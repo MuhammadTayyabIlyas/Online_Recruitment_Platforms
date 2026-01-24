@@ -1,0 +1,184 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\ProgramResource\Pages;
+use App\Models\Program;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+class ProgramResource extends Resource
+{
+    protected static ?string $model = Program::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
+
+    protected static ?string $navigationGroup = 'Study Programs';
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\Section::make('Program Details')
+                    ->schema([
+                        Forms\Components\TextInput::make('title')
+                            ->required()
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn (string $state, Forms\Set $set) => $set('slug', \Illuminate\Support\Str::slug($state))),
+
+                        Forms\Components\TextInput::make('slug')
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(ignoreRecord: true),
+
+                        Forms\Components\Select::make('university_id')
+                            ->relationship('university', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')->required(),
+                                Forms\Components\Select::make('country_id')
+                                    ->relationship('country', 'name')
+                                    ->required(),
+                            ]),
+
+                        Forms\Components\Select::make('country_id')
+                            ->relationship('country', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+
+                        Forms\Components\Select::make('degree_id')
+                            ->relationship('degree', 'name')
+                            ->required()
+                            ->preload()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')->required(),
+                            ]),
+
+                        Forms\Components\Select::make('subject_id')
+                            ->relationship('subject', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')->required(),
+                                Forms\Components\TextInput::make('category'),
+                            ]),
+                    ])->columns(2),
+
+                Forms\Components\Section::make('Admissions & Fees')
+                    ->schema([
+                        Forms\Components\TextInput::make('tuition_fee')
+                            ->numeric()
+                            ->prefix('€')
+                            ->maxValue(100000),
+
+                        Forms\Components\Select::make('currency')
+                            ->options(['EUR' => 'EUR'])
+                            ->default('EUR')
+                            ->required(),
+
+                        Forms\Components\TextInput::make('duration')
+                            ->placeholder('e.g. 2 years'),
+
+                        Forms\Components\Select::make('study_mode')
+                            ->options([
+                                'On-campus' => 'On-campus',
+                                'Online' => 'Online',
+                                'Hybrid' => 'Hybrid',
+                            ])
+                            ->required(),
+
+                        Forms\Components\TextInput::make('intake')
+                            ->placeholder('e.g. September 2026'),
+
+                        Forms\Components\DatePicker::make('application_deadline'),
+
+                        Forms\Components\TextInput::make('program_url')
+                            ->url()
+                            ->suffixIcon('heroicon-m-globe-alt'),
+
+                        Forms\Components\TextInput::make('language')
+                            ->default('English')
+                            ->required(),
+
+                        Forms\Components\Toggle::make('is_featured')
+                            ->columnSpanFull(),
+                            
+                        Forms\Components\Textarea::make('description')
+                            ->columnSpanFull(),
+                    ])->columns(2),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('title')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('university.name')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('country.name')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('degree.name')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('subject.name')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('language')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('tuition_fee')
+                    ->money('EUR')
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('is_featured')
+                    ->boolean(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                Tables\Filters\SelectFilter::make('country')
+                    ->relationship('country', 'name'),
+                Tables\Filters\SelectFilter::make('degree')
+                    ->relationship('degree', 'name'),
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListPrograms::route('/'),
+            'create' => Pages\CreateProgram::route('/create'),
+            'edit' => Pages\EditProgram::route('/{record}/edit'),
+            'bulk-import' => Pages\BulkImportPrograms::route('/bulk-import'),
+        ];
+    }
+}

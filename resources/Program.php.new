@@ -1,0 +1,54 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Program extends Model
+{
+    protected $fillable = [
+        'title',
+        'slug',
+        'university_id',
+        'country_id',
+        'degree_id',
+        'subject_id',
+        'language',
+        'tuition_fee',
+        'currency',
+        'duration',
+        'intake',
+        'study_mode',
+        'application_deadline',
+        'program_url',
+        'is_featured',
+        'description',
+    ];
+
+    protected $casts = [
+        'tuition_fee' => 'decimal:2',
+        'application_deadline' => 'date',
+        'is_featured' => 'boolean',
+    ];
+
+    public function university(): BelongsTo
+    {
+        return $this->belongsTo(University::class);
+    }
+
+    public function country(): BelongsTo
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    public function degree(): BelongsTo
+    {
+        return $this->belongsTo(Degree::class);
+    }
+
+    public function subject(): BelongsTo
+    {
+        return $this->belongsTo(Subject::class);
+    }
+}

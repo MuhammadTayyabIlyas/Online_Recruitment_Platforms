@@ -1,0 +1,280 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
+
+class LoginController extends Controller
+{
+    /**
+     * Maximum number of login attempts before lockout.
+     */
+    protected int $maxAttempts = 5;
+
+    /**
+     * Number of minutes to lockout after max attempts.
+     */
+    protected int $decayMinutes = 15;
+
+    /**
+     * Show the application's login form.
+     */
+    public function showLoginForm(): View
+    {
+        return view('auth.login');
+    }
+
+    /**
+     * Handle a login request to the application.
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function login(Request $request): RedirectResponse
+    {
+        $this->validateLogin($request);
+
+        // Check for too many login attempts
+        if ($this->hasTooManyLoginAttempts($request)) {
+            return $this->sendLockoutResponse($request);
+        }
+
+        if ($this->attemptLogin($request)) {
+            // Check if user account is active
+            $user = Auth::user();
+
+            if (!$user->is_active) {
+                Auth::logout();
+                $request->session()->invalidate();
+
+                throw ValidationException::withMessages([
+                    'email' => ['Your account has been deactivated. Please contact support.'],
+                ]);
+            }
+
+            // Update last login timestamp
+            $this->updateLastLogin();
+
+            // Log successful login
+            Log::info('User logged in', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
+            return $this->sendLoginResponse($request);
+        }
+
+        // Log failed login attempt
+        Log::warning('Failed login attempt', [
+            'email' => $request->input('email'),
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        $this->incrementLoginAttempts($request);
+
+        return $this->sendFailedLoginResponse($request);
+    }
+
+    /**
+     * Validate the user login request.
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function validateLogin(Request $request): void
+    {
+        $request->validate([
+            'email' => ['required', 'string', 'email'],
+            'password' => ['required', 'string'],
+        ]);
+    }
+
+    /**
+     * Attempt to log the user into the application.
+     */
+    protected function attemptLogin(Request $request): bool
+    {
+        return Auth::attempt(
+            $this->credentials($request),
+            $request->boolean('remember')
+        );
+    }
+
+    /**
+     * Get the needed authorization credentials from the request.
+     */
+    protected function credentials(Request $request): array
+    {
+        return $request->only('email', 'password');
+    }
+
+    /**
+     * Update the user's last login timestamp.
+     */
+    protected function updateLastLogin(): void
+    {
+        $user = Auth::user();
+        if ($user) {
+            $user->timestamps = false;
+            $user->update(['last_login_at' => now()]);
+            $user->timestamps = true;
+        }
+    }
+
+    /**
+     * Send the response after the user was authenticated.
+     */
+    /**
+     * Send the response after the user was authenticated.
+     */
+    protected function sendLoginResponse(Request $request): RedirectResponse
+    {
+        $request->session()->regenerate();
+
+        $this->clearLoginAttempts($request);
+
+        $user = Auth::user();
+        
+        // Log login event
+        \Illuminate\Support\Facades\Log::info('LoginController: User logged in', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'verified' => !is_null($user->email_verified_at),
+        ]);
+
+        // Check if email is not verified and send verification email
+        if (!$user->email_verified_at) {
+            // Automatically send verification email on login
+            \Illuminate\Support\Facades\Log::info('LoginController: User not verified, sending email', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+            ]);
+            
+            $this->sendVerificationEmail($user);
+            
+            session()->flash('info', 'Please verify your email address. A verification email has been sent to your inbox.');
+        } else {
+            session()->flash('success', 'Welcome back! You have been successfully logged in.');
+        }
+
+        return redirect()->intended($this->redirectPath());
+    }
+
+    /**
+     * Get the post authentication redirect path based on user type.
+     */
+    protected function redirectPath(): string
+    {
+        $user = Auth::user();
+
+        return match ($user->user_type) {
+            'admin' => '/admin',
+            'employer' => '/employer/dashboard',
+            'job_seeker' => '/jobseeker/dashboard',
+            default => '/'
+        };
+    }
+
+    /**
+     * Get the failed login response instance.
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function sendFailedLoginResponse(Request $request): never
+    {
+        throw ValidationException::withMessages([
+            'email' => [trans('auth.failed')],
+        ]);
+    }
+
+    /**
+     * Get the login username to be used by the controller.
+     */
+    public function username(): string
+    {
+        return 'email';
+    }
+
+    /**
+     * Log the user out of the application.
+     */
+    public function logout(Request $request): RedirectResponse
+    {
+        $userId = Auth::id();
+
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        Log::info('User logged out', ['user_id' => $userId]);
+
+        session()->flash('success', 'You have been logged out successfully.');
+
+        return redirect('/');
+    }
+
+    /**
+     * Get the rate limiter key for the request.
+     */
+    protected function throttleKey(Request $request): string
+    {
+        return Str::transliterate(Str::lower($request->input('email')).'|'.$request->ip());
+    }
+
+    /**
+     * Determine if the user has too many failed login attempts.
+     */
+    protected function hasTooManyLoginAttempts(Request $request): bool
+    {
+        return RateLimiter::tooManyAttempts(
+            $this->throttleKey($request),
+            $this->maxAttempts
+        );
+    }
+
+    /**
+     * Increment the login attempts for the user.
+     */
+    protected function incrementLoginAttempts(Request $request): void
+    {
+        RateLimiter::hit(
+            $this->throttleKey($request),
+            $this->decayMinutes * 60
+        );
+    }
+
+    /**
+     * Clear the login locks for the given user credentials.
+     */
+    protected function clearLoginAttempts(Request $request): void
+    {
+        RateLimiter::clear($this->throttleKey($request));
+    }
+
+    /**
+     * Redirect the user after determining they are locked out.
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function sendLockoutResponse(Request $request): never
+    {
+        $seconds = RateLimiter::availableIn($this->throttleKey($request));
+
+        throw ValidationException::withMessages([
+            'email' => [trans('auth.throttle', [
+                'seconds' => $seconds,
+                'minutes' => ceil($seconds / 60),
+            ])],
+        ])->status(429);
+    }
+}

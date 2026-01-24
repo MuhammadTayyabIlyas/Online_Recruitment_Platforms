@@ -1,0 +1,101 @@
+<?php
+
+namespace App\Filament\Resources\ProgramResource\Pages;
+
+use App\Filament\Resources\ProgramResource;
+use App\Models\Country;
+use App\Models\Degree;
+use App\Models\Program;
+use App\Models\Subject;
+use App\Models\University;
+use Filament\Actions;
+use Filament\Forms\Components\FileUpload;
+use Filament\Notifications\Notification;
+use Filament\Resources\Pages\ListRecords;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
+class ListPrograms extends ListRecords
+{
+    protected static string $resource = ProgramResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\CreateAction::make(),
+            Actions\Action::make('import')
+                ->label('Import CSV')
+                ->icon('heroicon-o-arrow-up-tray')
+                ->form([
+                    FileUpload::make('attachment')
+                        ->label('Upload CSV File')
+                        ->acceptedFileTypes(['text/csv', 'text/plain', 'application/csv'])
+                        ->disk('local')
+                        ->directory('imports')
+                        ->required(),
+                ])
+                ->action(function (array $data) {
+                    $path = Storage::disk('local')->path($data['attachment']);
+                    
+                    if (!file_exists($path)) {
+                        Notification::make()->title('File not found')->danger()->send();
+                        return;
+                    }
+
+                    $handle = fopen($path, 'r');
+                    $header = fgetcsv($handle); // Skip header
+
+                    $count = 0;
+                    
+                    while (($row = fgetcsv($handle)) !== false) {
+                        // Expected Format: Title, University, Country, Degree, Subject, Tuition, Currency
+                        if (count($row) < 5) continue;
+
+                        $title = $row[0];
+                        $uniName = $row[1];
+                        $countryName = $row[2];
+                        $degreeName = $row[3];
+                        $subjectName = $row[4];
+                        $fee = $row[5] ?? null;
+                        $currency = $row[6] ?? 'EUR';
+
+                        $country = Country::firstOrCreate(
+                            ['name' => $countryName],
+                            ['code' => strtoupper(substr($countryName, 0, 3))]
+                        );
+
+                        $university = University::firstOrCreate(
+                            ['name' => $uniName],
+                            ['country_id' => $country->id]
+                        );
+
+                        $degree = Degree::firstOrCreate(['name' => $degreeName]);
+
+                        $subject = Subject::firstOrCreate(['name' => $subjectName]);
+
+                        Program::create([
+                            'title' => $title,
+                            'slug' => Str::slug($title . '-' . $uniName . '-' . Str::random(4)),
+                            'university_id' => $university->id,
+                            'country_id' => $country->id,
+                            'degree_id' => $degree->id,
+                            'subject_id' => $subject->id,
+                            'tuition_fee' => $fee,
+                            'currency' => $currency,
+                            'language' => 'English',
+                        ]);
+
+                        $count++;
+                    }
+
+                    fclose($handle);
+                    Storage::disk('local')->delete($data['attachment']);
+
+                    Notification::make()
+                        ->title("Imported {$count} programs successfully")
+                        ->success()
+                        ->send();
+                }),
+        ];
+    }
+}

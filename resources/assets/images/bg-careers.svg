@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f5f8ff"/>
+      <stop offset="1" stop-color="#e8eefc"/>
+    </linearGradient>
+    <linearGradient id="chip" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4f8df7"/>
+      <stop offset="1" stop-color="#6ac7ff"/>
+    </linearGradient>
+    <linearGradient id="steth" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6ad6c4"/>
+      <stop offset="1" stop-color="#3da7b5"/>
+    </linearGradient>
+    <linearGradient id="book" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a78bfa"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="coin" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f9d976"/>
+      <stop offset="1" stop-color="#f39c12"/>
+    </linearGradient>
+    <linearGradient id="gear" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#94a3b8"/>
+      <stop offset="1" stop-color="#64748b"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.8">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+
+  <!-- Ambient blobs -->
+  <ellipse cx="250" cy="180" rx="220" ry="160" fill="url(#glow)" opacity="0.45"/>
+  <ellipse cx="1350" cy="160" rx="260" ry="180" fill="url(#glow)" opacity="0.35"/>
+  <ellipse cx="800" cy="680" rx="420" ry="240" fill="url(#glow)" opacity="0.3"/>
+
+  <!-- Platform base -->
+  <rect x="200" y="520" width="1200" height="220" rx="48" fill="white" opacity="0.55"/>
+  <rect x="240" y="560" width="1120" height="180" rx="42" fill="white" opacity="0.85"/>
+
+  <!-- Technology (chip) -->
+  <g transform="translate(320 480)">
+    <rect x="0" y="0" width="180" height="180" rx="36" fill="url(#chip)" opacity="0.9"/>
+    <rect x="28" y="28" width="124" height="124" rx="20" fill="white" opacity="0.25"/>
+    <rect x="60" y="60" width="60" height="60" rx="14" fill="white" opacity="0.75"/>
+    <path d="M90 20v20M90 140v20M20 90h20M140 90h20" stroke="white" stroke-width="10" stroke-linecap="round" opacity="0.7"/>
+  </g>
+
+  <!-- Healthcare (stethoscope) -->
+  <g transform="translate(560 450)">
+    <rect x="0" y="0" width="180" height="210" rx="36" fill="url(#steth)" opacity="0.9"/>
+    <path d="M55 60c0 30 12 60 42 60s42-30 42-60" stroke="white" stroke-width="10" stroke-linecap="round" fill="none"/>
+    <path d="M140 60h-16c-8 0-14-6-14-14V30" stroke="white" stroke-width="10" stroke-linecap="round" fill="none"/>
+    <circle cx="140" cy="30" r="12" fill="white" opacity="0.85"/>
+    <circle cx="97" cy="140" r="16" fill="white" opacity="0.85"/>
+    <path d="M97 156v28c0 10 8 18 18 18h18" stroke="white" stroke-width="10" stroke-linecap="round" fill="none" opacity="0.8"/>
+    <circle cx="143" cy="202" r="14" fill="white" opacity="0.9"/>
+  </g>
+
+  <!-- Education (book) -->
+  <g transform="translate(820 470)">
+    <rect x="0" y="0" width="200" height="190" rx="30" fill="url(#book)" opacity="0.9"/>
+    <path d="M48 48h104c12 0 22 10 22 22v80c0 12-10 22-22 22H48" stroke="white" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.9"/>
+    <path d="M48 48v126c0 12 10 22 22 22h86" stroke="white" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.4"/>
+    <path d="M90 70h60M90 96h60M90 122h34" stroke="white" stroke-width="8" stroke-linecap="round" opacity="0.8"/>
+  </g>
+
+  <!-- Finance (coins) -->
+  <g transform="translate(1100 500)">
+    <rect x="0" y="0" width="180" height="160" rx="32" fill="url(#coin)" opacity="0.9"/>
+    <ellipse cx="90" cy="46" rx="68" ry="28" fill="white" opacity="0.85"/>
+    <path d="M22 46v54c0 16 32 28 68 28s68-12 68-28V46" stroke="#f0b545" stroke-width="10" fill="none" opacity="0.8"/>
+    <path d="M70 46c0-8 10-14 22-14s22 6 22 14-10 14-22 14-22-6-22-14z" fill="#f0b545" opacity="0.9"/>
+  </g>
+
+  <!-- Engineering (gear) -->
+  <g transform="translate(1340 450)">
+    <rect x="0" y="0" width="180" height="210" rx="36" fill="url(#gear)" opacity="0.9"/>
+    <g transform="translate(40 45)" fill="none" stroke="white" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity="0.9">
+      <circle cx="50" cy="60" r="34"/>
+      <path d="M50 12V0m0 120v-12m38-48h12M0 60h12m65-33l9-9m-96 96l9-9m0-78l-9-9m96 96l-9-9"/>
+    </g>
+  </g>
+
+  <!-- Accent shapes -->
+  <circle cx="180" cy="580" r="28" fill="#c7d2fe" opacity="0.7"/>
+  <circle cx="1420" cy="320" r="20" fill="#a5b4fc" opacity="0.7"/>
+  <circle cx="1240" cy="700" r="24" fill="#bae6fd" opacity="0.7"/>
+  <rect x="260" y="320" width="120" height="22" rx="11" fill="#cbd5e1" opacity="0.6"/>
+  <rect x="1240" y="620" width="160" height="26" rx="13" fill="#c7d2fe" opacity="0.5"/>
+
+  <!-- Soft lines -->
+  <path d="M140 360c180 0 220 120 360 120s200-80 340-80 200 80 360 80 180-80 260-80" stroke="#dbeafe" stroke-width="14" stroke-linecap="round" opacity="0.55"/>
+</svg>

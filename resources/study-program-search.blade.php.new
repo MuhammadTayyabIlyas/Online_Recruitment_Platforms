@@ -1,0 +1,143 @@
+<div>
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <h1 class="text-3xl font-bold text-gray-900">Study Programs</h1>
+            <p class="mt-2 text-sm text-gray-600">Find your dream study program from top universities around the world.</p>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Filters Sidebar -->
+            <div class="w-full lg:w-1/4 space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 sticky top-24">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Filters</h3>
+                    
+                    <!-- Search -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                        <input wire:model.live.debounce.300ms="search" type="text" placeholder="Program or University" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+
+                    <!-- Country -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                        <select wire:model.live="selectedCountry" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">All Countries</option>
+                            @foreach($countries as $country)
+                                <option value="{{ $country->id }}">{{ $country->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Degree -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Degree Level</label>
+                        <select wire:model.live="selectedDegree" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">All Degrees</option>
+                            @foreach($degrees as $degree)
+                                <option value="{{ $degree->id }}">{{ $degree->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Subject -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                        <select wire:model.live="selectedSubject" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">All Subjects</option>
+                            @foreach($subjects as $subject)
+                                <option value="{{ $subject->id }}">{{ $subject->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Study Mode -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Study Mode</label>
+                        <select wire:model.live="selectedStudyMode" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">Any Mode</option>
+                            <option value="On-campus">On-campus</option>
+                            <option value="Online">Online</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select>
+                    </div>
+
+                    <button wire:click="resetFilters" class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors text-sm font-medium">
+                        Reset Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results List -->
+            <div class="w-full lg:w-3/4">
+                <div class="mb-4 flex justify-between items-center">
+                    <p class="text-sm text-gray-500">Showing <span class="font-medium text-gray-900">{{ $programs->total() }}</span> programs</p>
+                </div>
+
+                <div class="space-y-4">
+                    @forelse($programs as $program)
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            {{ $program->degree->name }}
+                                        </span>
+                                        @if($program->is_featured)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                Featured
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <h3 class="text-xl font-bold text-gray-900">
+                                        <a href="#" class="hover:text-blue-600 transition-colors">{{ $program->title }}</a>
+                                    </h3>
+                                    <p class="text-gray-600 font-medium">{{ $program->university->name }}</p>
+                                    <div class="flex items-center text-sm text-gray-500 mt-2 gap-4 flex-wrap">
+                                        <span class="flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                            {{ $program->country->name }}
+                                        </span>
+                                        <span class="flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            {{ $program->duration }}
+                                        </span>
+                                        <span class="flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            @if($program->tuition_fee)
+                                                €{{ number_format($program->tuition_fee, 0) }} / year
+                                            @else
+                                                Contact for fee
+                                            @endif
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="mt-4 md:mt-0 flex flex-col gap-2 w-full md:w-auto">
+                                    <a href="#" class="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 whitespace-nowrap">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-12 bg-white rounded-lg border border-gray-200">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">No programs found</h3>
+                            <p class="mt-1 text-sm text-gray-500">Try adjusting your filters or search terms.</p>
+                            <div class="mt-6">
+                                <button wire:click="resetFilters" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Reset Filters
+                                </button>
+                            </div>
+                        </div>
+                    @endforelse
+                </div>
+
+                <div class="mt-6">
+                    {{ $programs->links() }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

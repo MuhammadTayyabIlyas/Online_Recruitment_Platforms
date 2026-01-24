@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Program;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+
+class StudyProgramController extends Controller
+{
+    public function show($country, $slug)
+    {
+        $program = Program::where('slug', $slug)
+            ->with(['university', 'country', 'degree', 'subject'])
+            ->firstOrFail();
+
+        // Optional: specific check if country matches (for canonical URLs)
+        // if (Str::slug($program->country->name) !== $country) { ... }
+
+        return view('study-programs.show', compact('program'));
+    }
+}
