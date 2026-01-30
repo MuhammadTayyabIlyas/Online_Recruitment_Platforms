@@ -38,6 +38,9 @@ use Illuminate\Support\Facades\File;
 // Homepage
 Route::post('/locale/switch', [LocaleController::class, 'switch'])->name('locale.switch');
 
+// UK Police Character Certificate Routes
+require __DIR__ . '/police-certificate.php';
+
 Route::get('/sitemap.xml', function () {
     $uploadedPath = public_path('sitemap.xml');
     if (File::exists($uploadedPath)) {
