@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PoliceCertificateSubmitted;
 use App\Models\PoliceCertificateApplication;
 use App\Models\PoliceCertificateDocument;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -94,12 +96,15 @@ class PoliceCertificateController extends Controller
             $this->handleStep2Documents($request, $application);
         }
 
-        // If final step, mark as submitted
+        // If final step, mark as submitted and send confirmation email
         if ($step === 7) {
             $application->status = 'submitted';
             $application->submitted_at = now();
             $application->save();
-            
+
+            // Send confirmation email to applicant
+            Mail::to($application->email)->send(new PoliceCertificateSubmitted($application));
+
             return redirect()->route('police-certificate.success', ['reference' => $application->application_reference]);
         }
 

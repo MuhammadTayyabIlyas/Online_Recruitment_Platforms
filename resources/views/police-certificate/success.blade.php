@@ -103,15 +103,55 @@
                     </div>
                 </div>
 
+                <!-- Bank Account Details -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-5 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                        </svg>
+                        Bank Transfer Details
+                    </h3>
+
+                    <!-- GBP Account -->
+                    <div class="bg-white rounded-lg p-4 border border-gray-100 mb-3">
+                        <h4 class="font-medium text-gray-900 mb-2 text-sm">GBP Account (Wise)</h4>
+                        <div class="grid grid-cols-2 gap-1 text-sm">
+                            <span class="text-gray-500">Account Name:</span>
+                            <span class="font-medium">PLACEMENET I.K.E.</span>
+                            <span class="text-gray-500">Account Number:</span>
+                            <span class="font-medium font-mono">21126413</span>
+                            <span class="text-gray-500">Sort Code:</span>
+                            <span class="font-medium font-mono">23-08-01</span>
+                            <span class="text-gray-500">IBAN:</span>
+                            <span class="font-medium font-mono text-xs">GB52 TRWI 2308 0121 1264 13</span>
+                            <span class="text-gray-500">SWIFT/BIC:</span>
+                            <span class="font-medium font-mono">TRWIGB2LXXX</span>
+                        </div>
+                    </div>
+
+                    <!-- EUR Account -->
+                    <div class="bg-white rounded-lg p-4 border border-gray-100">
+                        <h4 class="font-medium text-gray-900 mb-2 text-sm">EUR Account (Wise)</h4>
+                        <div class="grid grid-cols-2 gap-1 text-sm">
+                            <span class="text-gray-500">Account Name:</span>
+                            <span class="font-medium">PLACEMENET I.K.E.</span>
+                            <span class="text-gray-500">IBAN:</span>
+                            <span class="font-medium font-mono">BE10 9677 3176 2104</span>
+                            <span class="text-gray-500">SWIFT/BIC:</span>
+                            <span class="font-medium font-mono">TRWIBEB1XXX</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Contact Support -->
                 <div class="text-center">
                     <p class="text-gray-600 mb-4">Questions? We're here to help.</p>
                     <div class="flex justify-center gap-4">
-                        <a href="mailto:support@placemenet.com" class="inline-flex items-center text-blue-600 hover:text-blue-500">
+                        <a href="mailto:info@placemenet.com" class="inline-flex items-center text-blue-600 hover:text-blue-500">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                             </svg>
-                            Email Support
+                            info@placemenet.com
                         </a>
                         <a href="https://wa.me/3464867464" target="_blank" class="inline-flex items-center text-green-600 hover:text-green-500">
                             <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">

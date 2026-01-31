@@ -92,47 +92,46 @@
         </h3>
         <p class="text-sm text-gray-600 mb-4">Transfer the exact amount to one of the following accounts:</p>
 
-        <!-- UK Bank Account -->
+        <!-- GBP Bank Account (Wise) -->
         <div class="bg-gray-50 rounded-lg p-4 mb-4">
-            <h4 class="font-medium text-gray-900 mb-2">🇬🇧 UK Bank Account</h4>
+            <h4 class="font-medium text-gray-900 mb-3">🇬🇧 GBP Account Details (Wise)</h4>
             <div class="grid grid-cols-2 gap-2 text-sm">
                 <span class="text-gray-600">Account Name:</span>
-                <span class="font-medium">PlaceMeNet Ltd</span>
-                <span class="text-gray-600">Sort Code:</span>
-                <span class="font-medium font-mono">XX-XX-XX</span>
+                <span class="font-medium">PLACEMENET I.K.E.</span>
                 <span class="text-gray-600">Account Number:</span>
-                <span class="font-medium font-mono">XXXXXXXX</span>
+                <span class="font-medium font-mono">21126413</span>
+                <span class="text-gray-600">Sort Code:</span>
+                <span class="font-medium font-mono">23-08-01</span>
                 <span class="text-gray-600">IBAN:</span>
-                <span class="font-medium font-mono">GBXX XXXX XXXX XXXX XXXX XX</span>
-                <span class="text-gray-600">Reference:</span>
-                <span class="font-medium text-blue-600">Your Full Name</span>
+                <span class="font-medium font-mono">GB52 TRWI 2308 0121 1264 13</span>
+                <span class="text-gray-600">SWIFT / BIC:</span>
+                <span class="font-medium font-mono">TRWIGB2LXXX</span>
+                <span class="text-gray-600">Bank:</span>
+                <span class="font-medium">Wise Payments Limited</span>
             </div>
+            <p class="mt-3 text-xs text-gray-500">
+                <strong>UK transfers:</strong> Use Account Number & Sort Code<br>
+                <strong>International:</strong> Use IBAN & SWIFT/BIC
+            </p>
         </div>
 
-        <!-- Spanish Bank Account -->
-        <div class="bg-gray-50 rounded-lg p-4 mb-4">
-            <h4 class="font-medium text-gray-900 mb-2">🇪🇸 Spanish Bank Account</h4>
+        <!-- EUR Bank Account (Wise) -->
+        <div class="bg-gray-50 rounded-lg p-4">
+            <h4 class="font-medium text-gray-900 mb-3">🇪🇺 EUR Account Details (Wise)</h4>
             <div class="grid grid-cols-2 gap-2 text-sm">
                 <span class="text-gray-600">Account Name:</span>
-                <span class="font-medium">PlaceMeNet S.L.</span>
+                <span class="font-medium">PLACEMENET I.K.E.</span>
                 <span class="text-gray-600">IBAN:</span>
-                <span class="font-medium font-mono">ESXX XXXX XXXX XXXX XXXX XXXX</span>
-                <span class="text-gray-600">BIC/SWIFT:</span>
-                <span class="font-medium font-mono">XXXXXXXX</span>
-                <span class="text-gray-600">Reference:</span>
-                <span class="font-medium text-blue-600">Your Full Name</span>
+                <span class="font-medium font-mono">BE10 9677 3176 2104</span>
+                <span class="text-gray-600">SWIFT / BIC:</span>
+                <span class="font-medium font-mono">TRWIBEB1XXX</span>
+                <span class="text-gray-600">Bank:</span>
+                <span class="font-medium">Wise, Brussels, Belgium</span>
             </div>
-        </div>
-
-        <!-- Bizum (Spain only) -->
-        <div class="bg-gray-50 rounded-lg p-4">
-            <h4 class="font-medium text-gray-900 mb-2">📱 Bizum (Spain)</h4>
-            <div class="grid grid-cols-2 gap-2 text-sm">
-                <span class="text-gray-600">Phone:</span>
-                <span class="font-medium font-mono">+34 XXX XXX XXX</span>
-                <span class="text-gray-600">Concept:</span>
-                <span class="font-medium text-blue-600">PCC - Your Full Name</span>
-            </div>
+            <p class="mt-3 text-xs text-gray-500">
+                <strong>SEPA transfers:</strong> Use IBAN only<br>
+                <strong>Outside SEPA:</strong> Use IBAN & SWIFT/BIC
+            </p>
         </div>
     </div>
 
