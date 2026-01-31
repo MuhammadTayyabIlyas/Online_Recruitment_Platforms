@@ -91,13 +91,23 @@
         <label for="date_of_birth" class="block text-sm font-medium text-gray-700 mb-1">
             Date of Birth <span class="text-red-500">*</span>
         </label>
-        <input type="date" name="date_of_birth" id="date_of_birth" 
-               value="{{ old('date_of_birth', $application->date_of_birth ?? '') }}"
+        @php
+            $dobValue = old('date_of_birth');
+            if (!$dobValue && isset($application) && $application->date_of_birth) {
+                $dobValue = $application->date_of_birth instanceof \Carbon\Carbon
+                    ? $application->date_of_birth->format('Y-m-d')
+                    : $application->date_of_birth;
+            }
+        @endphp
+        <input type="date" name="date_of_birth" id="date_of_birth"
+               value="{{ $dobValue ?? '' }}"
+               max="{{ date('Y-m-d') }}"
                class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('date_of_birth') border-red-500 @enderror"
                required>
         @error('date_of_birth')
             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
         @enderror
+        <p class="mt-1 text-xs text-gray-500">Must be before today's date</p>
     </div>
 
     <!-- Place of Birth -->

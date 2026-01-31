@@ -45,8 +45,17 @@
                 <label for="passport_issue_date" class="block text-sm font-medium text-gray-700 mb-1">
                     Date of Issue <span class="text-red-500">*</span>
                 </label>
+                @php
+                    $issueValue = old('passport_issue_date');
+                    if (!$issueValue && isset($application) && $application->passport_issue_date) {
+                        $issueValue = $application->passport_issue_date instanceof \Carbon\Carbon
+                            ? $application->passport_issue_date->format('Y-m-d')
+                            : $application->passport_issue_date;
+                    }
+                @endphp
                 <input type="date" name="passport_issue_date" id="passport_issue_date"
-                       value="{{ old('passport_issue_date', $application->passport_issue_date?->format('Y-m-d') ?? '') }}"
+                       value="{{ $issueValue ?? '' }}"
+                       max="{{ date('Y-m-d') }}"
                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('passport_issue_date') border-red-500 @enderror"
                        required>
                 @error('passport_issue_date')
@@ -58,8 +67,17 @@
                 <label for="passport_expiry_date" class="block text-sm font-medium text-gray-700 mb-1">
                     Date of Expiry <span class="text-red-500">*</span>
                 </label>
+                @php
+                    $expiryValue = old('passport_expiry_date');
+                    if (!$expiryValue && isset($application) && $application->passport_expiry_date) {
+                        $expiryValue = $application->passport_expiry_date instanceof \Carbon\Carbon
+                            ? $application->passport_expiry_date->format('Y-m-d')
+                            : $application->passport_expiry_date;
+                    }
+                @endphp
                 <input type="date" name="passport_expiry_date" id="passport_expiry_date"
-                       value="{{ old('passport_expiry_date', $application->passport_expiry_date?->format('Y-m-d') ?? '') }}"
+                       value="{{ $expiryValue ?? '' }}"
+                       min="{{ date('Y-m-d', strtotime('+1 day')) }}"
                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('passport_expiry_date') border-red-500 @enderror"
                        required>
                 @error('passport_expiry_date')
