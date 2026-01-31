@@ -50,6 +50,7 @@ class PoliceCertificateApplication extends Model
         'status',
         'application_reference',
         'submitted_at',
+        'admin_notes',
     ];
 
     protected $casts = [

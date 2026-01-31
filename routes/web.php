@@ -458,6 +458,11 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::post('/csv/import-jobs', [AdminSettingsController::class, 'importJobs'])->name('csv.import-jobs');
     Route::get('/csv/export-jobs', [AdminSettingsController::class, 'exportJobs'])->name('csv.export-jobs');
     Route::get('/csv/export-candidates', [AdminSettingsController::class, 'exportCandidates'])->name('csv.export-candidates');
+
+    // Police Certificate Admin Routes
+    Route::get('/police-certificate/document/{document}/download', [\App\Http\Controllers\Admin\PoliceCertificateAdminController::class, 'downloadDocument'])->name('police-certificate.download-document');
+    Route::get('/police-certificate/document/{document}/preview', [\App\Http\Controllers\Admin\PoliceCertificateAdminController::class, 'previewDocument'])->name('police-certificate.preview-document');
+    Route::get('/police-certificate/{application}/download-documents', [\App\Http\Controllers\Admin\PoliceCertificateAdminController::class, 'downloadAllDocuments'])->name('police-certificate.download-documents');
 });
 
 // Institution (study programs)
