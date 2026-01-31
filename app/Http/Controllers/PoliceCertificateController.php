@@ -10,13 +10,6 @@ use Illuminate\Support\Facades\Validator;
 
 class PoliceCertificateController extends Controller
 {
-    public function __construct()
-    {
-        // Require authentication for all routes except index
-        $this->middleware('auth')->except(['index']);
-        $this->middleware('verified')->except(['index']);
-    }
-
     protected $stepFields = [
         1 => ['first_name', 'middle_name', 'last_name', 'father_full_name', 'gender', 'date_of_birth', 'place_of_birth_city', 'place_of_birth_country', 'nationality', 'marital_status'],
         2 => ['passport_number', 'passport_issue_date', 'passport_expiry_date', 'passport_place_of_issue', 'cnic_nicop_number', 'uk_home_office_ref', 'uk_brp_number'],

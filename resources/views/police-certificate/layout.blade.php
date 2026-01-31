@@ -1,3 +1,28 @@
+@php
+$stepTitles = [
+    1 => 'Personal Information',
+    2 => 'Identification Details',
+    3 => 'UK Residence History',
+    4 => 'UK Address History',
+    5 => 'Spain Address',
+    6 => 'Contact Information',
+    7 => 'Review & Payment',
+];
+
+$stepDescriptions = [
+    1 => 'Enter your personal details as they appear on your passport',
+    2 => 'Upload your passport, CNIC/NICOP, and UK visa documents',
+    3 => 'Provide details of your stay in the United Kingdom',
+    4 => 'List all addresses where you lived in the UK',
+    5 => 'Enter your current address in Spain',
+    6 => 'How we can contact you during the application process',
+    7 => 'Select your service type and view payment instructions',
+];
+
+$currentTitle = $stepTitles[$step] ?? '';
+$currentDescription = $stepDescriptions[$step] ?? '';
+@endphp
+
 @extends('layouts.app')
 
 @section('title', 'Step ' . $step . ' - UK Police Character Certificate')
@@ -29,20 +54,20 @@
             <div class="text-center">
                 <span class="text-sm font-medium text-gray-600">Step {{ $step }} of 7</span>
                 <span class="mx-2 text-gray-300">|</span>
-                <span class="text-sm text-gray-500">{{ $this->getStepTitle($step) }}</span>
+                <span class="text-sm text-gray-500">{{ $currentTitle }}</span>
             </div>
         </div>
 
         <!-- Form Card -->
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
             <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4">
-                <h2 class="text-xl font-bold text-white">{{ $this->getStepTitle($step) }}</h2>
-                <p class="text-blue-100 text-sm mt-1">{{ $this->getStepDescription($step) }}</p>
+                <h2 class="text-xl font-bold text-white">{{ $currentTitle }}</h2>
+                <p class="text-blue-100 text-sm mt-1">{{ $currentDescription }}</p>
             </div>
 
             <form action="{{ route('police-certificate.process-step', ['step' => $step]) }}" method="POST" enctype="multipart/form-data" class="p-6">
                 @csrf
-                
+
                 @if($errors->any())
                     <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded">
                         <div class="flex">
@@ -61,7 +86,7 @@
                 <!-- Navigation Buttons -->
                 <div class="flex justify-between mt-8 pt-6 border-t border-gray-200">
                     @if($step > 1)
-                        <a href="{{ route('police-certificate.step', ['step' => $step - 1]) }}" 
+                        <a href="{{ route('police-certificate.step', ['step' => $step - 1]) }}"
                            class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <svg class="mr-2 -ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -72,7 +97,7 @@
                         <div></div>
                     @endif
 
-                    <button type="submit" 
+                    <button type="submit"
                             class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-lg transform hover:scale-105 transition-all">
                         {{ $step == 7 ? 'Submit Application' : 'Next Step' }}
                         <svg class="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,31 +124,3 @@
     </div>
 </div>
 @endsection
-
-@php
-function getStepTitle($step) {
-    $titles = [
-        1 => 'Personal Information',
-        2 => 'Identification Details',
-        3 => 'UK Residence History',
-        4 => 'UK Address History',
-        5 => 'Spain Address',
-        6 => 'Contact Information',
-        7 => 'Review & Payment',
-    ];
-    return $titles[$step] ?? '';
-}
-
-function getStepDescription($step) {
-    $descriptions = [
-        1 => 'Enter your personal details as they appear on your passport',
-        2 => 'Upload your passport, CNIC/NICOP, and UK visa documents',
-        3 => 'Provide details of your stay in the United Kingdom',
-        4 => 'List all addresses where you lived in the UK',
-        5 => 'Enter your current address in Spain',
-        6 => 'How we can contact you during the application process',
-        7 => 'Select your service type and view payment instructions',
-    ];
-    return $descriptions[$step] ?? '';
-}
-@endphp
