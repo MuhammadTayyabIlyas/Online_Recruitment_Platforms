@@ -68,6 +68,11 @@ class RoleSeeder extends Seeder
             'access admin dashboard',
             'access employer dashboard',
             'access job seeker dashboard',
+            'access service user dashboard',
+
+            // Police Certificate Services
+            'apply police certificate',
+            'view police certificates',
 
             // Reports
             'view reports',
@@ -138,6 +143,14 @@ class RoleSeeder extends Seeder
             'view programs',
             'apply programs',
             'access job seeker dashboard',
+        ]);
+
+        // Service User role (Police Certificates & Other Services)
+        $serviceUserRole = Role::firstOrCreate(['name' => 'service_user', 'guard_name' => 'web']);
+        $serviceUserRole->givePermissionTo([
+            'apply police certificate',
+            'view police certificates',
+            'access service user dashboard',
         ]);
 
         $this->command->info('Roles and permissions seeded successfully!');

@@ -28,15 +28,29 @@
                 </p>
                 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="{{ route('police-certificate.step', ['step' => 1]) }}" 
-                       class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-blue-700 bg-white rounded-lg shadow-lg hover:bg-blue-50 transition-all transform hover:scale-105">
-                        Start Application
-                        <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                        </svg>
-                    </a>
-                    
-                    <a href="#pricing" 
+                    @auth
+                        <a href="{{ route('police-certificate.step', ['step' => 1]) }}"
+                           class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-blue-700 bg-white rounded-lg shadow-lg hover:bg-blue-50 transition-all transform hover:scale-105">
+                            Start Application
+                            <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                            </svg>
+                        </a>
+                    @else
+                        <a href="{{ route('register') }}?user_type=service_user&redirect={{ urlencode(route('police-certificate.step', ['step' => 1])) }}"
+                           class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-blue-700 bg-white rounded-lg shadow-lg hover:bg-blue-50 transition-all transform hover:scale-105">
+                            Create Account & Apply
+                            <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                            </svg>
+                        </a>
+                        <a href="{{ route('login') }}?redirect={{ urlencode(route('police-certificate.step', ['step' => 1])) }}"
+                           class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white border-2 border-white rounded-lg hover:bg-white/10 transition-all">
+                            Already Have Account? Login
+                        </a>
+                    @endauth
+
+                    <a href="#pricing"
                        class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white border-2 border-white rounded-lg hover:bg-white/10 transition-all">
                         View Pricing
                     </a>
@@ -185,13 +199,20 @@
                     </ul>
                 </div>
                 <div class="p-6 bg-gray-50">
-                    <a href="{{ route('police-certificate.step', ['step' => 1]) }}" 
-                       class="block w-full py-3 px-4 text-center font-semibold text-blue-700 bg-white border-2 border-blue-700 rounded-lg hover:bg-blue-700 hover:text-white transition-colors">
-                        Select Normal
-                    </a>
+                    @auth
+                        <a href="{{ route('police-certificate.step', ['step' => 1]) }}"
+                           class="block w-full py-3 px-4 text-center font-semibold text-blue-700 bg-white border-2 border-blue-700 rounded-lg hover:bg-blue-700 hover:text-white transition-colors">
+                            Select Normal
+                        </a>
+                    @else
+                        <a href="{{ route('register') }}?user_type=service_user&redirect={{ urlencode(route('police-certificate.step', ['step' => 1])) }}"
+                           class="block w-full py-3 px-4 text-center font-semibold text-blue-700 bg-white border-2 border-blue-700 rounded-lg hover:bg-blue-700 hover:text-white transition-colors">
+                            Select Normal
+                        </a>
+                    @endauth
                 </div>
             </div>
-            
+
             <!-- Urgent Service -->
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-blue-500 relative">
                 <div class="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
@@ -200,7 +221,7 @@
                 <div class="p-8">
                     <h3 class="text-xl font-bold text-gray-900 mb-2">Urgent Service</h3>
                     <p class="text-gray-500 mb-6">7 working days processing</p>
-                    
+
                     <div class="space-y-3 mb-8">
                         <div class="flex justify-between items-center">
                             <span class="text-gray-600">GBP</span>
@@ -211,7 +232,7 @@
                             <span class="text-3xl font-bold text-blue-600">€180</span>
                         </div>
                     </div>
-                    
+
                     <ul class="space-y-3 text-gray-600">
                         <li class="flex items-center">
                             <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -240,10 +261,17 @@
                     </ul>
                 </div>
                 <div class="p-6 bg-blue-50">
-                    <a href="{{ route('police-certificate.step', ['step' => 1]) }}" 
-                       class="block w-full py-3 px-4 text-center font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
-                        Select Urgent
-                    </a>
+                    @auth
+                        <a href="{{ route('police-certificate.step', ['step' => 1]) }}"
+                           class="block w-full py-3 px-4 text-center font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                            Select Urgent
+                        </a>
+                    @else
+                        <a href="{{ route('register') }}?user_type=service_user&redirect={{ urlencode(route('police-certificate.step', ['step' => 1])) }}"
+                           class="block w-full py-3 px-4 text-center font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                            Select Urgent
+                        </a>
+                    @endauth
                 </div>
             </div>
         </div>
@@ -257,13 +285,23 @@
                 Begin your UK Police Character Certificate application now. 
                 The process takes approximately 20 minutes to complete.
             </p>
-            <a href="{{ route('police-certificate.step', ['step' => 1]) }}" 
-               class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-blue-700 bg-white rounded-lg shadow-lg hover:bg-blue-50 transition-all transform hover:scale-105">
-                Start Application Now
-                <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                </svg>
-            </a>
+            @auth
+                <a href="{{ route('police-certificate.step', ['step' => 1]) }}"
+                   class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-blue-700 bg-white rounded-lg shadow-lg hover:bg-blue-50 transition-all transform hover:scale-105">
+                    Start Application Now
+                    <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                </a>
+            @else
+                <a href="{{ route('register') }}?user_type=service_user&redirect={{ urlencode(route('police-certificate.step', ['step' => 1])) }}"
+                   class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-blue-700 bg-white rounded-lg shadow-lg hover:bg-blue-50 transition-all transform hover:scale-105">
+                    Create Account & Apply
+                    <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                </a>
+            @endauth
         </div>
     </div>
 </div>

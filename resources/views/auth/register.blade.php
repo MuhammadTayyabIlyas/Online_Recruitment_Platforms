@@ -237,6 +237,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <option value="job_seeker" {{ old('user_type') === 'job_seeker' ? 'selected' : '' }}>Job Seeker - Find & Apply to Jobs</option>
                         <option value="educational_institution" {{ old('user_type') === 'educational_institution' ? 'selected' : '' }}>Educational Institution - Publish Study Programs</option>
                         <option value="student" {{ old('user_type') === 'student' ? 'selected' : '' }}>Student - Browse & Apply to Study Programs</option>
+                        <option value="service_user" {{ old('user_type') === 'service_user' ? 'selected' : '' }}>Other Services - Police Certificates & More</option>
                     </select>
                     @error('user_type')
                         <p class="mt-1 text-sm text-red-600" role="alert">{{ $message }}</p>

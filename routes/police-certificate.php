@@ -9,10 +9,11 @@ use App\Http\Controllers\PoliceCertificateController;
 |--------------------------------------------------------------------------
 */
 
-// Public form routes
+// Public landing page (no auth required)
 Route::get('/uk-police-certificate', [PoliceCertificateController::class, 'index'])
     ->name('police-certificate.index');
 
+// Application wizard routes (auth required - handled by controller middleware)
 Route::get('/uk-police-certificate/step/{step}', [PoliceCertificateController::class, 'showStep'])
     ->where('step', '[1-7]')
     ->name('police-certificate.step');
@@ -24,11 +25,9 @@ Route::post('/uk-police-certificate/step/{step}', [PoliceCertificateController::
 Route::get('/uk-police-certificate/success', [PoliceCertificateController::class, 'success'])
     ->name('police-certificate.success');
 
-// User portal routes (require authentication)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/portal/police-certificate/receipt/{reference}', [PoliceCertificateController::class, 'showReceiptUpload'])
-        ->name('police-certificate.receipt.show');
-    
-    Route::post('/portal/police-certificate/receipt/{reference}', [PoliceCertificateController::class, 'uploadReceipt'])
-        ->name('police-certificate.receipt.upload');
-});
+// Receipt upload routes (auth required - handled by controller middleware)
+Route::get('/services/police-certificate/receipt/{reference}', [PoliceCertificateController::class, 'showReceiptUpload'])
+    ->name('police-certificate.receipt.show');
+
+Route::post('/services/police-certificate/receipt/{reference}', [PoliceCertificateController::class, 'uploadReceipt'])
+    ->name('police-certificate.receipt.upload');

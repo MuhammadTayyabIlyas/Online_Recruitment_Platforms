@@ -166,6 +166,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return redirect()->route('student.dashboard');
         }
 
+        if ($user->hasRole('service_user')) {
+            return redirect()->route('service_user.dashboard');
+        }
+
         return redirect()->route('jobseeker.dashboard');
     })->name('dashboard');
 
@@ -355,6 +359,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/documents/upload', [\App\Http\Controllers\Student\DocumentController::class, 'upload'])->name('documents.upload');
         Route::get('/documents/{document}/download', [\App\Http\Controllers\Student\DocumentController::class, 'download'])->name('documents.download');
         Route::delete('/documents/{document}', [\App\Http\Controllers\Student\DocumentController::class, 'destroy'])->name('documents.destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Service User Routes (Police Certificates & Other Services)
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['role:service_user'])->prefix('services')->name('service_user.')->group(function () {
+
+        // Service User Dashboard
+        Route::get('/dashboard', [\App\Http\Controllers\ServiceUser\DashboardController::class, 'index'])->name('dashboard');
     });
 });
 

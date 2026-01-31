@@ -21,7 +21,7 @@ class RegisterController extends Controller
      * Allowed user types for public registration.
      * Admin accounts should be created through a separate secure process.
      */
-    protected const ALLOWED_USER_TYPES = ['employer', 'job_seeker', 'student', 'educational_institution'];
+    protected const ALLOWED_USER_TYPES = ['employer', 'job_seeker', 'student', 'educational_institution', 'service_user'];
 
     /**
      * Show the registration form.

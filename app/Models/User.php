@@ -42,6 +42,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public const TYPE_ADMIN = 'admin';
     public const TYPE_EMPLOYER = 'employer';
     public const TYPE_JOB_SEEKER = 'job_seeker';
+    public const TYPE_SERVICE_USER = 'service_user';
 
     /**
      * The attributes that are mass assignable.
@@ -294,6 +295,22 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isContentCreator(): bool
     {
         return $this->hasRole(['employer', 'educational_institution']);
+    }
+
+    /**
+     * Check if user is a service user.
+     */
+    public function isServiceUser(): bool
+    {
+        return $this->user_type === self::TYPE_SERVICE_USER;
+    }
+
+    /**
+     * Get the police certificate applications for the user.
+     */
+    public function policeCertificateApplications(): HasMany
+    {
+        return $this->hasMany(PoliceCertificateApplication::class);
     }
 
     /**
