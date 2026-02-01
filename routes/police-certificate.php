@@ -30,6 +30,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/uk-police-certificate/success', [PoliceCertificateController::class, 'success'])
         ->name('police-certificate.success');
 
+    // Payment PDF download
+    Route::get('/uk-police-certificate/payment-pdf/{reference}', [PoliceCertificateController::class, 'downloadPaymentPdf'])
+        ->name('police-certificate.download-payment-pdf');
+
     // Resume draft application
     Route::get('/uk-police-certificate/resume/{reference}', [PoliceCertificateController::class, 'resume'])
         ->name('police-certificate.resume');

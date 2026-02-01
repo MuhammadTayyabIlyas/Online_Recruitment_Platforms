@@ -103,6 +103,23 @@
                     </div>
                 </div>
 
+                <!-- Download Payment PDF -->
+                <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-5 mb-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-indigo-900 mb-1">Payment Details Document</h3>
+                            <p class="text-sm text-indigo-700">Download your payment instructions as a PDF for your records.</p>
+                        </div>
+                        <a href="{{ route('police-certificate.download-payment-pdf', $application->application_reference) }}"
+                           class="inline-flex items-center px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition shadow-sm">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            Download PDF
+                        </a>
+                    </div>
+                </div>
+
                 <!-- Bank Account Details -->
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-5 mb-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\PoliceCertificateSubmitted;
 use App\Models\PoliceCertificateApplication;
 use App\Models\PoliceCertificateDocument;
+use App\Services\PaymentPdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -110,7 +111,22 @@ class PoliceCertificateController extends Controller
             );
         }
 
+        // Handle "I don't have this" checkboxes
+        if ($step === 2) {
+            $validated['no_uk_home_office_ref'] = $request->boolean('no_uk_home_office_ref');
+            $validated['no_uk_brp_number'] = $request->boolean('no_uk_brp_number');
+        }
+        if ($step === 3) {
+            $validated['no_uk_national_insurance_number'] = $request->boolean('no_uk_national_insurance_number');
+        }
+        if ($step === 4) {
+            $validated['address_dates_approximate'] = $request->boolean('address_dates_approximate');
+            $validated['address_dates_notes'] = $request->input('address_dates_notes');
+        }
+
         $application->fill($validated);
+        $application->last_completed_step = $step;
+        $application->last_saved_at = now();
         $application->save();
 
         // Store application ID in session
@@ -121,13 +137,24 @@ class PoliceCertificateController extends Controller
             $this->handleStep2Documents($request, $application);
         }
 
+        // Handle "Save & Continue Later" button
+        if ($request->has('save_for_later')) {
+            return redirect()->route('service_user.dashboard')
+                ->with('success', 'Application saved! You can resume anytime.')
+                ->with('progress_saved', true)
+                ->with('application_reference', $application->application_reference);
+        }
+
         // If final step, mark as submitted and send confirmation email
         if ($step === 7) {
             $application->status = 'submitted';
             $application->submitted_at = now();
             $application->save();
 
-            // Send confirmation email to applicant
+            // Generate and store payment PDF
+            $this->generatePaymentPdf($application);
+
+            // Send confirmation email to applicant (with PDF attached)
             Mail::to($application->email)->send(new PoliceCertificateSubmitted($application));
 
             return redirect()->route('police-certificate.success', ['reference' => $application->application_reference]);
@@ -421,5 +448,53 @@ class PoliceCertificateController extends Controller
         ];
 
         return $prices[$serviceType][$currency] ?? 100;
+    }
+
+    /**
+     * Generate and store payment PDF for the application
+     */
+    protected function generatePaymentPdf(PoliceCertificateApplication $application): void
+    {
+        $pdfService = app(PaymentPdfService::class);
+        $pdfPath = $pdfService->generateAndStore($application, 'uk-police');
+
+        // Store as document record
+        PoliceCertificateDocument::create([
+            'application_id' => $application->id,
+            'document_type' => 'payment_details',
+            'file_path' => $pdfPath,
+            'original_filename' => 'Payment_Details_' . $application->application_reference . '.pdf',
+            'mime_type' => 'application/pdf',
+            'file_size' => Storage::disk('private')->size($pdfPath),
+        ]);
+    }
+
+    /**
+     * Download the payment details PDF
+     */
+    public function downloadPaymentPdf(Request $request, $reference)
+    {
+        $application = PoliceCertificateApplication::where('application_reference', $reference)->firstOrFail();
+
+        // Check if user is the owner or an admin
+        if (!auth()->user()->hasRole('admin') && $application->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        // Try to get stored PDF first
+        $document = $application->documents()
+            ->where('document_type', 'payment_details')
+            ->first();
+
+        if ($document && Storage::disk('private')->exists($document->file_path)) {
+            return Storage::disk('private')->download(
+                $document->file_path,
+                'Payment_Details_' . $application->application_reference . '.pdf'
+            );
+        }
+
+        // Fallback: generate PDF on the fly if not stored
+        $pdfService = app(PaymentPdfService::class);
+        return $pdfService->download($application, 'uk-police');
     }
 }

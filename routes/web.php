@@ -473,6 +473,24 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/police-certificate/document/{document}/download', [\App\Http\Controllers\Admin\PoliceCertificateAdminController::class, 'downloadDocument'])->name('police-certificate.download-document');
     Route::get('/police-certificate/document/{document}/preview', [\App\Http\Controllers\Admin\PoliceCertificateAdminController::class, 'previewDocument'])->name('police-certificate.preview-document');
     Route::get('/police-certificate/{application}/download-documents', [\App\Http\Controllers\Admin\PoliceCertificateAdminController::class, 'downloadAllDocuments'])->name('police-certificate.download-documents');
+
+    // Portugal Certificate Admin Routes
+    Route::get('/portugal-certificates', [\App\Http\Controllers\Admin\PortugalCertificateAdminController::class, 'index'])->name('portugal-certificates.index');
+    Route::get('/portugal-certificates/export/csv', [\App\Http\Controllers\Admin\PortugalCertificateAdminController::class, 'export'])->name('portugal-certificates.export');
+    Route::get('/portugal-certificates/{application}', [\App\Http\Controllers\Admin\PortugalCertificateAdminController::class, 'show'])->name('portugal-certificates.show');
+    Route::patch('/portugal-certificates/{application}/status', [\App\Http\Controllers\Admin\PortugalCertificateAdminController::class, 'updateStatus'])->name('portugal-certificates.update-status');
+    Route::get('/portugal-certificate/document/{document}/download', [\App\Http\Controllers\Admin\PortugalCertificateAdminController::class, 'downloadDocument'])->name('portugal-certificate.download-document');
+    Route::get('/portugal-certificate/document/{document}/preview', [\App\Http\Controllers\Admin\PortugalCertificateAdminController::class, 'previewDocument'])->name('portugal-certificate.preview-document');
+    Route::get('/portugal-certificate/{application}/download-documents', [\App\Http\Controllers\Admin\PortugalCertificateAdminController::class, 'downloadAllDocuments'])->name('portugal-certificate.download-documents');
+
+    // Greece Certificate Admin Routes
+    Route::get('/greece-certificates', [\App\Http\Controllers\Admin\GreeceCertificateAdminController::class, 'index'])->name('greece-certificates.index');
+    Route::get('/greece-certificates/export/csv', [\App\Http\Controllers\Admin\GreeceCertificateAdminController::class, 'export'])->name('greece-certificates.export');
+    Route::get('/greece-certificates/{application}', [\App\Http\Controllers\Admin\GreeceCertificateAdminController::class, 'show'])->name('greece-certificates.show');
+    Route::patch('/greece-certificates/{application}/status', [\App\Http\Controllers\Admin\GreeceCertificateAdminController::class, 'updateStatus'])->name('greece-certificates.update-status');
+    Route::get('/greece-certificate/document/{document}/download', [\App\Http\Controllers\Admin\GreeceCertificateAdminController::class, 'downloadDocument'])->name('greece-certificate.download-document');
+    Route::get('/greece-certificate/document/{document}/preview', [\App\Http\Controllers\Admin\GreeceCertificateAdminController::class, 'previewDocument'])->name('greece-certificate.preview-document');
+    Route::get('/greece-certificate/{application}/download-documents', [\App\Http\Controllers\Admin\GreeceCertificateAdminController::class, 'downloadAllDocuments'])->name('greece-certificate.download-documents');
 });
 
 // Institution (study programs)

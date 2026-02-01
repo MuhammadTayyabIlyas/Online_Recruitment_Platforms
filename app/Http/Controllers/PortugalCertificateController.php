@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Mail\PortugalCertificateSubmitted;
 use App\Models\PortugalCertificateApplication;
 use App\Models\PortugalCertificateDocument;
+use App\Services\PaymentPdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class PortugalCertificateController extends Controller
@@ -103,7 +105,18 @@ class PortugalCertificateController extends Controller
             );
         }
 
+        // Handle "I don't have this" checkboxes
+        if ($step === 2) {
+            $validated['no_portugal_nif'] = $request->boolean('no_portugal_nif');
+            $validated['no_portugal_residence_permit'] = $request->boolean('no_portugal_residence_permit');
+        }
+        if ($step === 3) {
+            $validated['no_portugal_social_security_number'] = $request->boolean('no_portugal_social_security_number');
+        }
+
         $application->fill($validated);
+        $application->last_completed_step = $step;
+        $application->last_saved_at = now();
         $application->save();
 
         // Store application ID in session
@@ -114,14 +127,25 @@ class PortugalCertificateController extends Controller
             $this->handleStep2Documents($request, $application);
         }
 
+        // Handle "Save & Continue Later" button
+        if ($request->has('save_for_later')) {
+            return redirect()->route('service_user.dashboard')
+                ->with('success', 'Application saved! You can resume anytime.')
+                ->with('progress_saved', true)
+                ->with('application_reference', $application->application_reference);
+        }
+
         // If final step, mark as submitted
         if ($step === 6) {
             $application->status = 'submitted';
             $application->submitted_at = now();
             $application->save();
 
-            // Send confirmation email to applicant
-            // Mail::to($application->email)->send(new PortugalCertificateSubmitted($application));
+            // Generate and store payment PDF
+            $this->generatePaymentPdf($application);
+
+            // Send confirmation email to applicant (with PDF attached)
+            Mail::to($application->email)->send(new PortugalCertificateSubmitted($application));
 
             return redirect()->route('portugal-certificate.success', ['reference' => $application->application_reference]);
         }
@@ -373,5 +397,53 @@ class PortugalCertificateController extends Controller
         ];
 
         return $prices[$serviceType] ?? 85;
+    }
+
+    /**
+     * Generate and store payment PDF for the application
+     */
+    protected function generatePaymentPdf(PortugalCertificateApplication $application): void
+    {
+        $pdfService = app(PaymentPdfService::class);
+        $pdfPath = $pdfService->generateAndStore($application, 'portugal');
+
+        // Store as document record
+        PortugalCertificateDocument::create([
+            'application_id' => $application->id,
+            'document_type' => 'payment_details',
+            'file_path' => $pdfPath,
+            'original_filename' => 'Payment_Details_' . $application->application_reference . '.pdf',
+            'mime_type' => 'application/pdf',
+            'file_size' => Storage::disk('private')->size($pdfPath),
+        ]);
+    }
+
+    /**
+     * Download the payment details PDF
+     */
+    public function downloadPaymentPdf(Request $request, $reference)
+    {
+        $application = PortugalCertificateApplication::where('application_reference', $reference)->firstOrFail();
+
+        // Check if user is the owner or an admin
+        if (!auth()->user()->hasRole('admin') && $application->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        // Try to get stored PDF first
+        $document = $application->documents()
+            ->where('document_type', 'payment_details')
+            ->first();
+
+        if ($document && Storage::disk('private')->exists($document->file_path)) {
+            return Storage::disk('private')->download(
+                $document->file_path,
+                'Payment_Details_' . $application->application_reference . '.pdf'
+            );
+        }
+
+        // Fallback: generate PDF on the fly if not stored
+        $pdfService = app(PaymentPdfService::class);
+        return $pdfService->download($application, 'portugal');
     }
 }

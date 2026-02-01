@@ -50,6 +50,23 @@
                     </div>
                 </div>
 
+                <!-- Download Payment PDF -->
+                <div class="bg-yellow-50 border border-yellow-300 rounded-xl p-6 mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-yellow-900 mb-1">Payment Details Document</h3>
+                            <p class="text-sm text-yellow-700">Download your payment instructions as a PDF for your records.</p>
+                        </div>
+                        <a href="{{ route('greece-certificate.download-payment-pdf', $application->application_reference) }}"
+                           class="inline-flex items-center px-5 py-2.5 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 transition shadow-sm">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            Download PDF
+                        </a>
+                    </div>
+                </div>
+
                 <!-- Payment Instructions -->
                 <div class="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-8">
                     <h3 class="font-semibold text-amber-800 mb-4 flex items-center">

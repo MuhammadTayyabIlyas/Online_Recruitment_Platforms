@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\GreeceCertificateSubmitted;
 use App\Models\GreeceCertificateApplication;
 use App\Models\GreeceCertificateDocument;
+use App\Services\PaymentPdfService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class GreeceCertificateController extends Controller
@@ -98,7 +102,15 @@ class GreeceCertificateController extends Controller
             );
         }
 
+        // Handle "I don't have this" checkboxes
+        if ($step === 2) {
+            $validated['no_greece_afm'] = $request->boolean('no_greece_afm');
+            $validated['no_greece_amka'] = $request->boolean('no_greece_amka');
+        }
+
         $application->fill($validated);
+        $application->last_completed_step = $step;
+        $application->last_saved_at = now();
         $application->save();
 
         // Store application ID in session
@@ -109,11 +121,25 @@ class GreeceCertificateController extends Controller
             $this->handleStep2Documents($request, $application);
         }
 
+        // Handle "Save & Continue Later" button
+        if ($request->has('save_for_later')) {
+            return redirect()->route('service_user.dashboard')
+                ->with('success', 'Application saved! You can resume anytime.')
+                ->with('progress_saved', true)
+                ->with('application_reference', $application->application_reference);
+        }
+
         // If final step, mark as submitted
         if ($step === 7) {
             $application->status = 'submitted';
             $application->submitted_at = now();
             $application->save();
+
+            // Generate and store payment PDF
+            $this->generatePaymentPdf($application);
+
+            // Send confirmation email to applicant (with PDF attached)
+            Mail::to($application->email)->send(new GreeceCertificateSubmitted($application));
 
             return redirect()->route('greece-certificate.success', ['reference' => $application->application_reference]);
         }
@@ -386,5 +412,53 @@ class GreeceCertificateController extends Controller
         ];
 
         return $prices[$serviceType] ?? 75;
+    }
+
+    /**
+     * Generate and store payment PDF for the application
+     */
+    protected function generatePaymentPdf(GreeceCertificateApplication $application): void
+    {
+        $pdfService = app(PaymentPdfService::class);
+        $pdfPath = $pdfService->generateAndStore($application, 'greece');
+
+        // Store as document record
+        GreeceCertificateDocument::create([
+            'application_id' => $application->id,
+            'document_type' => 'payment_details',
+            'file_path' => $pdfPath,
+            'original_filename' => 'Payment_Details_' . $application->application_reference . '.pdf',
+            'mime_type' => 'application/pdf',
+            'file_size' => Storage::disk('private')->size($pdfPath),
+        ]);
+    }
+
+    /**
+     * Download the payment details PDF
+     */
+    public function downloadPaymentPdf(Request $request, $reference)
+    {
+        $application = GreeceCertificateApplication::where('application_reference', $reference)->firstOrFail();
+
+        // Check if user is the owner or an admin
+        if (!auth()->user()->hasRole('admin') && $application->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        // Try to get stored PDF first
+        $document = $application->documents()
+            ->where('document_type', 'payment_details')
+            ->first();
+
+        if ($document && Storage::disk('private')->exists($document->file_path)) {
+            return Storage::disk('private')->download(
+                $document->file_path,
+                'Payment_Details_' . $application->application_reference . '.pdf'
+            );
+        }
+
+        // Fallback: generate PDF on the fly if not stored
+        $pdfService = app(PaymentPdfService::class);
+        return $pdfService->download($application, 'greece');
     }
 }

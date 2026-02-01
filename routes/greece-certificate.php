@@ -30,6 +30,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/greece-penal-record/success', [GreeceCertificateController::class, 'success'])
         ->name('greece-certificate.success');
 
+    // Payment PDF download
+    Route::get('/greece-certificate/payment-pdf/{reference}', [GreeceCertificateController::class, 'downloadPaymentPdf'])
+        ->name('greece-certificate.download-payment-pdf');
+
     // Resume draft application
     Route::get('/greece-penal-record/resume/{reference}', [GreeceCertificateController::class, 'resume'])
         ->name('greece-certificate.resume');

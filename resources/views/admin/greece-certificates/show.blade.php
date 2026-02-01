@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 
-@section('title', 'Police Certificate - ' . $application->application_reference)
+@section('title', 'Greece Certificate - ' . $application->application_reference)
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Header -->
     <div class="mb-6">
-        <a href="{{ route('admin.police-certificates.index') }}" class="inline-flex items-center text-indigo-600 hover:text-indigo-900 font-medium mb-4">
+        <a href="{{ route('admin.greece-certificates.index') }}" class="inline-flex items-center text-amber-600 hover:text-amber-900 font-medium mb-4">
             <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
@@ -16,11 +16,11 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div class="flex items-start justify-between">
                 <div class="flex items-center gap-4">
-                    <div class="h-16 w-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg">
+                    <div class="h-16 w-16 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg">
                         {{ strtoupper(substr($application->first_name, 0, 1)) }}
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900">{{ $application->full_name }}</h1>
+                        <h1 class="text-2xl font-bold text-gray-900">{{ $application->first_name }} {{ $application->middle_name }} {{ $application->last_name }}</h1>
                         <p class="text-gray-600 flex items-center mt-1">
                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -29,7 +29,7 @@
                         </p>
                         <p class="text-sm text-gray-500 mt-1">
                             Service: <span class="font-medium {{ $application->service_type === 'urgent' ? 'text-red-600' : '' }}">{{ $application->service_type_label }}</span> |
-                            Amount: <span class="font-medium">{{ $application->payment_amount_display }}</span> |
+                            Amount: <span class="font-medium">&euro;{{ number_format($application->payment_amount, 2) }}</span> |
                             Submitted {{ $application->submitted_at?->diffForHumans() }}
                         </p>
                     </div>
@@ -61,9 +61,9 @@
         <div class="lg:col-span-2 space-y-6">
             <!-- Personal Information -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 px-6 py-4 border-b border-gray-200">
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 px-6 py-4 border-b border-gray-200">
                     <h2 class="text-lg font-bold text-gray-900 flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                         </svg>
                         Personal Information
@@ -73,11 +73,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <p class="text-xs text-gray-500 uppercase tracking-wide">Full Name</p>
-                            <p class="text-sm font-medium text-gray-900">{{ $application->full_name }}</p>
+                            <p class="text-sm font-medium text-gray-900">{{ $application->first_name }} {{ $application->middle_name }} {{ $application->last_name }}</p>
                         </div>
                         <div>
                             <p class="text-xs text-gray-500 uppercase tracking-wide">Father's Name</p>
-                            <p class="text-sm font-medium text-gray-900">{{ $application->father_full_name ?? 'N/A' }}</p>
+                            <p class="text-sm font-medium text-gray-900">{{ $application->father_name ?? 'N/A' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wide">Mother's Name</p>
+                            <p class="text-sm font-medium text-gray-900">{{ $application->mother_name ?? 'N/A' }}</p>
                         </div>
                         <div>
                             <p class="text-xs text-gray-500 uppercase tracking-wide">Gender</p>
@@ -95,19 +99,15 @@
                             <p class="text-xs text-gray-500 uppercase tracking-wide">Nationality</p>
                             <p class="text-sm font-medium text-gray-900">{{ $application->nationality ?? 'N/A' }}</p>
                         </div>
-                        <div>
-                            <p class="text-xs text-gray-500 uppercase tracking-wide">Marital Status</p>
-                            <p class="text-sm font-medium text-gray-900">{{ ucfirst($application->marital_status ?? 'N/A') }}</p>
-                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Identity Documents -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                <div class="bg-gradient-to-r from-amber-50 to-orange-50 px-6 py-4 border-b border-gray-200">
+                <div class="bg-gradient-to-r from-orange-50 to-red-50 px-6 py-4 border-b border-gray-200">
                     <h2 class="text-lg font-bold text-gray-900 flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
                         </svg>
                         Identity Documents
@@ -131,92 +131,63 @@
                             <p class="text-xs text-gray-500 uppercase tracking-wide">Passport Place of Issue</p>
                             <p class="text-sm font-medium text-gray-900">{{ $application->passport_place_of_issue ?? 'N/A' }}</p>
                         </div>
-                        @if($application->cnic_nicop_number)
+                        @if($application->greece_afm)
                         <div>
-                            <p class="text-xs text-gray-500 uppercase tracking-wide">CNIC/NICOP Number</p>
-                            <p class="text-sm font-medium text-gray-900 font-mono">{{ $application->cnic_nicop_number }}</p>
+                            <p class="text-xs text-gray-500 uppercase tracking-wide">Greece AFM (Tax Number)</p>
+                            <p class="text-sm font-medium text-gray-900 font-mono">{{ $application->greece_afm }}</p>
+                        </div>
+                        @endif
+                        @if($application->greece_amka)
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wide">Greece AMKA (Social Security)</p>
+                            <p class="text-sm font-medium text-gray-900 font-mono">{{ $application->greece_amka }}</p>
+                        </div>
+                        @endif
+                        @if($application->greece_residence_permit)
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wide">Residence Permit</p>
+                            <p class="text-sm font-medium text-gray-900 font-mono">{{ $application->greece_residence_permit }}</p>
                         </div>
                         @endif
                     </div>
                 </div>
             </div>
 
-            <!-- UK Information -->
+            <!-- Greece Residence History -->
+            @if($application->greece_residence_history && count($application->greece_residence_history) > 0)
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div class="bg-gradient-to-r from-blue-50 to-cyan-50 px-6 py-4 border-b border-gray-200">
                     <h2 class="text-lg font-bold text-gray-900 flex items-center">
                         <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
-                        UK Information
+                        Greece Residence History
                     </h2>
                 </div>
-                <div class="p-6 space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        @if($application->uk_home_office_ref)
-                        <div>
-                            <p class="text-xs text-gray-500 uppercase tracking-wide">Home Office Reference</p>
-                            <p class="text-sm font-medium text-gray-900 font-mono">{{ $application->uk_home_office_ref }}</p>
+                <div class="p-6">
+                    <div class="space-y-3">
+                        @foreach($application->greece_residence_history as $residence)
+                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <p class="text-sm font-medium text-gray-900">{{ $residence['address'] ?? 'N/A' }}, {{ $residence['city'] ?? '' }}</p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                {{ $residence['from_date'] ?? 'N/A' }} - {{ $residence['to_date'] ?? 'Present' }}
+                            </p>
                         </div>
-                        @endif
-                        @if($application->uk_brp_number)
-                        <div>
-                            <p class="text-xs text-gray-500 uppercase tracking-wide">BRP Number</p>
-                            <p class="text-sm font-medium text-gray-900 font-mono">{{ $application->uk_brp_number }}</p>
-                        </div>
-                        @endif
-                        @if($application->uk_national_insurance_number)
-                        <div>
-                            <p class="text-xs text-gray-500 uppercase tracking-wide">National Insurance Number</p>
-                            <p class="text-sm font-medium text-gray-900 font-mono">{{ $application->uk_national_insurance_number }}</p>
-                        </div>
-                        @endif
+                        @endforeach
                     </div>
-
-                    @if($application->uk_residence_history && count($application->uk_residence_history) > 0)
-                    <div class="mt-4">
-                        <p class="text-xs text-gray-500 uppercase tracking-wide mb-2">UK Residence History</p>
-                        <div class="space-y-2">
-                            @foreach($application->uk_residence_history as $residence)
-                            <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                                <p class="text-sm text-gray-900">
-                                    <span class="font-medium">{{ $residence['from_date'] ?? 'N/A' }}</span> to <span class="font-medium">{{ $residence['to_date'] ?? 'Present' }}</span>
-                                </p>
-                                @if(isset($residence['visa_type']))
-                                <p class="text-xs text-gray-500">Visa: {{ $residence['visa_type'] }}</p>
-                                @endif
-                            </div>
-                            @endforeach
-                        </div>
-                    </div>
-                    @endif
-
-                    @if($application->uk_address_history && count($application->uk_address_history) > 0)
-                    <div class="mt-4">
-                        <p class="text-xs text-gray-500 uppercase tracking-wide mb-2">UK Address History</p>
-                        <div class="space-y-2">
-                            @foreach($application->uk_address_history as $address)
-                            <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                                <p class="text-sm text-gray-900 font-medium">{{ $address['address'] ?? 'N/A' }}</p>
-                                <p class="text-xs text-gray-500">
-                                    {{ $address['from_date'] ?? 'N/A' }} - {{ $address['to_date'] ?? 'Present' }}
-                                </p>
-                            </div>
-                            @endforeach
-                        </div>
-                    </div>
-                    @endif
                 </div>
             </div>
+            @endif
 
-            <!-- Contact Information -->
+            <!-- Contact Information & Current Address -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div class="bg-gradient-to-r from-green-50 to-teal-50 px-6 py-4 border-b border-gray-200">
                     <h2 class="text-lg font-bold text-gray-900 flex items-center">
                         <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                         </svg>
-                        Contact & Spain Address
+                        Contact & Address
                     </h2>
                 </div>
                 <div class="p-6">
@@ -226,8 +197,8 @@
                             <p class="text-sm font-medium text-gray-900">{{ $application->email }}</p>
                         </div>
                         <div>
-                            <p class="text-xs text-gray-500 uppercase tracking-wide">Phone (Spain)</p>
-                            <p class="text-sm font-medium text-gray-900">{{ $application->phone_spain ?? 'N/A' }}</p>
+                            <p class="text-xs text-gray-500 uppercase tracking-wide">Phone</p>
+                            <p class="text-sm font-medium text-gray-900">{{ $application->phone_number ?? 'N/A' }}</p>
                         </div>
                         <div>
                             <p class="text-xs text-gray-500 uppercase tracking-wide">WhatsApp</p>
@@ -235,12 +206,39 @@
                         </div>
                     </div>
                     <div class="mt-4 pt-4 border-t border-gray-200">
-                        <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Spain Address</p>
+                        <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Current Address</p>
                         <p class="text-sm font-medium text-gray-900">
-                            {{ $application->spain_address_line1 }}<br>
-                            @if($application->spain_address_line2){{ $application->spain_address_line2 }}<br>@endif
-                            {{ $application->spain_city }}, {{ $application->spain_province }} {{ $application->spain_postal_code }}
+                            {{ $application->current_address_line1 }}<br>
+                            @if($application->current_address_line2){{ $application->current_address_line2 }}<br>@endif
+                            {{ $application->current_city }}, {{ $application->current_postal_code }}<br>
+                            {{ $application->current_country }}
                         </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificate Purpose -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-bold text-gray-900 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Certificate Purpose
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wide">Purpose</p>
+                            <p class="text-sm font-medium text-gray-900">{{ $application->purpose_label }}</p>
+                        </div>
+                        @if($application->purpose_details)
+                        <div class="md:col-span-2">
+                            <p class="text-xs text-gray-500 uppercase tracking-wide">Details</p>
+                            <p class="text-sm font-medium text-gray-900">{{ $application->purpose_details }}</p>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -255,7 +253,7 @@
                         Uploaded Documents ({{ $application->documents->count() }})
                     </h2>
                     @if($application->documents->count() > 0)
-                    <a href="{{ route('admin.police-certificate.download-documents', $application) }}"
+                    <a href="{{ route('admin.greece-certificate.download-documents', $application) }}"
                        class="inline-flex items-center px-3 py-1.5 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors">
                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -275,13 +273,9 @@
                                             <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                                             </svg>
-                                            @elseif(str_contains($document->mime_type, 'image'))
+                                            @else
                                             <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                            </svg>
-                                            @else
-                                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                                             </svg>
                                             @endif
                                         </div>
@@ -296,18 +290,16 @@
                                         </div>
                                     </div>
                                     <div class="flex gap-2">
-                                        <a href="{{ route('admin.police-certificate.preview-document', $document) }}" target="_blank"
-                                           class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
-                                           title="View document">
+                                        <a href="{{ route('admin.greece-certificate.preview-document', $document) }}" target="_blank"
+                                           class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
                                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                             </svg>
                                             View
                                         </a>
-                                        <a href="{{ route('admin.police-certificate.download-document', $document) }}"
-                                           class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
-                                           title="Download document">
+                                        <a href="{{ route('admin.greece-certificate.download-document', $document) }}"
+                                           class="inline-flex items-center px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition-colors">
                                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                                             </svg>
@@ -328,8 +320,8 @@
         <div class="lg:col-span-1">
             <div class="sticky top-4 space-y-6">
                 <!-- Admin Status Control -->
-                <div class="bg-white rounded-lg shadow-lg border-2 border-red-300 overflow-hidden">
-                    <div class="bg-gradient-to-r from-red-600 to-orange-600 px-6 py-4">
+                <div class="bg-white rounded-lg shadow-lg border-2 border-amber-300 overflow-hidden">
+                    <div class="bg-gradient-to-r from-amber-500 to-yellow-600 px-6 py-4">
                         <h2 class="text-lg font-bold text-white flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
@@ -338,33 +330,13 @@
                         </h2>
                     </div>
 
-                    <form action="{{ route('admin.police-certificates.update-status', $application) }}" method="POST" class="p-6 space-y-4">
+                    <form action="{{ route('admin.greece-certificates.update-status', $application) }}" method="POST" class="p-6 space-y-4">
                         @csrf
                         @method('PATCH')
 
-                        @if ($errors->any())
-                            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                                <div class="flex">
-                                    <div class="flex-shrink-0">
-                                        <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                        </svg>
-                                    </div>
-                                    <div class="ml-3">
-                                        <h3 class="text-sm font-medium text-red-800">Validation errors</h3>
-                                        <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
-                                            @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
-
                         <div>
                             <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Update Status</label>
-                            <select name="status" id="status" class="mt-1 block w-full pl-3 pr-10 py-2.5 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-lg">
+                            <select name="status" id="status" class="mt-1 block w-full pl-3 pr-10 py-2.5 text-base border-gray-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 rounded-lg">
                                 <option value="submitted" {{ $application->status == 'submitted' ? 'selected' : '' }}>Submitted</option>
                                 <option value="payment_pending" {{ $application->status == 'payment_pending' ? 'selected' : '' }}>Payment Pending</option>
                                 <option value="payment_verified" {{ $application->status == 'payment_verified' ? 'selected' : '' }}>Payment Verified</option>
@@ -379,11 +351,10 @@
                                 Add Admin Note
                                 <span class="text-xs text-gray-500 font-normal">(timestamped)</span>
                             </label>
-                            <textarea name="admin_notes" id="admin_notes" rows="4" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm" placeholder="Add internal note about this application..."></textarea>
-                            <p class="mt-1 text-xs text-gray-500">Note will be saved with your name and timestamp</p>
+                            <textarea name="admin_notes" id="admin_notes" rows="4" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 text-sm" placeholder="Add internal note..."></textarea>
                         </div>
 
-                        <button type="submit" class="w-full inline-flex items-center justify-center px-6 py-3 bg-red-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-red-700 shadow-lg transition-colors">
+                        <button type="submit" class="w-full inline-flex items-center justify-center px-6 py-3 bg-amber-600 border border-transparent rounded-lg font-semibold text-sm text-white hover:bg-amber-700 shadow-lg transition-colors">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
@@ -402,43 +373,23 @@
                             <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                             </svg>
-                            Payment Details PDF
+                            Payment PDF
                         </h2>
                     </div>
-                    <div class="p-6">
+                    <div class="p-4">
                         @if($paymentPdfDoc)
-                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                <div class="flex items-center">
-                                    <div class="h-10 w-10 rounded-lg bg-red-100 flex items-center justify-center">
-                                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                                        </svg>
-                                    </div>
-                                    <div class="ml-4">
-                                        <p class="text-sm font-medium text-gray-900">{{ $paymentPdfDoc->original_filename }}</p>
-                                        <p class="text-xs text-gray-500">Generated {{ $paymentPdfDoc->created_at->format('M d, Y H:i') }}</p>
-                                    </div>
-                                </div>
-                                <div class="flex gap-2">
-                                    <a href="{{ route('admin.police-certificate.preview-document', $paymentPdfDoc) }}" target="_blank"
-                                       class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                        </svg>
-                                        View
-                                    </a>
-                                    <a href="{{ route('admin.police-certificate.download-document', $paymentPdfDoc) }}"
-                                       class="inline-flex items-center px-3 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                                        </svg>
-                                        Download
-                                    </a>
-                                </div>
+                            <div class="flex gap-2">
+                                <a href="{{ route('admin.greece-certificate.preview-document', $paymentPdfDoc) }}" target="_blank"
+                                   class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                                    View
+                                </a>
+                                <a href="{{ route('admin.greece-certificate.download-document', $paymentPdfDoc) }}"
+                                   class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
+                                    Download
+                                </a>
                             </div>
                         @else
-                            <p class="text-gray-500 text-sm text-center py-4">Payment PDF not generated yet.</p>
+                            <p class="text-gray-500 text-sm text-center py-2">Not generated yet.</p>
                         @endif
                     </div>
                 </div>
@@ -456,7 +407,7 @@
                     <div class="p-6 space-y-3 text-sm">
                         <div class="flex justify-between">
                             <span class="text-gray-600">Amount:</span>
-                            <span class="font-bold text-gray-900">{{ $application->payment_amount_display }}</span>
+                            <span class="font-bold text-gray-900">&euro;{{ number_format($application->payment_amount, 2) }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Status:</span>

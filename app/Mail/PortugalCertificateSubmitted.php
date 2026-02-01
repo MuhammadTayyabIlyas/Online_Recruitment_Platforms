@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\PoliceCertificateApplication;
+use App\Models\PortugalCertificateApplication;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -12,19 +12,19 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 
-class PoliceCertificateSubmitted extends Mailable implements ShouldQueue
+class PortugalCertificateSubmitted extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
     /**
-     * The police certificate application instance.
+     * The Portugal certificate application instance.
      */
-    public PoliceCertificateApplication $application;
+    public PortugalCertificateApplication $application;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(PoliceCertificateApplication $application)
+    public function __construct(PortugalCertificateApplication $application)
     {
         $this->application = $application;
     }
@@ -35,7 +35,7 @@ class PoliceCertificateSubmitted extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'UK Police Certificate Application Received - ' . $this->application->application_reference,
+            subject: 'Portugal Criminal Record Certificate Application Received - ' . $this->application->application_reference,
         );
     }
 
@@ -45,7 +45,7 @@ class PoliceCertificateSubmitted extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            view: 'emails.police-certificate.submitted',
+            view: 'emails.portugal-certificate.submitted',
         );
     }
 
