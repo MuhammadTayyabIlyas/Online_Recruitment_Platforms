@@ -1,7 +1,7 @@
 {{-- Mega Menu Component for PlaceMeNet --}}
 {{-- Uses Alpine.js for interactivity and Tailwind for styling --}}
 
-<nav class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 shadow-lg sticky top-0 z-50">
+<nav class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 shadow-lg sticky top-0 z-50" x-data="{ mobileMenuOpen: false }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             {{-- Logo --}}
@@ -417,79 +417,79 @@
             </div>
 
             {{-- Mobile Menu Button --}}
-            <div class="flex items-center lg:hidden" x-data="{ mobileOpen: false }">
-                <button @click="mobileOpen = !mobileOpen" type="button" class="p-2 rounded-lg text-white hover:bg-white/10 transition">
-                    <svg x-show="!mobileOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex items-center lg:hidden">
+                <button @click.stop="mobileMenuOpen = !mobileMenuOpen" type="button" class="p-2 rounded-lg text-white hover:bg-white/10 transition touch-manipulation" aria-label="Toggle menu">
+                    <svg x-show="!mobileMenuOpen" class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
-                    <svg x-show="mobileOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
+                    <svg x-show="mobileMenuOpen" x-cloak class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
+            </div>
+        </div>
+    </div>
 
-                {{-- Mobile Menu Panel --}}
-                <div x-show="mobileOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-[200] lg:hidden" style="display: none;">
-                    {{-- Backdrop --}}
-                    <div class="fixed inset-0 bg-black/50" @click="mobileOpen = false"></div>
+    {{-- Mobile Menu Panel (outside the flex container for better positioning) --}}
+    <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" x-cloak class="fixed inset-0 z-[200] lg:hidden">
+        {{-- Backdrop --}}
+        <div class="fixed inset-0 bg-black/50" @click="mobileMenuOpen = false"></div>
 
-                    {{-- Panel --}}
-                    <div class="fixed top-0 right-0 w-80 max-w-full h-full bg-gradient-to-b from-blue-700 to-indigo-800 shadow-2xl overflow-y-auto">
-                        <div class="p-4">
-                            {{-- Close Button --}}
-                            <div class="flex justify-end mb-4">
-                                <button @click="mobileOpen = false" class="p-2 text-white/80 hover:text-white">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                    </svg>
-                                </button>
-                            </div>
+        {{-- Panel --}}
+        <div class="fixed top-0 right-0 w-80 max-w-full h-full bg-gradient-to-b from-blue-700 to-indigo-800 shadow-2xl overflow-y-auto">
+            <div class="p-4">
+                {{-- Close Button --}}
+                <div class="flex justify-end mb-4">
+                    <button @click="mobileMenuOpen = false" type="button" class="p-2 text-white/80 hover:text-white touch-manipulation" aria-label="Close menu">
+                        <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
 
-                            {{-- Mobile Links --}}
-                            <div class="space-y-2">
-                                <a href="{{ route('jobs.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Browse Jobs') }}</a>
-                                <a href="{{ route('study-programs.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Study Programs') }}</a>
-                                <a href="{{ route('visa.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Visa & Residency') }}</a>
+                {{-- Mobile Links --}}
+                <div class="space-y-2">
+                    <a href="{{ route('jobs.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('Browse Jobs') }}</a>
+                    <a href="{{ route('study-programs.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('Study Programs') }}</a>
+                    <a href="{{ route('visa.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('Visa & Residency') }}</a>
 
-                                {{-- Certificate Services --}}
-                                <div class="border-t border-white/20 my-2 pt-2">
-                                    <p class="px-4 py-1 text-white/60 text-xs font-semibold uppercase tracking-wider">{{ __('Certificate Services') }}</p>
-                                    <a href="{{ route('police-certificate.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('UK Police Certificate') }}</a>
-                                    <a href="{{ route('portugal-certificate.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Portugal Certificate') }}</a>
-                                    <a href="{{ route('greece-certificate.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Greece Certificate') }}</a>
-                                </div>
-
-                                <a href="{{ route('blogs.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Blog') }}</a>
-                                <a href="{{ route('about') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('About') }}</a>
-                                <a href="{{ route('contact') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Contact') }}</a>
-
-                                @auth
-                                    <div class="border-t border-white/20 my-4 pt-4">
-                                        @if(auth()->user()->hasRole('job_seeker'))
-                                            <a href="{{ route('jobseeker.dashboard') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('My Dashboard') }}</a>
-                                            <a href="{{ route('jobseeker.applications.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('My Applications') }}</a>
-                                        @elseif(auth()->user()->hasRole('employer'))
-                                            <a href="{{ route('employer.dashboard') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Employer Dashboard') }}</a>
-                                        @elseif(auth()->user()->hasRole('educational_institution'))
-                                            <a href="{{ route('institution.dashboard') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Institution Dashboard') }}</a>
-                                        @elseif(auth()->user()->hasRole('admin'))
-                                            <a href="{{ route('admin.dashboard') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Admin Panel') }}</a>
-                                        @elseif(auth()->user()->hasRole('service_user'))
-                                            <a href="{{ route('service_user.dashboard') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('My Services Dashboard') }}</a>
-                                        @endif
-                                    </div>
-                                    <form method="POST" action="{{ route('logout') }}" class="mt-4">
-                                        @csrf
-                                        <button type="submit" class="w-full px-4 py-3 bg-red-500/20 text-red-200 rounded-lg hover:bg-red-500/30 text-left">{{ __('Logout') }}</button>
-                                    </form>
-                                @else
-                                    <div class="border-t border-white/20 my-4 pt-4 space-y-2">
-                                        <a href="{{ route('login') }}" class="block px-4 py-3 text-white bg-white/10 rounded-lg text-center font-medium">{{ __('Login') }}</a>
-                                        <a href="{{ route('register') }}" class="block px-4 py-3 bg-yellow-400 text-blue-900 rounded-lg text-center font-semibold">{{ __('Get Started') }}</a>
-                                    </div>
-                                @endauth
-                            </div>
-                        </div>
+                    {{-- Certificate Services --}}
+                    <div class="border-t border-white/20 my-2 pt-2">
+                        <p class="px-4 py-1 text-white/60 text-xs font-semibold uppercase tracking-wider">{{ __('Certificate Services') }}</p>
+                        <a href="{{ route('police-certificate.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('UK Police Certificate') }}</a>
+                        <a href="{{ route('portugal-certificate.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('Portugal Certificate') }}</a>
+                        <a href="{{ route('greece-certificate.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('Greece Certificate') }}</a>
                     </div>
+
+                    <a href="{{ route('blogs.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('Blog') }}</a>
+                    <a href="{{ route('about') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('About') }}</a>
+                    <a href="{{ route('contact') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('Contact') }}</a>
+
+                    @auth
+                        <div class="border-t border-white/20 my-4 pt-4">
+                            @if(auth()->user()->hasRole('job_seeker'))
+                                <a href="{{ route('jobseeker.dashboard') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('My Dashboard') }}</a>
+                                <a href="{{ route('jobseeker.applications.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('My Applications') }}</a>
+                            @elseif(auth()->user()->hasRole('employer'))
+                                <a href="{{ route('employer.dashboard') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('Employer Dashboard') }}</a>
+                            @elseif(auth()->user()->hasRole('educational_institution'))
+                                <a href="{{ route('institution.dashboard') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('Institution Dashboard') }}</a>
+                            @elseif(auth()->user()->hasRole('admin'))
+                                <a href="{{ route('admin.dashboard') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('Admin Panel') }}</a>
+                            @elseif(auth()->user()->hasRole('service_user'))
+                                <a href="{{ route('service_user.dashboard') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('My Services Dashboard') }}</a>
+                            @endif
+                        </div>
+                        <form method="POST" action="{{ route('logout') }}" class="mt-4">
+                            @csrf
+                            <button type="submit" class="w-full px-4 py-3 bg-red-500/20 text-red-200 rounded-lg hover:bg-red-500/30 active:bg-red-500/40 text-left">{{ __('Logout') }}</button>
+                        </form>
+                    @else
+                        <div class="border-t border-white/20 my-4 pt-4 space-y-2">
+                            <a href="{{ route('login') }}" class="block px-4 py-3 text-white bg-white/10 rounded-lg text-center font-medium active:bg-white/20">{{ __('Login') }}</a>
+                            <a href="{{ route('register') }}" class="block px-4 py-3 bg-yellow-400 text-blue-900 rounded-lg text-center font-semibold active:bg-yellow-300">{{ __('Get Started') }}</a>
+                        </div>
+                    @endauth
                 </div>
             </div>
         </div>
