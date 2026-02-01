@@ -90,8 +90,28 @@ Controllers are organized by role in `app/Http/Controllers/`:
 - `programs` - Study programs
 - `packages`, `package_subscriptions` - Subscription system
 - `blogs`, `blog_categories` - Content management
+- `police_certificate_applications` - UK Police Certificate applications
+- `police_certificate_documents` - Uploaded documents for PCC applications
 
 User profile split across: `user_profiles`, `user_education`, `user_experience`, `user_skills`, `user_languages`, `user_certifications`, `user_resumes`
+
+### Police Certificate Module
+
+Located in `app/Http/Controllers/Admin/PoliceCertificateAdminController.php`
+
+**Routes** (prefixed with `admin.police-certificates`):
+- `GET /admin/police-certificates` - List all applications with stats and filters
+- `GET /admin/police-certificates/{id}` - View application details
+- `PATCH /admin/police-certificates/{id}/status` - Update status (triggers email)
+- `GET /admin/police-certificates/export/csv` - Export filtered data
+
+**Views** in `resources/views/admin/police-certificates/`:
+- `index.blade.php` - List view with statistics cards, filters, table
+- `show.blade.php` - Detail view with all applicant info and admin controls
+
+**Status Workflow**: `draft` → `submitted` → `payment_pending` → `payment_verified` → `processing` → `completed` (or `rejected`)
+
+**Email Notifications**: `App\Mail\PoliceCertificateStatusUpdate` sends status update emails when admin changes application status.
 
 ### Routes
 
@@ -109,6 +129,19 @@ Environment variables needed:
 - Stripe: `STRIPE_KEY`, `STRIPE_SECRET`
 - LinkedIn OAuth: `LINKEDIN_CLIENT_ID`, `LINKEDIN_CLIENT_SECRET`
 - MeiliSearch: `MEILISEARCH_HOST`, `MEILISEARCH_KEY` (optional)
+
+## Admin Panels
+
+The application has two admin interfaces:
+
+1. **Custom Admin Panel** (`/admin`) - Primary admin dashboard
+   - Located in `resources/views/admin/` and `resources/views/layouts/admin.blade.php`
+   - Controllers in `app/Http/Controllers/Admin/`
+   - Includes: Users, Jobs, Programs, Applications, Police Certificates, Blogs, Settings
+
+2. **Filament Panel** (`/panel`) - Secondary admin for specific resources
+   - Configuration in `app/Providers/Filament/AdminPanelProvider.php`
+   - Resources in `app/Filament/Resources/`
 
 ## Debugging
 

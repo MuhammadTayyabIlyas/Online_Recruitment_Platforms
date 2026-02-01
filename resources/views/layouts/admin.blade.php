@@ -36,15 +36,29 @@
             color: #fff;
             font-weight: 600;
         }
+        /* Custom scrollbar for sidebar */
+        .overflow-y-auto::-webkit-scrollbar {
+            width: 6px;
+        }
+        .overflow-y-auto::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .overflow-y-auto::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+        .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
     </style>
     @include('layouts.partials.brand-styles')
 </head>
 <body class="font-sans antialiased bg-slate-100">
     <div class="min-h-screen flex" x-data="{ sidebarOpen: true }">
         <!-- Sidebar -->
-        <aside :class="sidebarOpen ? 'w-64' : 'w-20'" class="brand-gradient text-white shadow-2xl transition-all duration-300 fixed h-full z-30 border-r border-white/10">
+        <aside :class="sidebarOpen ? 'w-64' : 'w-20'" class="brand-gradient text-white shadow-2xl transition-all duration-300 fixed h-full z-30 border-r border-white/10 flex flex-col">
             <!-- Logo -->
-            <div class="flex items-center justify-between p-4 border-b border-white/10">
+            <div class="flex-shrink-0 flex items-center justify-between p-4 border-b border-white/10">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3" x-show="sidebarOpen">
                     <div class="h-12 w-12 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center shadow-lg">
                         <img src="{{ asset('assets/images/logo.jpg') }}" alt="PlaceMeNet Admin" class="h-8 w-auto object-contain drop-shadow">
@@ -66,8 +80,8 @@
                 </button>
             </div>
 
-            <!-- Navigation -->
-            <nav class="p-4 space-y-2 text-white">
+            <!-- Navigation (Scrollable) -->
+            <nav class="flex-1 overflow-y-auto p-4 space-y-2 text-white">
                 <!-- Dashboard -->
                 <a href="{{ route('admin.dashboard') }}"
                    class="sidebar-link group flex items-center rounded-lg text-white/80 py-3 {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
@@ -128,6 +142,16 @@
                     <span x-show="sidebarOpen">Applications</span>
                 </a>
 
+                <!-- Police Certificates -->
+                <a href="{{ route('admin.police-certificates.index') }}"
+                   class="sidebar-link group flex items-center rounded-lg text-white/80 py-3 {{ request()->routeIs('admin.police-certificates.*') ? 'active' : '' }}"
+                   :class="sidebarOpen ? 'space-x-3 px-4 justify-start' : 'px-3 justify-center'">
+                    <svg class="w-6 h-6 text-white/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    <span x-show="sidebarOpen">Police Certificates</span>
+                </a>
+
                 <!-- Blogs -->
                 <a href="{{ route('admin.blogs.index') }}"
                    class="sidebar-link group flex items-center rounded-lg text-white/80 py-3 {{ request()->routeIs('admin.blogs.*') ? 'active' : '' }}"
@@ -174,7 +198,7 @@
             </nav>
 
             <!-- User Info (Bottom) -->
-            <div class="absolute bottom-0 w-full p-4 border-t border-white/10 bg-white/5 backdrop-blur" x-show="sidebarOpen">
+            <div class="flex-shrink-0 p-4 border-t border-white/10 bg-white/5 backdrop-blur" x-show="sidebarOpen">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center text-white font-semibold">
                         {{ substr(auth()->user()->name, 0, 1) }}

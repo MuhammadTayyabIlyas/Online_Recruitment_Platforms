@@ -15,7 +15,20 @@ class BlogCategoryController extends Controller
     public function index()
     {
         $categories = BlogCategory::withCount('blogs')->ordered()->paginate(20);
-        return view('admin.blog-categories.index', compact('categories'));
+
+        // Statistics for the dashboard cards
+        $totalCategories = BlogCategory::count();
+        $activeCategories = BlogCategory::where('is_active', true)->count();
+        $inactiveCategories = BlogCategory::where('is_active', false)->count();
+        $totalBlogs = \App\Models\Blog::count();
+
+        return view('admin.blog-categories.index', compact(
+            'categories',
+            'totalCategories',
+            'activeCategories',
+            'inactiveCategories',
+            'totalBlogs'
+        ));
     }
 
     /**

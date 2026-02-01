@@ -460,6 +460,10 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/csv/export-candidates', [AdminSettingsController::class, 'exportCandidates'])->name('csv.export-candidates');
 
     // Police Certificate Admin Routes
+    Route::get('/police-certificates', [\App\Http\Controllers\Admin\PoliceCertificateAdminController::class, 'index'])->name('police-certificates.index');
+    Route::get('/police-certificates/export/csv', [\App\Http\Controllers\Admin\PoliceCertificateAdminController::class, 'export'])->name('police-certificates.export');
+    Route::get('/police-certificates/{application}', [\App\Http\Controllers\Admin\PoliceCertificateAdminController::class, 'show'])->name('police-certificates.show');
+    Route::patch('/police-certificates/{application}/status', [\App\Http\Controllers\Admin\PoliceCertificateAdminController::class, 'updateStatus'])->name('police-certificates.update-status');
     Route::get('/police-certificate/document/{document}/download', [\App\Http\Controllers\Admin\PoliceCertificateAdminController::class, 'downloadDocument'])->name('police-certificate.download-document');
     Route::get('/police-certificate/document/{document}/preview', [\App\Http\Controllers\Admin\PoliceCertificateAdminController::class, 'previewDocument'])->name('police-certificate.preview-document');
     Route::get('/police-certificate/{application}/download-documents', [\App\Http\Controllers\Admin\PoliceCertificateAdminController::class, 'downloadAllDocuments'])->name('police-certificate.download-documents');

@@ -57,6 +57,15 @@ PlaceMeNet is a full-featured recruitment and education platform that connects j
 - **Content Moderation** - Review and approve blog posts
 - **Analytics Dashboard** - Track platform metrics and growth
 - **Package Management** - Configure subscription packages
+- **Police Certificate Management** - Process UK Police Certificate applications
+
+### Police Certificate Service
+- **Application Processing** - Manage UK Police Certificate applications
+- **Document Management** - View and download applicant documents (passport, CNIC, BRP, receipts)
+- **Status Workflow** - Track applications through: Submitted → Payment Pending → Payment Verified → Processing → Completed
+- **Email Notifications** - Automatic status update emails to applicants
+- **CSV Export** - Export applications with filters for reporting
+- **Admin Notes** - Timestamped internal notes for each application
 
 ### Additional Features
 - **Blog System** - Content creation with admin review workflow
@@ -461,7 +470,9 @@ npm run build                    # Production build
 | URL | Description |
 |-----|-------------|
 | `http://localhost:8000` | Main application |
-| `http://localhost:8000/admin` | Filament admin panel |
+| `http://localhost:8000/admin` | Admin dashboard (custom) |
+| `http://localhost:8000/admin/police-certificates` | Police Certificate management |
+| `http://localhost:8000/panel` | Filament admin panel |
 | `http://localhost:8000/telescope` | Laravel Telescope (debug) |
 
 ---
