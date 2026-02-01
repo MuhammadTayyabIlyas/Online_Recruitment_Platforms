@@ -258,6 +258,21 @@
 
                     <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute left-0 mt-2 w-72 bg-white/95 backdrop-blur-lg rounded-xl shadow-2xl border border-blue-100 overflow-hidden z-[100]" style="display: none;">
                         <div class="p-2">
+                            @auth
+                                @if(auth()->user()->hasRole('service_user'))
+                                    <a href="{{ route('service_user.dashboard') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-indigo-50 transition-colors border-b border-gray-100 mb-2">
+                                        <div class="p-2 bg-indigo-100 rounded-lg">
+                                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900 text-sm">{{ __('My Services Dashboard') }}</p>
+                                            <p class="text-xs text-gray-500">Track your applications</p>
+                                        </div>
+                                    </a>
+                                @endif
+                            @endauth
                             <a href="{{ route('visa.index') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-amber-50 transition-colors">
                                 <div class="p-2 bg-amber-100 rounded-lg">
                                     <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -276,8 +291,30 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <p class="font-medium text-gray-900 text-sm">{{ __('Police Certificates') }}</p>
-                                    <p class="text-xs text-gray-500">UK ACRO service</p>
+                                    <p class="font-medium text-gray-900 text-sm">{{ __('UK Police Certificate') }}</p>
+                                    <p class="text-xs text-gray-500">ACRO service</p>
+                                </div>
+                            </a>
+                            <a href="{{ route('portugal-certificate.index') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-green-50 transition-colors">
+                                <div class="p-2 bg-green-100 rounded-lg">
+                                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900 text-sm">{{ __('Portugal Certificate') }}</p>
+                                    <p class="text-xs text-gray-500">Criminal Record</p>
+                                </div>
+                            </a>
+                            <a href="{{ route('greece-certificate.index') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-amber-50 transition-colors">
+                                <div class="p-2 bg-amber-100 rounded-lg">
+                                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900 text-sm">{{ __('Greece Certificate') }}</p>
+                                    <p class="text-xs text-gray-500">Penal Record</p>
                                 </div>
                             </a>
                             <a href="{{ route('blogs.index') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-rose-50 transition-colors">
@@ -365,6 +402,8 @@
                                 <a href="{{ route('institution.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('Dashboard') }}</a>
                             @elseif(auth()->user()->hasRole('student'))
                                 <a href="{{ route('student.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('Dashboard') }}</a>
+                            @elseif(auth()->user()->hasRole('service_user'))
+                                <a href="{{ route('service_user.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('My Services') }}</a>
                             @endif
                             <div class="border-t border-gray-100 mt-1 pt-1">
                                 <form method="POST" action="{{ route('logout') }}">
@@ -410,7 +449,15 @@
                                 <a href="{{ route('jobs.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Browse Jobs') }}</a>
                                 <a href="{{ route('study-programs.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Study Programs') }}</a>
                                 <a href="{{ route('visa.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Visa & Residency') }}</a>
-                                <a href="{{ route('police-certificate.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Police Certificates') }}</a>
+
+                                {{-- Certificate Services --}}
+                                <div class="border-t border-white/20 my-2 pt-2">
+                                    <p class="px-4 py-1 text-white/60 text-xs font-semibold uppercase tracking-wider">{{ __('Certificate Services') }}</p>
+                                    <a href="{{ route('police-certificate.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('UK Police Certificate') }}</a>
+                                    <a href="{{ route('portugal-certificate.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Portugal Certificate') }}</a>
+                                    <a href="{{ route('greece-certificate.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Greece Certificate') }}</a>
+                                </div>
+
                                 <a href="{{ route('blogs.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Blog') }}</a>
                                 <a href="{{ route('about') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('About') }}</a>
                                 <a href="{{ route('contact') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Contact') }}</a>
@@ -426,6 +473,8 @@
                                             <a href="{{ route('institution.dashboard') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Institution Dashboard') }}</a>
                                         @elseif(auth()->user()->hasRole('admin'))
                                             <a href="{{ route('admin.dashboard') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('Admin Panel') }}</a>
+                                        @elseif(auth()->user()->hasRole('service_user'))
+                                            <a href="{{ route('service_user.dashboard') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10">{{ __('My Services Dashboard') }}</a>
                                         @endif
                                     </div>
                                     <form method="POST" action="{{ route('logout') }}" class="mt-4">
