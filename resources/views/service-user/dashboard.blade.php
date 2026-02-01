@@ -36,16 +36,16 @@
                 @foreach($draftApplications as $draft)
                     <div class="flex items-center justify-between bg-white rounded-lg p-4 border border-blue-200 shadow-sm">
                         <div class="flex items-center space-x-4">
-                            <div class="p-2 {{ $draft->certificate_type === 'portugal' ? 'bg-green-100' : 'bg-blue-100' }} rounded-lg">
-                                <svg class="h-5 w-5 {{ $draft->certificate_type === 'portugal' ? 'text-green-600' : 'text-blue-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="p-2 {{ $draft->certificate_type === 'greece' ? 'bg-amber-100' : ($draft->certificate_type === 'portugal' ? 'bg-green-100' : 'bg-blue-100') }} rounded-lg">
+                                <svg class="h-5 w-5 {{ $draft->certificate_type === 'greece' ? 'text-amber-600' : ($draft->certificate_type === 'portugal' ? 'text-green-600' : 'text-blue-600') }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                 </svg>
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-gray-900">{{ $draft->application_reference }}</p>
                                 <p class="text-xs text-gray-500">
-                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium {{ $draft->certificate_type === 'portugal' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700' }} mr-1">
-                                        {{ $draft->certificate_type === 'portugal' ? 'Portugal' : 'UK' }}
+                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium {{ $draft->certificate_type === 'greece' ? 'bg-amber-100 text-amber-700' : ($draft->certificate_type === 'portugal' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700') }} mr-1">
+                                        {{ $draft->certificate_type === 'greece' ? 'Greece' : ($draft->certificate_type === 'portugal' ? 'Portugal' : 'UK') }}
                                     </span>
                                     @if($draft->first_name)
                                         {{ $draft->first_name }} {{ $draft->last_name }} ·
@@ -54,8 +54,8 @@
                                 </p>
                             </div>
                         </div>
-                        <a href="{{ $draft->certificate_type === 'portugal' ? route('portugal-certificate.resume', $draft->application_reference) : route('police-certificate.resume', $draft->application_reference) }}"
-                           class="inline-flex items-center px-4 py-2 text-sm font-medium text-white {{ $draft->certificate_type === 'portugal' ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700' }} rounded-lg transition shadow-sm">
+                        <a href="{{ $draft->certificate_type === 'greece' ? route('greece-certificate.resume', $draft->application_reference) : ($draft->certificate_type === 'portugal' ? route('portugal-certificate.resume', $draft->application_reference) : route('police-certificate.resume', $draft->application_reference)) }}"
+                           class="inline-flex items-center px-4 py-2 text-sm font-medium text-white {{ $draft->certificate_type === 'greece' ? 'bg-amber-600 hover:bg-amber-700' : ($draft->certificate_type === 'portugal' ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700') }} rounded-lg transition shadow-sm">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -83,13 +83,13 @@
                         <div>
                             <p class="text-sm font-medium text-gray-900">
                                 {{ $app->application_reference }}
-                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium {{ $app->certificate_type === 'portugal' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700' }} ml-1">
-                                    {{ $app->certificate_type === 'portugal' ? 'Portugal' : 'UK' }}
+                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium {{ $app->certificate_type === 'greece' ? 'bg-amber-100 text-amber-700' : ($app->certificate_type === 'portugal' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700') }} ml-1">
+                                    {{ $app->certificate_type === 'greece' ? 'Greece' : ($app->certificate_type === 'portugal' ? 'Portugal' : 'UK') }}
                                 </span>
                             </p>
                             <p class="text-xs text-gray-500">Please upload payment receipt to proceed</p>
                         </div>
-                        <a href="{{ $app->certificate_type === 'portugal' ? route('portugal-certificate.receipt.show', $app->application_reference) : route('police-certificate.receipt.show', $app->application_reference) }}"
+                        <a href="{{ $app->certificate_type === 'greece' ? route('greece-certificate.receipt.show', $app->application_reference) : ($app->certificate_type === 'portugal' ? route('portugal-certificate.receipt.show', $app->application_reference) : route('police-certificate.receipt.show', $app->application_reference)) }}"
                            class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 transition">
                             Upload Receipt
                         </a>
@@ -165,7 +165,7 @@
     <!-- Quick Actions -->
     <div class="mb-8">
         <h2 class="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <!-- UK Police Certificate -->
             <a href="{{ route('police-certificate.step', ['step' => 1]) }}"
                class="flex items-center p-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl text-white hover:from-blue-700 hover:to-indigo-700 transition shadow-lg">
@@ -191,6 +191,20 @@
                 <div>
                     <p class="font-semibold">Portugal Certificate</p>
                     <p class="text-sm text-green-100">Criminal Record</p>
+                </div>
+            </a>
+
+            <!-- Greece Penal Record -->
+            <a href="{{ route('greece-certificate.step', ['step' => 1]) }}"
+               class="flex items-center p-4 bg-gradient-to-r from-amber-500 to-yellow-600 rounded-xl text-white hover:from-amber-600 hover:to-yellow-700 transition shadow-lg">
+                <div class="p-3 bg-white/20 rounded-lg mr-4">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="font-semibold">Greece Certificate</p>
+                    <p class="text-sm text-amber-100">Penal Record</p>
                 </div>
             </a>
 
@@ -221,6 +235,20 @@
                     <p class="text-sm text-gray-500">Learn more</p>
                 </div>
             </a>
+
+            <!-- Greece Info -->
+            <a href="{{ route('greece-certificate.index') }}"
+               class="flex items-center p-4 bg-white border border-gray-200 rounded-xl text-gray-900 hover:bg-gray-50 transition shadow-sm">
+                <div class="p-3 bg-amber-100 rounded-lg mr-4">
+                    <svg class="h-6 w-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="font-semibold">Greece Info</p>
+                    <p class="text-sm text-gray-500">Learn more</p>
+                </div>
+            </a>
         </div>
     </div>
 
@@ -235,8 +263,8 @@
                 @foreach($recentApplications as $application)
                     <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
                         <div class="flex items-center space-x-4">
-                            <div class="p-2 {{ $application->certificate_type === 'portugal' ? 'bg-green-100' : 'bg-blue-100' }} rounded-lg">
-                                <svg class="h-5 w-5 {{ $application->certificate_type === 'portugal' ? 'text-green-600' : 'text-blue-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="p-2 {{ $application->certificate_type === 'greece' ? 'bg-amber-100' : ($application->certificate_type === 'portugal' ? 'bg-green-100' : 'bg-blue-100') }} rounded-lg">
+                                <svg class="h-5 w-5 {{ $application->certificate_type === 'greece' ? 'text-amber-600' : ($application->certificate_type === 'portugal' ? 'text-green-600' : 'text-blue-600') }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                 </svg>
                             </div>
@@ -266,7 +294,7 @@
                                 {{ $application->status_label }}
                             </span>
                             @if($application->status === 'submitted')
-                                <a href="{{ $application->certificate_type === 'portugal' ? route('portugal-certificate.receipt.show', $application->application_reference) : route('police-certificate.receipt.show', $application->application_reference) }}"
+                                <a href="{{ $application->certificate_type === 'greece' ? route('greece-certificate.receipt.show', $application->application_reference) : ($application->certificate_type === 'portugal' ? route('portugal-certificate.receipt.show', $application->application_reference) : route('police-certificate.receipt.show', $application->application_reference)) }}"
                                    class="text-sm text-blue-600 hover:text-blue-800 font-medium">
                                     Upload Receipt
                                 </a>
@@ -282,7 +310,7 @@
                 </svg>
                 <h3 class="mt-2 text-sm font-medium text-gray-900">No applications yet</h3>
                 <p class="mt-1 text-sm text-gray-500">Get started by creating your first application.</p>
-                <div class="mt-6 flex justify-center gap-4">
+                <div class="mt-6 flex flex-wrap justify-center gap-4">
                     <a href="{{ route('police-certificate.step', ['step' => 1]) }}"
                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
                         <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -296,6 +324,13 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
                         Portugal Certificate
+                    </a>
+                    <a href="{{ route('greece-certificate.step', ['step' => 1]) }}"
+                       class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-amber-600 hover:bg-amber-700">
+                        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Greece Certificate
                     </a>
                 </div>
             </div>

@@ -44,6 +44,9 @@ require __DIR__ . '/police-certificate.php';
 // Portugal Criminal Record Certificate Routes
 require __DIR__ . '/portugal-certificate.php';
 
+// Greece Penal Record Certificate Routes
+require __DIR__ . '/greece-certificate.php';
+
 Route::get('/sitemap.xml', function () {
     $uploadedPath = public_path('sitemap.xml');
     if (File::exists($uploadedPath)) {
