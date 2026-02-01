@@ -22,6 +22,49 @@
         </div>
     @endif
 
+    <!-- Draft Applications - Continue Where You Left Off -->
+    @if($draftApplications->count() > 0)
+        <div class="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <svg class="h-5 w-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                Continue Your Application
+            </h3>
+            <p class="text-sm text-gray-600 mb-4">You have incomplete applications. Pick up where you left off:</p>
+            <div class="space-y-3">
+                @foreach($draftApplications as $draft)
+                    <div class="flex items-center justify-between bg-white rounded-lg p-4 border border-blue-200 shadow-sm">
+                        <div class="flex items-center space-x-4">
+                            <div class="p-2 bg-blue-100 rounded-lg">
+                                <svg class="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">{{ $draft->application_reference }}</p>
+                                <p class="text-xs text-gray-500">
+                                    @if($draft->first_name)
+                                        {{ $draft->first_name }} {{ $draft->last_name }} ·
+                                    @endif
+                                    Step {{ $draft->next_step }} of 7 · Started {{ $draft->created_at->diffForHumans() }}
+                                </p>
+                            </div>
+                        </div>
+                        <a href="{{ route('police-certificate.resume', $draft->application_reference) }}"
+                           class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition shadow-sm">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Continue
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     <!-- Quick Actions Needed -->
     @if($needsAction->count() > 0)
         <div class="mb-8 bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-500 rounded-lg p-6">

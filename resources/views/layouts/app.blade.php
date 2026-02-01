@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="google-site-verification" content="gu18dCDnQPyvs82m2d1PmlD7V1Ex9yeykt0ZIsEV5sQ">
     <meta name="description" content="@yield('meta_description', 'PlaceMeNet helps job seekers discover verified roles and connect with top employers, while companies find qualified talent quickly. Browse jobs, apply, and manage applications in one secure platform.')">
@@ -22,6 +22,34 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/favicon/favicon.ico') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/favicon/apple-touch-icon.png') }}">
+
+    <!-- Mobile Zoom & Responsive Fixes -->
+    <style>
+        /* Alpine.js cloak - hide elements until Alpine loads */
+        [x-cloak] { display: none !important; }
+
+        /* Prevent horizontal overflow on zoom */
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100vw;
+        }
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+        /* Ensure media scales correctly */
+        img, video, svg, iframe { max-width: 100%; height: auto; }
+        /* Prevent iOS zoom on input focus */
+        input, textarea, select, button { font-size: 16px; touch-action: manipulation; }
+        /* Safe area for notched devices */
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: env(safe-area-inset-left);
+                padding-right: env(safe-area-inset-right);
+            }
+        }
+    </style>
 
     <!-- Custom Styles for Interactive Elements -->
     <style>
@@ -119,168 +147,8 @@
 @php($whatsappNumber = config('placemenet.whatsapp_number'))
 <body class="font-sans antialiased bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800">
     <div class="min-h-screen flex flex-col">
-        <!-- Navigation -->
-        <nav class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 shadow-lg sticky top-0 z-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <div class="flex">
-                        <!-- Logo -->
-                        <div class="shrink-0 flex items-center">
-                            <a href="{{ route('home') }}" class="group flex items-center gap-4">
-                                <div class="relative">
-                                    <span class="absolute -inset-1 rounded-2xl bg-white/10 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                                    <div class="relative flex items-center justify-center h-12 w-12 rounded-2xl border border-white/30 bg-white/15 backdrop-blur-md shadow-lg transition-all duration-300 group-hover:border-white/70 group-hover:bg-white/25 group-hover:-translate-y-0.5">
-                                        <img src="{{ asset('assets/images/logo.jpg') }}" alt="PlaceMeNet logo" class="logo-sequence h-8 w-auto object-contain drop-shadow-lg">
-                                    </div>
-                                </div>
-                                <div class="hidden sm:block leading-tight">
-                                    <p class="text-white font-semibold tracking-wide">PlaceMeNet</p>
-                                    <p class="text-xs text-white/70 uppercase tracking-[0.25em]">Career Network</p>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- Navigation Links -->
-                        <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                        <a href="{{ route('jobs.index') }}" class="nav-link inline-flex items-center px-1 pt-1 text-sm font-medium text-white/90 hover:text-white">
-                            {{ __('Jobs') }}
-                        </a>
-                        <a href="{{ route('study-programs.index') }}" class="nav-link inline-flex items-center px-1 pt-1 text-sm font-medium text-white/90 hover:text-white">
-                            {{ __('Study Programs') }}
-                        </a>
-                        <a href="{{ route('visa.index') }}" class="nav-link inline-flex items-center px-1 pt-1 text-sm font-medium text-white/90 hover:text-white">
-                            {{ __('Visa & Residency') }}
-                        </a>
-                        <a href="{{ route('blogs.index') }}" class="nav-link inline-flex items-center px-1 pt-1 text-sm font-medium text-white/90 hover:text-white">
-                            {{ __('Blog') }}
-                        </a>
-                        @auth
-                            @if(auth()->user()->hasRole('educational_institution'))
-                                <a href="{{ route('institution.programs.index') }}" class="nav-link inline-flex items-center px-1 pt-1 text-sm font-medium text-white/90 hover:text-white">
-                                    {{ __('My Programs') }}
-                                </a>
-                            @endif
-                        @endauth
-                            <a href="{{ route('about') }}" class="nav-link inline-flex items-center px-1 pt-1 text-sm font-medium text-white/90 hover:text-white">
-                                {{ __('About') }}
-                            </a>
-                            <a href="{{ route('contact') }}" class="nav-link inline-flex items-center px-1 pt-1 text-sm font-medium text-white/90 hover:text-white">
-                                {{ __('Contact') }}
-                            </a>
-                            @auth
-                                @if(auth()->user()->hasRole('employer') || auth()->user()->hasRole('educational_institution'))
-                                    <a href="{{ route('employer.dashboard') }}" class="nav-link inline-flex items-center px-1 pt-1 text-sm font-medium text-white/90 hover:text-white">
-                                        {{ __('Dashboard') }}
-                                    </a>
-                                    <a href="{{ route('employer.jobs.index') }}" class="nav-link inline-flex items-center px-1 pt-1 text-sm font-medium text-white/90 hover:text-white">
-                                        {{ __('My Openings') }}
-                                    </a>
-                                    <a href="{{ route('content-creator.blogs.index') }}" class="nav-link inline-flex items-center px-1 pt-1 text-sm font-medium text-white/90 hover:text-white">
-                                        {{ __('My Blogs') }}
-                                    </a>
-                                @elseif(auth()->user()->hasRole('job_seeker'))
-                                    <a href="{{ route('jobseeker.dashboard') }}" class="nav-link inline-flex items-center px-1 pt-1 text-sm font-medium text-white/90 hover:text-white">
-                                        {{ __('Dashboard') }}
-                                    </a>
-                                    <a href="{{ route('jobseeker.applications.index') }}" class="nav-link inline-flex items-center px-1 pt-1 text-sm font-medium text-white/90 hover:text-white">
-                                        {{ __('My Applications') }}
-                                    </a>
-                        @elseif(auth()->user()->hasRole('student'))
-                            <a href="{{ route('study-programs.index') }}" class="nav-link inline-flex items-center px-1 pt-1 text-sm font-medium text-white/90 hover:text-white">
-                                {{ __('Study Programs') }}
-                            </a>
-                        @elseif(auth()->user()->hasRole('educational_institution'))
-                            <a href="{{ route('institution.programs.index') }}" class="nav-link inline-flex items-center px-1 pt-1 text-sm font-medium text-white/90 hover:text-white">
-                                {{ __('My Programs') }}
-                            </a>
-                        @endif
-                    @endauth
-                </div>
-                    </div>
-
-                    <!-- Right Navigation -->
-                    <div class="hidden sm:flex sm:items-center sm:ml-6 space-x-3">
-                        @php($localeLabels = [
-                            'en' => 'English',
-                            'es' => 'Español',
-                            'el' => 'Ελληνικά',
-                            'pt' => 'Português',
-                            'sq' => 'Shqip',
-                        ])
-                        @php($flagSvgs = [
-                            'en' => '<svg width="18" height="12" viewBox="0 0 18 12" xmlns="http://www.w3.org/2000/svg"><rect width="18" height="12" fill="#012169"/><path d="M0 0l18 12M18 0L0 12" stroke="#FFF" stroke-width="2"/><path d="M0 0l18 12M18 0L0 12" stroke="#C8102E" stroke-width="1"/><rect x="7" width="4" height="12" fill="#FFF"/><rect y="4" width="18" height="4" fill="#FFF"/><rect x="7.5" width="3" height="12" fill="#C8102E"/><rect y="4.5" width="18" height="3" fill="#C8102E"/></svg>',
-                            'es' => '<svg width="18" height="12" viewBox="0 0 18 12" xmlns="http://www.w3.org/2000/svg"><rect width="18" height="12" fill="#AA151B"/><rect y="3" width="18" height="6" fill="#F1BF00"/></svg>',
-                            'el' => '<svg width="18" height="12" viewBox="0 0 18 12" xmlns="http://www.w3.org/2000/svg"><rect width="18" height="12" fill="#0D5EAF"/><path d="M0 1.5h18M0 4.5h18M0 7.5h18M0 10.5h18" stroke="#FFF" stroke-width="1.2"/><rect width="7.2" height="7.2" fill="#0D5EAF"/><path d="M3.6 0v7.2M0 3.6h7.2" stroke="#FFF" stroke-width="1.2"/></svg>',
-                            'pt' => '<svg width="18" height="12" viewBox="0 0 18 12" xmlns="http://www.w3.org/2000/svg"><rect width="7" height="12" fill="#006600"/><rect x="7" width="11" height="12" fill="#FF0000"/><circle cx="7.5" cy="6" r="2.4" fill="#FFD700"/><circle cx="7.5" cy="6" r="1.4" fill="#006600"/></svg>',
-                            'sq' => '<svg width="18" height="12" viewBox="0 0 18 12" xmlns="http://www.w3.org/2000/svg"><rect width="18" height="12" fill="#E41E20"/><path d="M7 3.5h4v5H7z" fill="#111"/></svg>',
-                        ])
-                        @php($currentLocale = app()->getLocale())
-                        <div class="relative" x-data="{ open: false, selected: '{{ $currentLocale }}' }" @keydown.escape.window="open = false">
-                            <form method="POST" action="{{ route('locale.switch') }}" x-ref="localeForm">
-                                @csrf
-                                <input type="hidden" name="locale" :value="selected">
-                            </form>
-                            <button type="button"
-                                    @click="open = !open"
-                                    class="inline-flex items-center justify-center gap-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-semibold rounded-full border border-white/30 px-3 py-1.5 shadow-md hover:shadow-lg hover:-translate-y-px transition focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:border-yellow-300"
-                                    style="font-family: 'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji','Figtree',sans-serif; min-width: 110px;">
-                                <span class="inline-flex items-center gap-1.5 mx-auto">
-                                    <span class="inline-block w-4 h-3 align-middle" x-html="@js($flagSvgs)[selected] ?? ''"></span>
-                                    <span class="text-center" x-text="@js($localeLabels)[selected] ?? selected.toUpperCase()"></span>
-                                </span>
-                                <svg class="h-3 w-3 text-white/80 transition-transform" :class="{'rotate-180': open}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            <div x-show="open" @click.away="open = false" x-transition
-                                 class="absolute top-full right-0 mt-2 w-36 bg-white/60 backdrop-blur-md rounded-lg shadow-md border border-white/40 py-1 z-50 transform translate-x-2">
-                                @foreach(config('app.available_locales', ['en']) as $locale)
-                                    <button type="button"
-                                            class="w-full text-left px-3 py-2 text-xs font-semibold text-gray-800 hover:bg-blue-50/80 flex items-center gap-2"
-                                            style="font-family: 'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji','Figtree',sans-serif;"
-                                            @click="selected = '{{ $locale }}'; open = false; $refs.localeForm.submit();">
-                                        <span class="inline-block w-5 h-3 align-middle">{!! $flagSvgs[$locale] ?? '' !!}</span>
-                                        <span>{{ $localeLabels[$locale] ?? strtoupper($locale) }}</span>
-                                    </button>
-                                @endforeach
-                            </div>
-                        </div>
-                        @guest
-                            <a href="{{ route('login') }}" class="inline-flex items-center gap-2 bg-yellow-300 text-blue-900 text-sm font-semibold rounded-full px-4 py-2 mr-2 shadow-md hover:shadow-lg hover:bg-yellow-200 transition">
-                                {{ __('Login') }}
-                            </a>
-                            <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 bg-yellow-400 border border-transparent rounded-md font-semibold text-xs text-blue-900 uppercase tracking-widest hover:bg-yellow-300 transition-all duration-300 hover-lift">
-                                {{ __('Register') }}
-                            </a>
-                        @else
-                            <div class="relative" x-data="{ open: false }">
-                                <button @click="open = !open" class="flex items-center text-sm font-medium text-white/90 hover:text-white focus:outline-none transition-colors duration-300">
-                                    {{ Auth::user()->name }}
-                                    <svg class="ml-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                                <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                                    @if(auth()->user()->hasRole('job_seeker'))
-                                        <a href="{{ route('jobseeker.profile.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{{ __('Profile') }}</a>
-                                    @elseif(auth()->user()->hasRole('student'))
-                                        <a href="{{ route('study-programs.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Browse Study Programs</a>
-                                    @elseif(auth()->user()->hasRole('employer') || auth()->user()->hasRole('educational_institution'))
-                                        <a href="{{ route('employer.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
-                                    @endif
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            {{ __('Logout') }}
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        @endguest
-                    </div>
-                </div>
-            </div>
-        </nav>
+        <!-- Mega Menu Navigation -->
+        @include('layouts.partials.mega-menu')
 
         <!-- Floating WhatsApp Button -->
         <a href="{{ $whatsappLink }}" target="_blank" rel="noopener"

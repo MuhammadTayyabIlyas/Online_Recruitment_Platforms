@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ServiceUser;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\PoliceCertificateController;
 use App\Models\PoliceCertificateApplication;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,8 +25,21 @@ class DashboardController extends Controller
             ->whereIn('status', ['payment_verified', 'processing'])
             ->count();
 
-        // Get recent applications
+        // Get draft applications (incomplete)
+        $draftApplications = PoliceCertificateApplication::where('user_id', $user->id)
+            ->where('status', 'draft')
+            ->latest()
+            ->get();
+
+        // Add next step info to each draft
+        $pccController = new PoliceCertificateController();
+        foreach ($draftApplications as $draft) {
+            $draft->next_step = $pccController->getNextStep($draft);
+        }
+
+        // Get recent applications (excluding drafts for main list)
         $recentApplications = PoliceCertificateApplication::where('user_id', $user->id)
+            ->where('status', '!=', 'draft')
             ->latest()
             ->take(5)
             ->get();
@@ -41,6 +55,7 @@ class DashboardController extends Controller
             'completedApplications',
             'processingApplications',
             'recentApplications',
+            'draftApplications',
             'needsAction'
         ));
     }

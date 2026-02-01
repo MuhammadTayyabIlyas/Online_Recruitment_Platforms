@@ -51,6 +51,7 @@ class PoliceCertificateApplication extends Model
         'application_reference',
         'submitted_at',
         'admin_notes',
+        'disclaimer_accepted_at',
     ];
 
     protected $casts = [
@@ -60,6 +61,7 @@ class PoliceCertificateApplication extends Model
         'payment_amount' => 'decimal:2',
         'payment_verified_at' => 'datetime',
         'submitted_at' => 'datetime',
+        'disclaimer_accepted_at' => 'datetime',
         'uk_residence_history' => 'array',
         'uk_address_history' => 'array',
     ];

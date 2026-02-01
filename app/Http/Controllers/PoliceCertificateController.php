@@ -27,6 +27,17 @@ class PoliceCertificateController extends Controller
         return view('police-certificate.index');
     }
 
+    /**
+     * Accept the disclaimer and store in session
+     */
+    public function acceptDisclaimer(Request $request)
+    {
+        $request->session()->put('pcc_disclaimer_accepted', true);
+        $request->session()->put('pcc_disclaimer_accepted_at', now()->toDateTimeString());
+
+        return response()->json(['success' => true]);
+    }
+
     public function showStep(Request $request, $step)
     {
         $step = (int) $step;
@@ -46,7 +57,16 @@ class PoliceCertificateController extends Controller
             return redirect()->route('police-certificate.step', ['step' => 1]);
         }
 
-        return view("police-certificate.step{$step}", compact('application', 'step'));
+        // Check for existing drafts when starting step 1 without a session application
+        $existingDrafts = collect();
+        if ($step === 1 && !$application && auth()->check()) {
+            $existingDrafts = PoliceCertificateApplication::where('user_id', auth()->id())
+                ->where('status', 'draft')
+                ->latest()
+                ->get();
+        }
+
+        return view("police-certificate.step{$step}", compact('application', 'step', 'existingDrafts'));
     }
 
     public function processStep(Request $request, $step)
@@ -66,6 +86,11 @@ class PoliceCertificateController extends Controller
             $application = new PoliceCertificateApplication();
             $application->user_id = auth()->id();
             $application->status = 'draft';
+
+            // Record disclaimer acceptance from session
+            if ($request->session()->get('pcc_disclaimer_accepted')) {
+                $application->disclaimer_accepted_at = $request->session()->get('pcc_disclaimer_accepted_at', now());
+            }
         }
 
         // Handle special cases for array data
@@ -115,11 +140,78 @@ class PoliceCertificateController extends Controller
     {
         $reference = $request->query('reference');
         $application = PoliceCertificateApplication::where('application_reference', $reference)->firstOrFail();
-        
+
         // Clear session
         $request->session()->forget('pcc_application_id');
-        
+
         return view('police-certificate.success', compact('application'));
+    }
+
+    /**
+     * Resume a draft application
+     */
+    public function resume(Request $request, $reference)
+    {
+        $application = PoliceCertificateApplication::where('application_reference', $reference)
+            ->where('user_id', auth()->id())
+            ->where('status', 'draft')
+            ->firstOrFail();
+
+        // Store application ID in session
+        $request->session()->put('pcc_application_id', $application->id);
+
+        // Determine which step to resume from
+        $nextStep = $this->getNextStep($application);
+
+        return redirect()->route('police-certificate.step', ['step' => $nextStep]);
+    }
+
+    /**
+     * Determine the next step for a draft application based on filled fields
+     */
+    public function getNextStep(PoliceCertificateApplication $application): int
+    {
+        // Check each step's required fields to find where user left off
+
+        // Step 1: Personal Information
+        if (empty($application->first_name) || empty($application->last_name) || empty($application->date_of_birth)) {
+            return 1;
+        }
+
+        // Step 2: Passport & ID - check if documents were uploaded
+        if (empty($application->passport_number) || empty($application->cnic_nicop_number)) {
+            return 2;
+        }
+
+        // Check if passport document exists
+        $hasPassportDoc = $application->documents()->where('document_type', 'passport')->exists();
+        $hasCnicDoc = $application->documents()->where('document_type', 'cnic')->exists();
+        if (!$hasPassportDoc || !$hasCnicDoc) {
+            return 2;
+        }
+
+        // Step 3: UK Residence History
+        if (empty($application->uk_residence_history) || !is_array($application->uk_residence_history) || count($application->uk_residence_history) === 0) {
+            return 3;
+        }
+
+        // Step 4: UK Address History
+        if (empty($application->uk_address_history) || !is_array($application->uk_address_history) || count($application->uk_address_history) === 0) {
+            return 4;
+        }
+
+        // Step 5: Spain Address
+        if (empty($application->spain_address_line1) || empty($application->spain_city)) {
+            return 5;
+        }
+
+        // Step 6: Contact Information
+        if (empty($application->email) || empty($application->phone_spain)) {
+            return 6;
+        }
+
+        // Step 7: Service Selection (final step)
+        return 7;
     }
 
     public function showReceiptUpload(Request $request, $reference)

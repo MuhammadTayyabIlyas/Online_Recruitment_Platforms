@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'PlaceMeNet') }} - {{ auth()->user()->hasRole('educational_institution') ? 'Institution' : 'Employer' }} - @yield('title', 'Dashboard')</title>
@@ -21,6 +21,25 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/favicon/apple-touch-icon.png') }}">
 
     <style>
+        /* Mobile Zoom & Responsive Fixes */
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100vw;
+        }
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+        img, video, svg, iframe { max-width: 100%; height: auto; }
+        input, textarea, select, button { font-size: 16px; touch-action: manipulation; }
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: env(safe-area-inset-left);
+                padding-right: env(safe-area-inset-right);
+            }
+        }
+
         .sidebar-link {
             transition: all 0.25s ease;
         }
@@ -39,6 +58,34 @@
             color: #fff;
             font-weight: 600;
         }
+
+        /* Mobile sidebar as overlay */
+        @media (max-width: 767px) {
+            .sidebar-mobile {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar-mobile.open {
+                transform: translateX(0);
+            }
+            .content-area {
+                margin-left: 0 !important;
+                width: 100%;
+            }
+            .sidebar-backdrop {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 25;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.3s ease;
+            }
+            .sidebar-backdrop.open {
+                opacity: 1;
+                pointer-events: auto;
+            }
+        }
 </style>
     @include('layouts.partials.brand-styles')
     @livewireStyles
@@ -46,9 +93,12 @@
     @stack('styles')
 </head>
 <body class="font-sans antialiased bg-slate-100">
-    <div class="min-h-screen flex" x-data="{ sidebarOpen: true }" :data-sidebar-open="sidebarOpen">
+    <div class="min-h-screen flex" x-data="{ sidebarOpen: window.innerWidth >= 768 }" :data-sidebar-open="sidebarOpen">
+        <!-- Mobile Backdrop -->
+        <div class="sidebar-backdrop md:hidden" :class="sidebarOpen ? 'open' : ''" @click="sidebarOpen = false"></div>
+
         <!-- Sidebar -->
-        <aside :class="sidebarOpen ? 'w-72' : 'w-20'" class="brand-gradient text-white shadow-2xl transition-all duration-300 fixed h-full z-30 border-r border-white/10">
+        <aside :class="[sidebarOpen ? 'w-72' : 'w-20', sidebarOpen ? 'open' : '']" class="sidebar-mobile md:translate-x-0 brand-gradient text-white shadow-2xl transition-all duration-300 fixed h-full z-30 border-r border-white/10">
             <!-- Logo + Toggle -->
             <div class="flex items-center justify-between p-4 border-b border-white/10">
                 <a href="{{ route('home') }}" class="flex items-center gap-3" x-show="sidebarOpen">
@@ -259,7 +309,7 @@
         </aside>
 
         <!-- Main Content -->
-        <div :class="sidebarOpen ? 'ml-72' : 'ml-20'" class="flex-1 transition-all duration-300 bg-slate-50 min-h-screen">
+        <div :class="{'md:ml-72': sidebarOpen, 'md:ml-20': !sidebarOpen}" class="content-area flex-1 transition-all duration-300 bg-slate-50 min-h-screen w-full">
             <!-- Top Header -->
             <header class="brand-gradient text-white shadow-lg sticky top-0 z-10">
                 <div class="px-6 py-4 flex items-center justify-between">
