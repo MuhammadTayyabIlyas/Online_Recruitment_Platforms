@@ -172,6 +172,9 @@ class DashboardController extends Controller
         // Merge needs action
         $needsAction = $ukNeedsAction->merge($ptNeedsAction)->merge($grNeedsAction);
 
+        // Partner program
+        $partner = $user->authorizedPartner;
+
         return view('service-user.dashboard', compact(
             'totalApplications',
             'pendingApplications',
@@ -179,7 +182,8 @@ class DashboardController extends Controller
             'processingApplications',
             'recentApplications',
             'draftApplications',
-            'needsAction'
+            'needsAction',
+            'partner'
         ));
     }
 }

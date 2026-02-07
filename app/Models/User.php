@@ -314,6 +314,22 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Get the authorized partner record for the user.
+     */
+    public function authorizedPartner(): HasOne
+    {
+        return $this->hasOne(AuthorizedPartner::class);
+    }
+
+    /**
+     * Check if user is an active authorized partner.
+     */
+    public function isAuthorizedPartner(): bool
+    {
+        return $this->authorizedPartner && $this->authorizedPartner->isActive();
+    }
+
+    /**
      * Update the last login timestamp.
      */
     public function updateLastLogin(): void

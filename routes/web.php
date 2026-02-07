@@ -47,6 +47,10 @@ require __DIR__ . '/portugal-certificate.php';
 // Greece Penal Record Certificate Routes
 require __DIR__ . '/greece-certificate.php';
 
+// Public Partner Pages
+Route::get('/partners', [\App\Http\Controllers\PartnerController::class, 'directory'])->name('partners.directory');
+Route::get('/partner/verify/{reference}', [\App\Http\Controllers\PartnerController::class, 'verify'])->name('partner.verify');
+
 Route::get('/sitemap.xml', function () {
     $uploadedPath = public_path('sitemap.xml');
     if (File::exists($uploadedPath)) {
@@ -377,6 +381,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Service User Dashboard
         Route::get('/dashboard', [\App\Http\Controllers\ServiceUser\DashboardController::class, 'index'])->name('dashboard');
     });
+
+    // Partner Profile Routes (accessible to any authenticated user with a partner record)
+    Route::get('/partner/profile', [\App\Http\Controllers\ServiceUser\PartnerProfileController::class, 'edit'])->name('partner.profile.edit');
+    Route::put('/partner/profile', [\App\Http\Controllers\ServiceUser\PartnerProfileController::class, 'update'])->name('partner.profile.update');
+    Route::get('/partner/certificate/download', [\App\Http\Controllers\ServiceUser\PartnerProfileController::class, 'downloadCertificate'])->name('partner.certificate.download');
 });
 
 /*
@@ -482,6 +491,17 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/portugal-certificate/document/{document}/download', [\App\Http\Controllers\Admin\PortugalCertificateAdminController::class, 'downloadDocument'])->name('portugal-certificate.download-document');
     Route::get('/portugal-certificate/document/{document}/preview', [\App\Http\Controllers\Admin\PortugalCertificateAdminController::class, 'previewDocument'])->name('portugal-certificate.preview-document');
     Route::get('/portugal-certificate/{application}/download-documents', [\App\Http\Controllers\Admin\PortugalCertificateAdminController::class, 'downloadAllDocuments'])->name('portugal-certificate.download-documents');
+
+    // Authorized Partners Admin Routes
+    Route::get('/authorized-partners', [\App\Http\Controllers\Admin\AuthorizedPartnerController::class, 'index'])->name('authorized-partners.index');
+    Route::get('/authorized-partners/create', [\App\Http\Controllers\Admin\AuthorizedPartnerController::class, 'create'])->name('authorized-partners.create');
+    Route::post('/authorized-partners', [\App\Http\Controllers\Admin\AuthorizedPartnerController::class, 'store'])->name('authorized-partners.store');
+    Route::get('/authorized-partners/{partner}', [\App\Http\Controllers\Admin\AuthorizedPartnerController::class, 'show'])->name('authorized-partners.show');
+    Route::post('/authorized-partners/{partner}/approve', [\App\Http\Controllers\Admin\AuthorizedPartnerController::class, 'approve'])->name('authorized-partners.approve');
+    Route::post('/authorized-partners/{partner}/suspend', [\App\Http\Controllers\Admin\AuthorizedPartnerController::class, 'suspend'])->name('authorized-partners.suspend');
+    Route::post('/authorized-partners/{partner}/revoke', [\App\Http\Controllers\Admin\AuthorizedPartnerController::class, 'revoke'])->name('authorized-partners.revoke');
+    Route::post('/authorized-partners/{partner}/renew', [\App\Http\Controllers\Admin\AuthorizedPartnerController::class, 'renew'])->name('authorized-partners.renew');
+    Route::get('/authorized-partners/{partner}/certificate', [\App\Http\Controllers\Admin\AuthorizedPartnerController::class, 'downloadCertificate'])->name('authorized-partners.certificate');
 
     // Greece Certificate Admin Routes
     Route::get('/greece-certificates', [\App\Http\Controllers\Admin\GreeceCertificateAdminController::class, 'index'])->name('greece-certificates.index');

@@ -22,6 +22,89 @@
         </div>
     @endif
 
+    <!-- Partner Program Section -->
+    @if($partner)
+        <div class="mb-8">
+            @switch($partner->status)
+                @case('pending_profile')
+                    <div class="bg-gradient-to-r from-purple-50 to-indigo-50 border-l-4 border-purple-500 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2 flex items-center">
+                            <svg class="h-5 w-5 text-purple-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                            Partner Program
+                        </h3>
+                        <p class="text-sm text-gray-600 mb-4">You've been selected as a partner candidate! Complete your business profile to proceed.</p>
+                        <a href="{{ route('partner.profile.edit') }}" class="inline-flex items-center px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition shadow-sm">
+                            Complete Partner Profile
+                        </a>
+                    </div>
+                    @break
+                @case('pending_review')
+                    <div class="bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-500 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2 flex items-center">
+                            <svg class="h-5 w-5 text-yellow-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Partner Program - Under Review
+                        </h3>
+                        <p class="text-sm text-gray-600">Your partner profile is being reviewed. We'll notify you once a decision has been made.</p>
+                    </div>
+                    @break
+                @case('active')
+                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 rounded-lg p-6">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-1 flex items-center">
+                                    <svg class="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Authorized Partner
+                                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
+                                </h3>
+                                <p class="text-sm text-gray-600">
+                                    Ref: <span class="font-mono font-semibold">{{ $partner->reference_number }}</span> |
+                                    Valid until: {{ $partner->expires_at?->format('M d, Y') }}
+                                </p>
+                            </div>
+                            <div class="flex gap-2">
+                                @if($partner->certificate_path)
+                                    <a href="{{ route('partner.certificate.download') }}" class="inline-flex items-center px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                        </svg>
+                                        Certificate
+                                    </a>
+                                @endif
+                                <a href="{{ route('partner.profile.edit') }}" class="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition">
+                                    Profile
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    @break
+                @case('suspended')
+                    <div class="bg-gradient-to-r from-orange-50 to-red-50 border-l-4 border-orange-500 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2 flex items-center">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 mr-2">Suspended</span>
+                            Partner Program
+                        </h3>
+                        <p class="text-sm text-gray-600">Your partner account has been suspended. Please contact us for more information.</p>
+                    </div>
+                    @break
+                @case('revoked')
+                    <div class="bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-red-500 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2 flex items-center">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 mr-2">Revoked</span>
+                            Partner Program
+                        </h3>
+                        <p class="text-sm text-gray-600">Your partner account has been revoked.</p>
+                    </div>
+                    @break
+            @endswitch
+        </div>
+    @endif
+
     <!-- Draft Applications - Continue Where You Left Off -->
     @if($draftApplications->count() > 0)
         <div class="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-lg p-6">
