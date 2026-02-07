@@ -86,10 +86,13 @@
     <!-- Greece Documents -->
     <div class="bg-amber-50 rounded-lg p-4 mt-8 mb-4">
         <h3 class="text-lg font-semibold text-gray-900 mb-2">Greek Documents</h3>
-        <p class="text-sm text-gray-600">If you have Greek documents, please provide them below.</p>
+        <p class="text-sm text-gray-600">If you have Greek documents, please provide them below. Check the boxes if you don't have this information.</p>
     </div>
 
-    <div class="grid md:grid-cols-2 gap-4">
+    <div class="grid md:grid-cols-2 gap-4" x-data="{
+        noGreeceAfm: {{ old('no_greece_afm', $application->no_greece_afm ?? false) ? 'true' : 'false' }},
+        noGreeceAmka: {{ old('no_greece_amka', $application->no_greece_amka ?? false) ? 'true' : 'false' }}
+    }">
         <div>
             <label for="greece_afm" class="block text-sm font-medium text-gray-700 mb-1">
                 Greek AFM (Tax ID)
@@ -97,8 +100,19 @@
             <input type="text" name="greece_afm" id="greece_afm"
                    value="{{ old('greece_afm', $application->greece_afm ?? '') }}"
                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                   placeholder="9 digits">
-            <p class="mt-1 text-xs text-gray-500">Optional but recommended if you have one</p>
+                   :class="{ 'bg-gray-100': noGreeceAfm }"
+                   :disabled="noGreeceAfm"
+                   placeholder="e.g., 123456789">
+            <p class="mt-1 text-xs text-gray-500">9-digit tax identification number (&#913;&#934;&#924;)</p>
+            <!-- I don't have this checkbox -->
+            <div class="mt-2">
+                <label class="flex items-center text-sm text-gray-600 cursor-pointer hover:text-gray-800 min-h-[44px]">
+                    <input type="checkbox" name="no_greece_afm" value="1"
+                           x-model="noGreeceAfm"
+                           class="h-4 w-4 text-amber-600 border-gray-300 rounded mr-2 cursor-pointer">
+                    I don't have this information
+                </label>
+            </div>
         </div>
 
         <div>
@@ -108,7 +122,19 @@
             <input type="text" name="greece_amka" id="greece_amka"
                    value="{{ old('greece_amka', $application->greece_amka ?? '') }}"
                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                   placeholder="11 digits">
+                   :class="{ 'bg-gray-100': noGreeceAmka }"
+                   :disabled="noGreeceAmka"
+                   placeholder="e.g., 12345678901">
+            <p class="mt-1 text-xs text-gray-500">11-digit social security number (&#913;&#924;&#922;&#913;)</p>
+            <!-- I don't have this checkbox -->
+            <div class="mt-2">
+                <label class="flex items-center text-sm text-gray-600 cursor-pointer hover:text-gray-800 min-h-[44px]">
+                    <input type="checkbox" name="no_greece_amka" value="1"
+                           x-model="noGreeceAmka"
+                           class="h-4 w-4 text-amber-600 border-gray-300 rounded mr-2 cursor-pointer">
+                    I don't have this information
+                </label>
+            </div>
         </div>
     </div>
 
@@ -144,52 +170,45 @@
     <!-- File Uploads -->
     <div class="bg-gray-50 rounded-lg p-4 mt-8 mb-4">
         <h3 class="text-lg font-semibold text-gray-900 mb-2">Document Uploads</h3>
-        <p class="text-sm text-gray-600">Upload clear scans or photos of your documents. Accepted formats: PDF, JPG, PNG (max 5MB each).</p>
+        <p class="text-sm text-gray-600">Upload clear scans or photos of your documents. You can also take photos directly with your phone camera.</p>
+    </div>
+
+    @php
+        $hasPassportFront = $application ? $application->documents()->where('document_type', 'passport_front')->exists() : false;
+        $hasPassportBack = $application ? $application->documents()->where('document_type', 'passport_back')->exists() : false;
+        $hasPassportLegacy = $application ? $application->documents()->where('document_type', 'passport')->exists() : false;
+        $hasResidencePermit = $application ? $application->documents()->where('document_type', 'residence_permit')->exists() : false;
+    @endphp
+
+    <div class="grid md:grid-cols-2 gap-6">
+        <!-- Passport Front Upload -->
+        <x-document-upload
+            name="passport_front_file"
+            label="Passport / ID - Front Side"
+            :required="!$hasPassportFront && !$hasPassportLegacy"
+            :existing-file="$hasPassportFront || $hasPassportLegacy ? true : null"
+            help-text="Upload the page with your photo. PDF, JPG, PNG up to 5MB"
+        />
+
+        <!-- Passport Back Upload -->
+        <x-document-upload
+            name="passport_back_file"
+            label="Passport / ID - Back Side (if applicable)"
+            :required="false"
+            :existing-file="$hasPassportBack ? true : null"
+            help-text="Not needed for passport booklets. PDF, JPG, PNG up to 5MB"
+        />
     </div>
 
     <div class="grid md:grid-cols-2 gap-6">
-        <div>
-            <label for="passport_file" class="block text-sm font-medium text-gray-700 mb-1">
-                Passport Copy <span class="text-red-500">*</span>
-            </label>
-            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-amber-400 transition @error('passport_file') border-red-500 @enderror">
-                <div class="space-y-1 text-center">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                    <div class="flex text-sm text-gray-600">
-                        <label for="passport_file" class="relative cursor-pointer bg-white rounded-md font-medium text-amber-600 hover:text-amber-500">
-                            <span>Upload passport</span>
-                            <input id="passport_file" name="passport_file" type="file" class="sr-only" accept=".pdf,.jpg,.jpeg,.png" required>
-                        </label>
-                    </div>
-                    <p class="text-xs text-gray-500">PDF, JPG, PNG up to 5MB</p>
-                </div>
-            </div>
-            @error('passport_file')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
-        </div>
-
-        <div>
-            <label for="residence_permit_file" class="block text-sm font-medium text-gray-700 mb-1">
-                Residence Permit Copy
-            </label>
-            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-amber-400 transition">
-                <div class="space-y-1 text-center">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                    <div class="flex text-sm text-gray-600">
-                        <label for="residence_permit_file" class="relative cursor-pointer bg-white rounded-md font-medium text-amber-600 hover:text-amber-500">
-                            <span>Upload permit</span>
-                            <input id="residence_permit_file" name="residence_permit_file" type="file" class="sr-only" accept=".pdf,.jpg,.jpeg,.png">
-                        </label>
-                    </div>
-                    <p class="text-xs text-gray-500">Optional - if applicable</p>
-                </div>
-            </div>
-        </div>
+        <!-- Residence Permit Upload -->
+        <x-document-upload
+            name="residence_permit_file"
+            label="Residence Permit Copy"
+            :required="false"
+            :existing-file="$hasResidencePermit ? true : null"
+            help-text="Optional - PDF, JPG, PNG up to 5MB"
+        />
     </div>
 </div>
 @endsection

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class GreeceCertificateController extends Controller
 {
@@ -89,10 +90,22 @@ class GreeceCertificateController extends Controller
             $validated['greece_residence_history'] = $this->processResidenceHistory($request->greece_residence_history);
         }
 
-        // Handle authorization letter upload for step 6
-        if ($step === 6 && $request->hasFile('authorization_letter')) {
-            $this->handleAuthorizationLetter($request, $application);
-            $validated['authorization_letter_uploaded'] = true;
+        // Handle authorization letter - step 6
+        if ($step === 6) {
+            $signatureMethod = $request->input('signature_method', 'drawn');
+
+            if ($signatureMethod === 'drawn') {
+                // Save signature fields
+                $validated['signature_data'] = $request->input('signature_data');
+                $validated['signature_place'] = $request->input('signature_place');
+                $validated['signature_date'] = $request->input('signature_date');
+                $validated['signature_method'] = 'drawn';
+                $validated['authorization_letter_uploaded'] = true;
+            } elseif ($signatureMethod === 'uploaded' && $request->hasFile('authorization_letter')) {
+                $this->handleAuthorizationLetter($request, $application);
+                $validated['signature_method'] = 'uploaded';
+                $validated['authorization_letter_uploaded'] = true;
+            }
         }
 
         // Calculate payment amount for step 7
@@ -119,6 +132,11 @@ class GreeceCertificateController extends Controller
         // Handle file uploads for step 2
         if ($step === 2) {
             $this->handleStep2Documents($request, $application);
+        }
+
+        // Generate signed authorization letter PDF for drawn signatures
+        if ($step === 6 && ($request->input('signature_method') === 'drawn')) {
+            $this->generateSignedAuthorizationLetter($application);
         }
 
         // Handle "Save & Continue Later" button
@@ -192,8 +210,10 @@ class GreeceCertificateController extends Controller
             return 2;
         }
 
-        // Check if passport document exists
-        $hasPassportDoc = $application->documents()->where('document_type', 'passport')->exists();
+        // Check if passport document exists (support both new and legacy types)
+        $hasPassportDoc = $application->documents()
+            ->whereIn('document_type', ['passport_front', 'passport'])
+            ->exists();
         if (!$hasPassportDoc) {
             return 2;
         }
@@ -228,7 +248,31 @@ class GreeceCertificateController extends Controller
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        return view('greece-certificate.receipt-upload', compact('application'));
+        $receipts = $application->documents()->where('document_type', 'receipt')->get();
+
+        return view('greece-certificate.receipt-upload', compact('application', 'receipts'));
+    }
+
+    public function deleteReceipt($reference, $documentId)
+    {
+        $application = GreeceCertificateApplication::where('application_reference', $reference)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        $document = $application->documents()
+            ->where('id', $documentId)
+            ->where('document_type', 'receipt')
+            ->firstOrFail();
+
+        // Delete file from storage
+        if (Storage::disk('private')->exists($document->file_path)) {
+            Storage::disk('private')->delete($document->file_path);
+        }
+
+        // Delete document record
+        $document->delete();
+
+        return back()->with('success', 'Receipt deleted successfully.');
     }
 
     public function uploadReceipt(Request $request, $reference)
@@ -273,6 +317,7 @@ class GreeceCertificateController extends Controller
     protected function validateStep(Request $request, $step)
     {
         $rules = [];
+        $messages = [];
 
         switch ($step) {
             case 1:
@@ -300,8 +345,16 @@ class GreeceCertificateController extends Controller
                     'greece_amka' => 'nullable|string|max:20',
                     'greece_residence_permit' => 'nullable|string|max:50',
                     'greece_residence_permit_expiry' => 'nullable|date',
-                    'passport_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+                    'passport_front_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+                    'passport_back_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
                     'residence_permit_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+                ];
+                $messages = [
+                    'passport_front_file.mimes' => 'Please upload the front side of your passport as a PDF, JPG, or PNG file.',
+                    'passport_front_file.max' => 'File size must be under 5MB. Try taking a photo with lower resolution.',
+                    'passport_back_file.mimes' => 'Please upload the back side of your passport as a PDF, JPG, or PNG file.',
+                    'passport_back_file.max' => 'File size must be under 5MB. Try taking a photo with lower resolution.',
+                    'residence_permit_file.max' => 'File size must be under 5MB. Try taking a photo with lower resolution.',
                 ];
                 break;
 
@@ -334,9 +387,29 @@ class GreeceCertificateController extends Controller
                 break;
 
             case 6:
-                $rules = [
-                    'authorization_letter' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
-                ];
+                $signatureMethod = $request->input('signature_method', 'drawn');
+
+                if ($signatureMethod === 'drawn') {
+                    $rules = [
+                        'signature_data' => 'required|string',
+                        'signature_place' => 'required|string|max:200',
+                        'signature_date' => 'required|date',
+                        'signature_method' => 'required|in:drawn,uploaded',
+                    ];
+                    $messages = [
+                        'signature_data.required' => 'Please sign the authorization letter using the signature pad.',
+                        'signature_place.required' => 'Please enter the place where you are signing.',
+                    ];
+                } else {
+                    $rules = [
+                        'authorization_letter' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+                        'signature_method' => 'required|in:drawn,uploaded',
+                    ];
+                    $messages = [
+                        'authorization_letter.required' => 'Please upload your signed authorization letter.',
+                        'authorization_letter.max' => 'File size must be under 5MB. Try taking a photo with lower resolution.',
+                    ];
+                }
                 break;
 
             case 7:
@@ -350,7 +423,7 @@ class GreeceCertificateController extends Controller
                 break;
         }
 
-        return $request->validate($rules);
+        return $request->validate($rules, $messages);
     }
 
     protected function processResidenceHistory($data)
@@ -369,13 +442,47 @@ class GreeceCertificateController extends Controller
 
     protected function handleStep2Documents(Request $request, $application)
     {
-        // Passport
-        if ($request->hasFile('passport_file')) {
-            $this->storeDocument($request->file('passport_file'), $application, 'passport');
+        // Passport Front
+        if ($request->hasFile('passport_front_file')) {
+            // Delete old passport docs before replacing
+            $application->documents()
+                ->whereIn('document_type', ['passport_front', 'passport'])
+                ->each(function ($doc) {
+                    if (Storage::disk('private')->exists($doc->file_path)) {
+                        Storage::disk('private')->delete($doc->file_path);
+                    }
+                    $doc->delete();
+                });
+
+            $this->storeDocument($request->file('passport_front_file'), $application, 'passport_front');
+        }
+
+        // Passport Back (optional)
+        if ($request->hasFile('passport_back_file')) {
+            // Delete old back docs before replacing
+            $application->documents()
+                ->where('document_type', 'passport_back')
+                ->each(function ($doc) {
+                    if (Storage::disk('private')->exists($doc->file_path)) {
+                        Storage::disk('private')->delete($doc->file_path);
+                    }
+                    $doc->delete();
+                });
+
+            $this->storeDocument($request->file('passport_back_file'), $application, 'passport_back');
         }
 
         // Residence Permit (optional)
         if ($request->hasFile('residence_permit_file')) {
+            $application->documents()
+                ->where('document_type', 'residence_permit')
+                ->each(function ($doc) {
+                    if (Storage::disk('private')->exists($doc->file_path)) {
+                        Storage::disk('private')->delete($doc->file_path);
+                    }
+                    $doc->delete();
+                });
+
             $this->storeDocument($request->file('residence_permit_file'), $application, 'residence_permit');
         }
     }
@@ -384,10 +491,55 @@ class GreeceCertificateController extends Controller
     {
         if ($request->hasFile('authorization_letter')) {
             // Delete old authorization letter if exists
-            $application->documents()->where('document_type', 'authorization_letter')->delete();
+            $application->documents()->where('document_type', 'authorization_letter')->each(function ($doc) {
+                if (Storage::disk('private')->exists($doc->file_path)) {
+                    Storage::disk('private')->delete($doc->file_path);
+                }
+                $doc->delete();
+            });
 
             $this->storeDocument($request->file('authorization_letter'), $application, 'authorization_letter');
         }
+    }
+
+    /**
+     * Generate a signed authorization letter PDF with embedded signature image
+     */
+    protected function generateSignedAuthorizationLetter(GreeceCertificateApplication $application): void
+    {
+        // Delete old authorization letter docs
+        $application->documents()->where('document_type', 'authorization_letter')->each(function ($doc) {
+            if (Storage::disk('private')->exists($doc->file_path)) {
+                Storage::disk('private')->delete($doc->file_path);
+            }
+            $doc->delete();
+        });
+
+        $pdf = Pdf::loadView('greece-certificate.authorization-letter-pdf', [
+            'application' => $application,
+            'generatedDate' => $application->signature_date
+                ? $application->signature_date->format('d/m/Y')
+                : now()->format('d/m/Y'),
+            'signatureImage' => $application->signature_data,
+            'signaturePlace' => $application->signature_place,
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        $filename = 'authorization_letters/signed_' . $application->application_reference . '_' . time() . '.pdf';
+        Storage::disk('private')->put(
+            'greece-certificates/' . $filename,
+            $pdf->output()
+        );
+
+        GreeceCertificateDocument::create([
+            'application_id' => $application->id,
+            'document_type' => 'authorization_letter',
+            'file_path' => 'greece-certificates/' . $filename,
+            'original_filename' => 'Authorization_Letter_Signed_' . $application->application_reference . '.pdf',
+            'mime_type' => 'application/pdf',
+            'file_size' => Storage::disk('private')->size('greece-certificates/' . $filename),
+        ]);
     }
 
     protected function storeDocument($file, $application, $type)
@@ -406,12 +558,9 @@ class GreeceCertificateController extends Controller
 
     protected function calculatePaymentAmount($serviceType)
     {
-        $prices = [
-            'normal' => 75,  // EUR
-            'urgent' => 120, // EUR
-        ];
+        $pricing = config('certificate-services.services.greece.pricing.eur');
 
-        return $prices[$serviceType] ?? 75;
+        return $pricing[$serviceType] ?? $pricing['normal'];
     }
 
     /**
@@ -460,5 +609,39 @@ class GreeceCertificateController extends Controller
         // Fallback: generate PDF on the fly if not stored
         $pdfService = app(PaymentPdfService::class);
         return $pdfService->download($application, 'greece');
+    }
+
+    /**
+     * Generate and download pre-filled authorization letter PDF
+     */
+    public function downloadAuthorizationLetter(Request $request)
+    {
+        $applicationId = $request->session()->get('greece_application_id');
+
+        if (!$applicationId) {
+            return redirect()->route('greece-certificate.step', ['step' => 1])
+                ->with('error', 'Please complete the previous steps first.');
+        }
+
+        $application = GreeceCertificateApplication::find($applicationId);
+
+        if (!$application) {
+            return redirect()->route('greece-certificate.step', ['step' => 1])
+                ->with('error', 'Application not found.');
+        }
+
+        // Generate the PDF with pre-filled data (blank signature lines for print-and-sign flow)
+        $pdf = Pdf::loadView('greece-certificate.authorization-letter-pdf', [
+            'application' => $application,
+            'generatedDate' => now()->format('d/m/Y'),
+            'signatureImage' => null,
+            'signaturePlace' => null,
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        $filename = 'Authorization_Letter_' . ($application->application_reference ?? 'DRAFT') . '.pdf';
+
+        return $pdf->download($filename);
     }
 }

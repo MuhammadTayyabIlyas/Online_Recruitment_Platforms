@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PoliceCertificateController extends Controller
 {
@@ -18,8 +19,8 @@ class PoliceCertificateController extends Controller
         2 => ['passport_number', 'passport_issue_date', 'passport_expiry_date', 'passport_place_of_issue', 'cnic_nicop_number', 'uk_home_office_ref', 'uk_brp_number'],
         3 => ['uk_residence_history', 'uk_national_insurance_number'],
         4 => ['uk_address_history'],
-        5 => ['spain_address_line1', 'spain_address_line2', 'spain_city', 'spain_province', 'spain_postal_code'],
-        6 => ['email', 'phone_spain', 'whatsapp_number'],
+        5 => ['spain_address_line1', 'spain_address_line2', 'spain_city', 'spain_province', 'spain_postal_code', 'email', 'phone_spain', 'whatsapp_number'],
+        6 => ['signature_data', 'signature_place', 'signature_date', 'signature_method'],
         7 => ['service_type', 'payment_currency', 'payment_amount'],
     ];
 
@@ -67,7 +68,25 @@ class PoliceCertificateController extends Controller
                 ->get();
         }
 
-        return view("police-certificate.step{$step}", compact('application', 'step', 'existingDrafts'));
+        // Pass document existence flags for step 2
+        $hasPhoto = false;
+        $hasSelfie = false;
+        $hasPassport = false;
+        $hasCnic = false;
+        $hasBrp = false;
+
+        if ($step === 2 && $application) {
+            $hasPhoto = $application->documents()->where('document_type', 'photo')->exists();
+            $hasSelfie = $application->documents()->where('document_type', 'selfie_passport')->exists();
+            $hasPassport = $application->documents()->where('document_type', 'passport')->exists();
+            $hasCnic = $application->documents()->where('document_type', 'cnic')->exists();
+            $hasBrp = $application->documents()->where('document_type', 'brp')->exists();
+        }
+
+        return view("police-certificate.step{$step}", compact(
+            'application', 'step', 'existingDrafts',
+            'hasPhoto', 'hasSelfie', 'hasPassport', 'hasCnic', 'hasBrp'
+        ));
     }
 
     public function processStep(Request $request, $step)
@@ -103,6 +122,23 @@ class PoliceCertificateController extends Controller
             $validated['uk_address_history'] = $this->processAddressHistory($request->uk_address_history);
         }
 
+        // Handle authorization letter - step 6
+        if ($step === 6) {
+            $signatureMethod = $request->input('signature_method', 'drawn');
+
+            if ($signatureMethod === 'drawn') {
+                $validated['signature_data'] = $request->input('signature_data');
+                $validated['signature_place'] = $request->input('signature_place');
+                $validated['signature_date'] = $request->input('signature_date');
+                $validated['signature_method'] = 'drawn';
+                $validated['authorization_letter_uploaded'] = true;
+            } elseif ($signatureMethod === 'uploaded' && $request->hasFile('authorization_letter')) {
+                $this->handleAuthorizationLetter($request, $application);
+                $validated['signature_method'] = 'uploaded';
+                $validated['authorization_letter_uploaded'] = true;
+            }
+        }
+
         // Calculate payment amount for step 7
         if ($step === 7) {
             $validated['payment_amount'] = $this->calculatePaymentAmount(
@@ -135,6 +171,11 @@ class PoliceCertificateController extends Controller
         // Handle file uploads for step 2
         if ($step === 2) {
             $this->handleStep2Documents($request, $application);
+        }
+
+        // Generate signed authorization letter PDF for drawn signatures
+        if ($step === 6 && ($request->input('signature_method') === 'drawn')) {
+            $this->generateSignedAuthorizationLetter($application);
         }
 
         // Handle "Save & Continue Later" button
@@ -210,10 +251,12 @@ class PoliceCertificateController extends Controller
             return 2;
         }
 
-        // Check if passport document exists
+        // Check if required documents exist
         $hasPassportDoc = $application->documents()->where('document_type', 'passport')->exists();
         $hasCnicDoc = $application->documents()->where('document_type', 'cnic')->exists();
-        if (!$hasPassportDoc || !$hasCnicDoc) {
+        $hasPhoto = $application->documents()->where('document_type', 'photo')->exists();
+        $hasSelfie = $application->documents()->where('document_type', 'selfie_passport')->exists();
+        if (!$hasPassportDoc || !$hasCnicDoc || !$hasPhoto || !$hasSelfie) {
             return 2;
         }
 
@@ -227,13 +270,13 @@ class PoliceCertificateController extends Controller
             return 4;
         }
 
-        // Step 5: Spain Address
-        if (empty($application->spain_address_line1) || empty($application->spain_city)) {
+        // Step 5: Spain Address + Contact
+        if (empty($application->spain_address_line1) || empty($application->spain_city) || empty($application->email) || empty($application->phone_spain)) {
             return 5;
         }
 
-        // Step 6: Contact Information
-        if (empty($application->email) || empty($application->phone_spain)) {
+        // Step 6: Authorization Letter
+        if (!$application->authorization_letter_uploaded) {
             return 6;
         }
 
@@ -310,6 +353,9 @@ class PoliceCertificateController extends Controller
                 break;
 
             case 2:
+                $applicationId = $request->session()->get('pcc_application_id');
+                $existingApp = $applicationId ? PoliceCertificateApplication::find($applicationId) : null;
+
                 $rules = [
                     'passport_number' => 'required|string|max:20',
                     'passport_issue_date' => 'required|date|before:today',
@@ -318,11 +364,47 @@ class PoliceCertificateController extends Controller
                     'cnic_nicop_number' => 'required|string|max:20',
                     'uk_home_office_ref' => 'nullable|string|max:50',
                     'uk_brp_number' => 'nullable|string|max:50',
-                    'passport_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
-                    'cnic_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+                    'photo_file' => 'nullable|file|mimes:jpg,jpeg,png|max:5120',
+                    'selfie_passport_file' => 'nullable|file|mimes:jpg,jpeg,png|max:5120',
+                    'passport_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+                    'cnic_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
                     'brp_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
                 ];
-                break;
+
+                $messages = [
+                    'photo_file.mimes' => 'Photo must be a JPG or PNG image.',
+                    'photo_file.max' => 'Photo must be under 5MB. Try taking the photo with lower resolution.',
+                    'selfie_passport_file.mimes' => 'Selfie must be a JPG or PNG image.',
+                    'selfie_passport_file.max' => 'Selfie must be under 5MB.',
+                ];
+
+                $validated = $request->validate($rules, $messages);
+
+                // Server-side check: require files if no existing documents
+                $missingDocs = [];
+                $hasExistingPhoto = $existingApp && $existingApp->documents()->where('document_type', 'photo')->exists();
+                $hasExistingSelfie = $existingApp && $existingApp->documents()->where('document_type', 'selfie_passport')->exists();
+                $hasExistingPassport = $existingApp && $existingApp->documents()->where('document_type', 'passport')->exists();
+                $hasExistingCnic = $existingApp && $existingApp->documents()->where('document_type', 'cnic')->exists();
+
+                if (!$hasExistingPhoto && !$request->hasFile('photo_file')) {
+                    $missingDocs['photo_file'] = 'A passport-style photo is required.';
+                }
+                if (!$hasExistingSelfie && !$request->hasFile('selfie_passport_file')) {
+                    $missingDocs['selfie_passport_file'] = 'A selfie while holding your passport is required.';
+                }
+                if (!$hasExistingPassport && !$request->hasFile('passport_file')) {
+                    $missingDocs['passport_file'] = 'A passport scan is required.';
+                }
+                if (!$hasExistingCnic && !$request->hasFile('cnic_file')) {
+                    $missingDocs['cnic_file'] = 'A CNIC/NICOP scan is required.';
+                }
+
+                if (!empty($missingDocs)) {
+                    throw \Illuminate\Validation\ValidationException::withMessages($missingDocs);
+                }
+
+                return $validated;
 
             case 3:
                 $rules = [
@@ -354,15 +436,28 @@ class PoliceCertificateController extends Controller
                     'spain_city' => 'required|string|max:100',
                     'spain_province' => 'required|string|max:100',
                     'spain_postal_code' => 'required|string|max:20',
-                ];
-                break;
-
-            case 6:
-                $rules = [
                     'email' => 'required|email|max:255',
                     'phone_spain' => 'required|string|max:20',
                     'whatsapp_number' => 'nullable|string|max:20',
                 ];
+                break;
+
+            case 6:
+                $signatureMethod = $request->input('signature_method', 'drawn');
+
+                if ($signatureMethod === 'drawn') {
+                    $rules = [
+                        'signature_data' => 'required|string',
+                        'signature_place' => 'required|string|max:200',
+                        'signature_date' => 'required|date',
+                        'signature_method' => 'required|in:drawn,uploaded',
+                    ];
+                } else {
+                    $rules = [
+                        'authorization_letter' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+                        'signature_method' => 'required|in:drawn,uploaded',
+                    ];
+                }
                 break;
 
             case 7:
@@ -410,6 +505,16 @@ class PoliceCertificateController extends Controller
 
     protected function handleStep2Documents(Request $request, $application)
     {
+        // Passport photo
+        if ($request->hasFile('photo_file')) {
+            $this->storeDocument($request->file('photo_file'), $application, 'photo');
+        }
+
+        // Selfie with passport
+        if ($request->hasFile('selfie_passport_file')) {
+            $this->storeDocument($request->file('selfie_passport_file'), $application, 'selfie_passport');
+        }
+
         // Passport
         if ($request->hasFile('passport_file')) {
             $this->storeDocument($request->file('passport_file'), $application, 'passport');
@@ -440,14 +545,93 @@ class PoliceCertificateController extends Controller
         ]);
     }
 
+    protected function handleAuthorizationLetter(Request $request, $application)
+    {
+        if ($request->hasFile('authorization_letter')) {
+            // Delete old authorization letter if exists
+            $application->documents()->where('document_type', 'authorization_letter')->each(function ($doc) {
+                if (Storage::disk('private')->exists($doc->file_path)) {
+                    Storage::disk('private')->delete($doc->file_path);
+                }
+                $doc->delete();
+            });
+
+            $this->storeDocument($request->file('authorization_letter'), $application, 'authorization_letter');
+        }
+    }
+
+    protected function generateSignedAuthorizationLetter(PoliceCertificateApplication $application): void
+    {
+        // Delete old authorization letter docs
+        $application->documents()->where('document_type', 'authorization_letter')->each(function ($doc) {
+            if (Storage::disk('private')->exists($doc->file_path)) {
+                Storage::disk('private')->delete($doc->file_path);
+            }
+            $doc->delete();
+        });
+
+        $pdf = Pdf::loadView('police-certificate.authorization-letter-pdf', [
+            'application' => $application,
+            'generatedDate' => $application->signature_date
+                ? $application->signature_date->format('d/m/Y')
+                : now()->format('d/m/Y'),
+            'signatureImage' => $application->signature_data,
+            'signaturePlace' => $application->signature_place,
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        $filename = 'authorization_letters/signed_' . $application->application_reference . '_' . time() . '.pdf';
+        Storage::disk('private')->put(
+            'police-certificates/' . $filename,
+            $pdf->output()
+        );
+
+        PoliceCertificateDocument::create([
+            'application_id' => $application->id,
+            'document_type' => 'authorization_letter',
+            'file_path' => 'police-certificates/' . $filename,
+            'original_filename' => 'Authorization_Letter_Signed_' . $application->application_reference . '.pdf',
+            'mime_type' => 'application/pdf',
+            'file_size' => Storage::disk('private')->size('police-certificates/' . $filename),
+        ]);
+    }
+
+    public function downloadAuthorizationLetter(Request $request)
+    {
+        $applicationId = $request->session()->get('pcc_application_id');
+
+        if (!$applicationId) {
+            return redirect()->route('police-certificate.step', ['step' => 1])
+                ->with('error', 'Please complete the previous steps first.');
+        }
+
+        $application = PoliceCertificateApplication::find($applicationId);
+
+        if (!$application) {
+            return redirect()->route('police-certificate.step', ['step' => 1])
+                ->with('error', 'Application not found.');
+        }
+
+        $pdf = Pdf::loadView('police-certificate.authorization-letter-pdf', [
+            'application' => $application,
+            'generatedDate' => now()->format('d/m/Y'),
+            'signatureImage' => null,
+            'signaturePlace' => null,
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        $filename = 'Authorization_Letter_' . ($application->application_reference ?? 'DRAFT') . '.pdf';
+
+        return $pdf->download($filename);
+    }
+
     protected function calculatePaymentAmount($serviceType, $currency)
     {
-        $prices = [
-            'normal' => ['gbp' => 100, 'eur' => 120],
-            'urgent' => ['gbp' => 150, 'eur' => 180],
-        ];
+        $pricing = config('certificate-services.services.uk-police.pricing.' . $currency);
 
-        return $prices[$serviceType][$currency] ?? 100;
+        return $pricing[$serviceType] ?? $pricing['normal'];
     }
 
     /**

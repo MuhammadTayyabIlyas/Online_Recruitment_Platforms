@@ -3,8 +3,12 @@
 return [
     'support_email' => 'support@placemenet.net',
     'legal_email' => 'legal@placemenet.net',
-    'whatsapp_number' => '+30 698 151 3600',
-    'whatsapp_link' => 'https://wa.me/447482036000?text=Hello%2C%20I%20am%20applying%20through%20Place%20Me%20Net%20and%20I%20am%20interested%20in%20this%20job%20opportunity.%20Kindly%20provide%20more%20details%20about%20the%20position.%20Thank%20you.',
+    'whatsapp_number' => '+44 7341 395 000',
+    'whatsapp_link' => 'https://wa.me/447341395000?text=Hello%2C%20I%20am%20applying%20through%20PlaceMeNet%20and%20I%20am%20interested%20in%20learning%20more%20about%20your%20services.%20Thank%20you.',
+
+    // Country-specific WhatsApp numbers
+    'whatsapp_spain' => '+34 639 444 410',
+    'whatsapp_spain_link' => 'https://wa.me/34639444410',
 
     'offices' => [
         [

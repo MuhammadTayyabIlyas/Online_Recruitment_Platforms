@@ -1,0 +1,63 @@
+/**
+ * Custom Filament Admin Panel Styles
+ * Fixes sidebar scrolling and layout issues
+ */
+
+/* Ensure sidebar takes full height and is a flex column */
+.fi-sidebar {
+    height: 100vh;
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header should not shrink */
+.fi-sidebar-header {
+    flex-shrink: 0;
+}
+
+/* Navigation area should scroll */
+.fi-sidebar-nav {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0; /* Important for flex scroll */
+    padding-bottom: 2rem;
+}
+
+/* Ensure navigation groups container allows scrolling */
+.fi-sidebar-nav-groups {
+    padding-bottom: 3rem;
+}
+
+/* Custom scrollbar for better visibility */
+.fi-sidebar-nav::-webkit-scrollbar {
+    width: 6px;
+}
+
+.fi-sidebar-nav::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+}
+
+.fi-sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.fi-sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode scrollbar */
+.dark .fi-sidebar-nav::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.dark .fi-sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.dark .fi-sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}

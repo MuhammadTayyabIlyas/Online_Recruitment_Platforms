@@ -34,6 +34,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/uk-police-certificate/payment-pdf/{reference}', [PoliceCertificateController::class, 'downloadPaymentPdf'])
         ->name('police-certificate.download-payment-pdf');
 
+    // Authorization letter download
+    Route::get('/uk-police-certificate/authorization-letter/download', [PoliceCertificateController::class, 'downloadAuthorizationLetter'])
+        ->name('police-certificate.download-authorization-letter');
+
     // Resume draft application
     Route::get('/uk-police-certificate/resume/{reference}', [PoliceCertificateController::class, 'resume'])
         ->name('police-certificate.resume');

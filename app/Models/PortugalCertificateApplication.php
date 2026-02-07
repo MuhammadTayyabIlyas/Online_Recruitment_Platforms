@@ -53,6 +53,11 @@ class PortugalCertificateApplication extends Model
         'admin_notes',
         'disclaimer_accepted_at',
         'submitted_at',
+        'signature_data',
+        'signature_place',
+        'signature_date',
+        'signature_method',
+        'authorization_letter_uploaded',
     ];
 
     protected $casts = [
@@ -65,6 +70,8 @@ class PortugalCertificateApplication extends Model
         'submitted_at' => 'datetime',
         'disclaimer_accepted_at' => 'datetime',
         'portugal_residence_history' => 'array',
+        'signature_date' => 'date',
+        'authorization_letter_uploaded' => 'boolean',
     ];
 
     protected static function boot()
@@ -91,6 +98,11 @@ class PortugalCertificateApplication extends Model
     public function verifier()
     {
         return $this->belongsTo(User::class, 'payment_verified_by');
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return $this->first_name . ' ' . ($this->middle_name ? $this->middle_name . ' ' : '') . $this->last_name;
     }
 
     public function getStatusLabelAttribute(): string

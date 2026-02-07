@@ -23,14 +23,14 @@ return [
             ],
             'pricing' => [
                 'gbp' => [
-                    'normal' => 100,
-                    'urgent' => 150,
+                    'normal' => 125,
+                    'urgent' => 175,
                     'currency_symbol' => '£',
                     'currency_code' => 'GBP',
                 ],
                 'eur' => [
-                    'normal' => 120,
-                    'urgent' => 180,
+                    'normal' => 150,
+                    'urgent' => 200,
                     'currency_symbol' => '€',
                     'currency_code' => 'EUR',
                 ],
@@ -59,23 +59,23 @@ return [
             'reference_prefix' => 'PRT',
             'brand_color' => '#059669', // Emerald
             'processing_times' => [
-                'normal' => '5-7 working days',
-                'urgent' => '2-3 working days',
+                'normal' => 'Up to 30 days',
+                'urgent' => '14 days',
             ],
             'pricing' => [
                 'eur' => [
-                    'normal' => 85,
-                    'urgent' => 130,
+                    'normal' => 200,
+                    'urgent' => 250,
                     'currency_symbol' => '€',
                     'currency_code' => 'EUR',
                 ],
             ],
             'bank_accounts' => [
                 'eur' => [
-                    'bank_name' => 'Millennium BCP',
+                    'bank_name' => 'Wise',
                     'account_name' => 'PLACEMENET I.K.E.',
-                    'iban' => 'PT50 0033 0000 0012345678901',
-                    'swift_bic' => 'BCOMPTPL',
+                    'iban' => 'BE10 9677 3176 2104',
+                    'swift_bic' => 'TRWIBEB1XXX',
                 ],
             ],
         ],
@@ -86,23 +86,23 @@ return [
             'reference_prefix' => 'GRC',
             'brand_color' => '#D97706', // Amber
             'processing_times' => [
-                'normal' => '5-7 working days',
-                'urgent' => '2-3 working days',
+                'normal' => 'Up to 30 days',
+                'urgent' => '15-20 days',
             ],
             'pricing' => [
                 'eur' => [
-                    'normal' => 75,
-                    'urgent' => 120,
+                    'normal' => 250,
+                    'urgent' => 350,
                     'currency_symbol' => '€',
                     'currency_code' => 'EUR',
                 ],
             ],
             'bank_accounts' => [
                 'eur' => [
-                    'bank_name' => 'National Bank of Greece',
+                    'bank_name' => 'Wise',
                     'account_name' => 'PLACEMENET I.K.E.',
-                    'iban' => 'GR00 0000 0000 0000 0000 0000 000',
-                    'swift_bic' => 'ETHNGRAA',
+                    'iban' => 'BE10 9677 3176 2104',
+                    'swift_bic' => 'TRWIBEB1XXX',
                 ],
             ],
         ],
@@ -118,7 +118,8 @@ return [
         'legal_name' => 'PLACEMENET I.K.E.',
         'email' => 'info@placemenet.com',
         'support_email' => 'support@placemenet.net',
-        'whatsapp' => '+3464867464',
+        'whatsapp' => '+34 639 444 410',
+        'whatsapp_spain' => '+34 639 444 410',
         'website' => 'https://placemenet.com',
     ],
 ];

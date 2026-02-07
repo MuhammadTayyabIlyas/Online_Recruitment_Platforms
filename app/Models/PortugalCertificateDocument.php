@@ -31,6 +31,8 @@ class PortugalCertificateDocument extends Model
             'residence_permit' => 'Residence Permit',
             'nif_document' => 'NIF Document',
             'receipt' => 'Payment Receipt',
+            'payment_details' => 'Payment Details PDF',
+            'authorization_letter' => 'Authorization Letter',
             default => ucfirst(str_replace('_', ' ', $this->document_type)),
         };
     }

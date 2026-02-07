@@ -28,6 +28,8 @@ class GreeceCertificateDocument extends Model
     {
         return match($this->document_type) {
             'passport' => 'Passport',
+            'passport_front' => 'Passport / ID - Front Side',
+            'passport_back' => 'Passport / ID - Back Side',
             'residence_permit' => 'Residence Permit',
             'authorization_letter' => 'Authorization Letter',
             'receipt' => 'Payment Receipt',

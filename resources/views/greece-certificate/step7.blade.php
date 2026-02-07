@@ -3,6 +3,196 @@
 @section('form-content')
 <!-- Step 7: Service & Payment -->
 <div class="space-y-6">
+
+    <!-- Review Your Information -->
+    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden" x-data="{ expanded: false }">
+        <button type="button" @click="expanded = !expanded"
+                class="w-full flex items-center justify-between px-6 py-4 bg-gradient-to-r from-amber-50 to-yellow-50 hover:from-amber-100 hover:to-yellow-100 transition min-h-[48px]">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 text-amber-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+                <span class="text-lg font-semibold text-gray-900">Review Your Information</span>
+            </div>
+            <svg class="w-5 h-5 text-gray-500 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </button>
+
+        <div x-show="expanded" x-cloak
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-2"
+             class="px-6 pb-6">
+            <!-- Step 1: Personal Information -->
+            <div class="py-4 border-b border-gray-100">
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-sm font-bold text-gray-700 uppercase tracking-wide">Personal Information</h4>
+                    <a href="{{ route('greece-certificate.step', ['step' => 1]) }}" class="text-amber-600 hover:text-amber-800 text-sm font-medium min-h-[44px] flex items-center">Edit</a>
+                </div>
+                <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                    <div>
+                        <span class="text-gray-500">Name:</span>
+                        <span class="text-gray-900 font-medium">{{ $application->first_name }} {{ $application->middle_name }} {{ $application->last_name }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Gender:</span>
+                        <span class="text-gray-900 font-medium">{{ ucfirst($application->gender ?? '') }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Date of Birth:</span>
+                        <span class="text-gray-900 font-medium">{{ $application->date_of_birth?->format('d/m/Y') }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Nationality:</span>
+                        <span class="text-gray-900 font-medium">{{ $application->nationality }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Place of Birth:</span>
+                        <span class="text-gray-900 font-medium">{{ $application->place_of_birth_city }}, {{ $application->place_of_birth_country }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Father's Name:</span>
+                        <span class="text-gray-900 font-medium">{{ $application->father_name }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Mother's Name:</span>
+                        <span class="text-gray-900 font-medium">{{ $application->mother_name }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Passport -->
+            <div class="py-4 border-b border-gray-100">
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-sm font-bold text-gray-700 uppercase tracking-wide">Identification Documents</h4>
+                    <a href="{{ route('greece-certificate.step', ['step' => 2]) }}" class="text-amber-600 hover:text-amber-800 text-sm font-medium min-h-[44px] flex items-center">Edit</a>
+                </div>
+                <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                    <div>
+                        <span class="text-gray-500">Passport No:</span>
+                        <span class="text-gray-900 font-medium font-mono">{{ $application->passport_number }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Place of Issue:</span>
+                        <span class="text-gray-900 font-medium">{{ $application->passport_place_of_issue }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Issue Date:</span>
+                        <span class="text-gray-900 font-medium">{{ $application->passport_issue_date?->format('d/m/Y') }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Expiry Date:</span>
+                        <span class="text-gray-900 font-medium">{{ $application->passport_expiry_date?->format('d/m/Y') }}</span>
+                    </div>
+                    @if($application->greece_afm)
+                    <div>
+                        <span class="text-gray-500">AFM:</span>
+                        <span class="text-gray-900 font-medium font-mono">{{ $application->greece_afm }}</span>
+                    </div>
+                    @endif
+                    @if($application->greece_amka)
+                    <div>
+                        <span class="text-gray-500">AMKA:</span>
+                        <span class="text-gray-900 font-medium font-mono">{{ $application->greece_amka }}</span>
+                    </div>
+                    @endif
+                    @php
+                        $docCount = $application->documents()->whereIn('document_type', ['passport_front', 'passport_back', 'passport', 'residence_permit'])->count();
+                    @endphp
+                    <div>
+                        <span class="text-gray-500">Documents:</span>
+                        <span class="text-green-700 font-medium">{{ $docCount }} uploaded</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Residence History -->
+            <div class="py-4 border-b border-gray-100">
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-sm font-bold text-gray-700 uppercase tracking-wide">Greece Residence History</h4>
+                    <a href="{{ route('greece-certificate.step', ['step' => 3]) }}" class="text-amber-600 hover:text-amber-800 text-sm font-medium min-h-[44px] flex items-center">Edit</a>
+                </div>
+                @if(is_array($application->greece_residence_history))
+                <div class="space-y-2 text-sm">
+                    @foreach($application->greece_residence_history as $residence)
+                    <div class="bg-gray-50 rounded p-2">
+                        <span class="text-gray-900 font-medium">{{ $residence['address'] ?? '' }}, {{ $residence['city'] ?? '' }}</span>
+                        <span class="text-gray-500 text-xs block">{{ $residence['from_date'] ?? '' }} - {{ $residence['to_date'] ?? 'Present' }}</span>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+            </div>
+
+            <!-- Step 4: Address -->
+            <div class="py-4 border-b border-gray-100">
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-sm font-bold text-gray-700 uppercase tracking-wide">Current Address</h4>
+                    <a href="{{ route('greece-certificate.step', ['step' => 4]) }}" class="text-amber-600 hover:text-amber-800 text-sm font-medium min-h-[44px] flex items-center">Edit</a>
+                </div>
+                <p class="text-sm text-gray-900">
+                    {{ $application->current_address_line1 }}
+                    @if($application->current_address_line2), {{ $application->current_address_line2 }}@endif<br>
+                    {{ $application->current_city }}, {{ $application->current_postal_code }}, {{ $application->current_country }}
+                </p>
+            </div>
+
+            <!-- Step 5: Contact -->
+            <div class="py-4 border-b border-gray-100">
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-sm font-bold text-gray-700 uppercase tracking-wide">Contact Information</h4>
+                    <a href="{{ route('greece-certificate.step', ['step' => 5]) }}" class="text-amber-600 hover:text-amber-800 text-sm font-medium min-h-[44px] flex items-center">Edit</a>
+                </div>
+                <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                    <div>
+                        <span class="text-gray-500">Email:</span>
+                        <span class="text-gray-900 font-medium">{{ $application->email }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Phone:</span>
+                        <span class="text-gray-900 font-medium">{{ $application->phone_number }}</span>
+                    </div>
+                    @if($application->whatsapp_number)
+                    <div>
+                        <span class="text-gray-500">WhatsApp:</span>
+                        <span class="text-gray-900 font-medium">{{ $application->whatsapp_number }}</span>
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Step 6: Authorization -->
+            <div class="py-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-sm font-bold text-gray-700 uppercase tracking-wide">Authorization Letter</h4>
+                    <a href="{{ route('greece-certificate.step', ['step' => 6]) }}" class="text-amber-600 hover:text-amber-800 text-sm font-medium min-h-[44px] flex items-center">Edit</a>
+                </div>
+                <div class="text-sm">
+                    @if($application->signature_method === 'drawn')
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Digitally Signed
+                        </span>
+                        @if($application->signature_place)
+                            <span class="text-gray-500 ml-2">at {{ $application->signature_place }}</span>
+                        @endif
+                    @elseif($application->authorization_letter_uploaded)
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            Uploaded
+                        </span>
+                    @else
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Pending
+                        </span>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Certificate Purpose -->
     <div class="bg-amber-50 rounded-lg p-4 mb-6">
         <h3 class="text-lg font-semibold text-gray-900 mb-2">Certificate Purpose</h3>
@@ -53,10 +243,10 @@
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <h4 class="text-lg font-bold text-gray-900">Normal Service</h4>
-                        <p class="text-sm text-gray-600">5-7 working days</p>
+                        <p class="text-sm text-gray-600">Up to 30 days</p>
                     </div>
                     <div class="text-right">
-                        <span class="text-2xl font-bold text-gray-900">75</span>
+                        <span class="text-2xl font-bold text-gray-900">250</span>
                         <span class="text-sm text-gray-600">EUR</span>
                     </div>
                 </div>
@@ -82,15 +272,15 @@
             <input type="radio" name="service_type" value="urgent" x-model="serviceType" class="sr-only peer">
             <div class="p-6 border-2 rounded-xl transition-all peer-checked:border-amber-500 peer-checked:bg-amber-50 hover:border-amber-300 relative overflow-hidden">
                 <div class="absolute top-3 right-3 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-full">
-                    POPULAR
+                    FASTER
                 </div>
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <h4 class="text-lg font-bold text-gray-900">Urgent Service</h4>
-                        <p class="text-sm text-gray-600">2-3 working days</p>
+                        <p class="text-sm text-gray-600">15-20 days</p>
                     </div>
                     <div class="text-right">
-                        <span class="text-2xl font-bold text-gray-900">120</span>
+                        <span class="text-2xl font-bold text-gray-900">350</span>
                         <span class="text-sm text-gray-600">EUR</span>
                     </div>
                 </div>
@@ -125,9 +315,10 @@
         </h3>
         <p class="text-sm text-gray-700 mb-4">After submitting your application, you will need to make a bank transfer to complete the process.</p>
         <div class="bg-white rounded-lg p-4 text-sm">
-            <p class="mb-2"><strong>Bank:</strong> National Bank of Greece</p>
-            <p class="mb-2"><strong>IBAN:</strong> GR00 0000 0000 0000 0000 0000 000</p>
-            <p class="mb-2"><strong>BIC/SWIFT:</strong> ETHNGRAA</p>
+            <p class="mb-2"><strong>Bank:</strong> Wise</p>
+            <p class="mb-2"><strong>Account Name:</strong> PLACEMENET I.K.E.</p>
+            <p class="mb-2"><strong>IBAN:</strong> BE10 9677 3176 2104</p>
+            <p class="mb-2"><strong>BIC/SWIFT:</strong> TRWIBEB1XXX</p>
             <p><strong>Reference:</strong> Your application reference will be shown after submission</p>
         </div>
     </div>

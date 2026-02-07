@@ -243,6 +243,52 @@
                 </div>
             </div>
 
+            <!-- Authorization / Signature Info -->
+            @if($application->authorization_letter_uploaded)
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-emerald-50 to-green-50 px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-bold text-gray-900 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                        </svg>
+                        Authorization Letter
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wide">Signature Method</p>
+                            <p class="text-sm font-medium text-gray-900">
+                                @if($application->signature_method === 'drawn')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Digitally Signed
+                                    </span>
+                                @elseif($application->signature_method === 'uploaded')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        Uploaded (Print & Sign)
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        Legacy Upload
+                                    </span>
+                                @endif
+                            </p>
+                        </div>
+                        @if($application->signature_method === 'drawn')
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wide">Signing Place</p>
+                            <p class="text-sm font-medium text-gray-900">{{ $application->signature_place ?? 'N/A' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wide">Signing Date</p>
+                            <p class="text-sm font-medium text-gray-900">{{ $application->signature_date?->format('M d, Y') ?? 'N/A' }}</p>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Uploaded Documents -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div class="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
@@ -283,7 +329,7 @@
                                             <p class="text-sm font-medium text-gray-900">{{ $document->original_filename }}</p>
                                             <p class="text-xs text-gray-500">
                                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 mr-2">
-                                                    {{ ucfirst(str_replace('_', ' ', $document->document_type)) }}
+                                                    {{ $document->document_type_label }}
                                                 </span>
                                                 {{ $document->created_at->format('M d, Y') }}
                                             </p>

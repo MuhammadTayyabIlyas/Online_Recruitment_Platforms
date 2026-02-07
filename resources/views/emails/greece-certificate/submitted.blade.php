@@ -83,7 +83,7 @@
                                 <tr>
                                     <td style="padding: 20px;">
                                         <h3 style="margin: 0 0 15px; color: #b45309; font-size: 16px; font-weight: 700;">
-                                            EUR Account Details (National Bank of Greece)
+                                            EUR Account Details (Wise)
                                         </h3>
                                         <table style="width: 100%; font-size: 14px;">
                                             <tr>
@@ -92,11 +92,11 @@
                                             </tr>
                                             <tr>
                                                 <td style="padding: 4px 0; color: #64748b;">IBAN:</td>
-                                                <td style="padding: 4px 0; color: #1e293b; font-weight: 600; font-family: monospace;">GR00 0000 0000 0000 0000 0000 000</td>
+                                                <td style="padding: 4px 0; color: #1e293b; font-weight: 600; font-family: monospace;">BE10 9677 3176 2104</td>
                                             </tr>
                                             <tr>
                                                 <td style="padding: 4px 0; color: #64748b;">SWIFT / BIC:</td>
-                                                <td style="padding: 4px 0; color: #1e293b; font-weight: 600; font-family: monospace;">ETHNGRAA</td>
+                                                <td style="padding: 4px 0; color: #1e293b; font-weight: 600; font-family: monospace;">TRWIBEB1XXX</td>
                                             </tr>
                                             <tr>
                                                 <td style="padding: 4px 0; color: #64748b;">Payment Reference:</td>

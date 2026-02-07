@@ -29,7 +29,7 @@
                 Phone Number <span class="text-red-500">*</span>
             </label>
             <input type="tel" name="phone_number" id="phone_number"
-                   value="{{ old('phone_number', $application->phone_number ?? '') }}"
+                   value="{{ old('phone_number', $application->phone_number ?? auth()->user()?->phone ?? '') }}"
                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 @error('phone_number') border-red-500 @enderror"
                    placeholder="+30 XXX XXX XXXX"
                    required>

@@ -289,7 +289,7 @@
                                             <p class="text-sm font-medium text-gray-900">{{ $document->original_filename }}</p>
                                             <p class="text-xs text-gray-500">
                                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 mr-2">
-                                                    {{ ucfirst(str_replace('_', ' ', $document->document_type)) }}
+                                                    {{ $document->document_type_label }}
                                                 </span>
                                                 {{ $document->created_at->format('M d, Y') }}
                                             </p>

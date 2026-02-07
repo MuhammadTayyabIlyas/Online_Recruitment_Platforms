@@ -303,13 +303,12 @@
             <label for="place_of_birth_country" class="block text-sm font-medium text-gray-700 mb-1">
                 Country of Birth <span class="text-red-500">*</span>
             </label>
-            <input type="text" name="place_of_birth_country" id="place_of_birth_country"
-                   value="{{ old('place_of_birth_country', $application->place_of_birth_country ?? '') }}"
-                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 @error('place_of_birth_country') border-red-500 @enderror"
-                   required>
-            @error('place_of_birth_country')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
+            <x-country-select
+                name="place_of_birth_country"
+                :value="old('place_of_birth_country', $application->place_of_birth_country ?? '')"
+                :required="true"
+                placeholder="Select country of birth"
+            />
         </div>
     </div>
 
@@ -318,13 +317,14 @@
         <label for="nationality" class="block text-sm font-medium text-gray-700 mb-1">
             Nationality <span class="text-red-500">*</span>
         </label>
-        <input type="text" name="nationality" id="nationality"
-               value="{{ old('nationality', $application->nationality ?? '') }}"
-               class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 @error('nationality') border-red-500 @enderror"
-               required>
-        @error('nationality')
-            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-        @enderror
+        <div class="w-full md:w-1/2">
+            <x-country-select
+                name="nationality"
+                :value="old('nationality', $application->nationality ?? '')"
+                :required="true"
+                placeholder="Select nationality"
+            />
+        </div>
     </div>
 </div>
 @endsection

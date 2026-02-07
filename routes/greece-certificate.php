@@ -34,6 +34,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/greece-certificate/payment-pdf/{reference}', [GreeceCertificateController::class, 'downloadPaymentPdf'])
         ->name('greece-certificate.download-payment-pdf');
 
+    // Pre-filled Authorization Letter PDF download
+    Route::get('/greece-penal-record/authorization-letter/download', [GreeceCertificateController::class, 'downloadAuthorizationLetter'])
+        ->name('greece-certificate.download-authorization-letter');
+
     // Resume draft application
     Route::get('/greece-penal-record/resume/{reference}', [GreeceCertificateController::class, 'resume'])
         ->name('greece-certificate.resume');
@@ -44,4 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/services/greece-certificate/receipt/{reference}', [GreeceCertificateController::class, 'uploadReceipt'])
         ->name('greece-certificate.receipt.upload');
+
+    Route::delete('/services/greece-certificate/receipt/{reference}/{documentId}', [GreeceCertificateController::class, 'deleteReceipt'])
+        ->name('greece-certificate.receipt.delete');
 });

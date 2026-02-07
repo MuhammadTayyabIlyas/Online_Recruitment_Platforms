@@ -101,6 +101,16 @@
             </p>
         </div>
 
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-xl p-6 space-y-4 border border-blue-200">
+            <h2 class="text-2xl font-semibold text-gray-900">Multiple Jurisdictions</h2>
+            <p class="text-gray-600">
+                PlaceMeNet operates through multiple legal entities in different jurisdictions. The data controller for your personal data depends on the service you access and will be identified on the relevant service page. Data is processed in accordance with applicable data protection laws, including GDPR and, where applicable, UK GDPR.
+            </p>
+            <p class="text-gray-600">
+                The applicable legal entity, governing law, and jurisdiction are determined by the specific service page accessed by the user. Users must review the jurisdiction notice on each service page before proceeding.
+            </p>
+        </div>
+
         <div class="bg-white rounded-2xl shadow-xl p-6 space-y-4">
             <h2 class="text-2xl font-semibold text-gray-900">Updates</h2>
             <p class="text-gray-600">

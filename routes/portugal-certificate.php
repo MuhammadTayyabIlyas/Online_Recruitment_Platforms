@@ -20,11 +20,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('portugal-certificate.accept-disclaimer');
 
     Route::get('/portugal-criminal-record/step/{step}', [PortugalCertificateController::class, 'showStep'])
-        ->where('step', '[1-6]')
+        ->where('step', '[1-7]')
         ->name('portugal-certificate.step');
 
     Route::post('/portugal-criminal-record/step/{step}', [PortugalCertificateController::class, 'processStep'])
-        ->where('step', '[1-6]')
+        ->where('step', '[1-7]')
         ->name('portugal-certificate.process-step');
 
     Route::get('/portugal-criminal-record/success', [PortugalCertificateController::class, 'success'])
@@ -33,6 +33,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Payment PDF download
     Route::get('/portugal-certificate/payment-pdf/{reference}', [PortugalCertificateController::class, 'downloadPaymentPdf'])
         ->name('portugal-certificate.download-payment-pdf');
+
+    // Authorization letter download
+    Route::get('/portugal-criminal-record/authorization-letter/download', [PortugalCertificateController::class, 'downloadAuthorizationLetter'])
+        ->name('portugal-certificate.download-authorization-letter');
 
     // Resume draft application
     Route::get('/portugal-criminal-record/resume/{reference}', [PortugalCertificateController::class, 'resume'])
@@ -44,4 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/services/portugal-certificate/receipt/{reference}', [PortugalCertificateController::class, 'uploadReceipt'])
         ->name('portugal-certificate.receipt.upload');
+
+    Route::delete('/services/portugal-certificate/receipt/{reference}/{documentId}', [PortugalCertificateController::class, 'deleteReceipt'])
+        ->name('portugal-certificate.receipt.delete');
 });

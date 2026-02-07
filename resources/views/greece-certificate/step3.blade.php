@@ -2,8 +2,12 @@
 
 @section('form-content')
 <!-- Step 3: Greece Residence History -->
+@php
+    $existingResidences = is_array($application->greece_residence_history) ? $application->greece_residence_history : [];
+    $defaultResidences = count($existingResidences) > 0 ? $existingResidences : [['from_date' => '', 'to_date' => '', 'address' => '', 'city' => '']];
+@endphp
 <div class="space-y-6" x-data="{
-    residences: {{ json_encode(old('greece_residence_history', $application->greece_residence_history ?? [['from_date' => '', 'to_date' => '', 'address' => '', 'city' => '']])) }},
+    residences: {{ json_encode(old('greece_residence_history', $defaultResidences)) }},
     addResidence() {
         this.residences.push({ from_date: '', to_date: '', address: '', city: '' });
     },

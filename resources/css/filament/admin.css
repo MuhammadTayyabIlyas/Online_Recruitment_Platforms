@@ -1,0 +1,109 @@
+/**
+ * Custom Filament Admin Panel Styles
+ * Fixes sidebar layout and user menu overlap issues
+ */
+
+/* Ensure sidebar navigation has proper spacing and doesn't overlap with user menu */
+.fi-sidebar {
+    display: flex;
+    flex-direction: column;
+}
+
+.fi-sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 1rem;
+}
+
+/* Add proper spacing at the bottom of navigation to prevent overlap with user menu */
+.fi-sidebar-nav > ul {
+    padding-bottom: 5rem;
+}
+
+/* Fix user menu positioning at bottom of sidebar */
+.fi-sidebar-footer {
+    position: sticky;
+    bottom: 0;
+    background: inherit;
+    border-top: 1px solid rgba(var(--gray-200), 1);
+    padding: 0.75rem 1rem;
+    margin-top: auto;
+    z-index: 10;
+}
+
+/* Dark mode border adjustment */
+.dark .fi-sidebar-footer {
+    border-top-color: rgba(var(--gray-700), 1);
+}
+
+/* Ensure the user menu button is properly styled */
+.fi-sidebar-footer .fi-dropdown-trigger {
+    width: 100%;
+    justify-content: flex-start;
+}
+
+/* User info text truncation for long emails */
+.fi-sidebar-footer .fi-dropdown-trigger span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 180px;
+}
+
+/* Improve navigation group headers visibility */
+.fi-sidebar-group-label {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    color: rgba(var(--gray-500), 1);
+    padding: 0.75rem 1rem 0.5rem;
+}
+
+/* Navigation items spacing */
+.fi-sidebar-item {
+    margin: 0.125rem 0;
+}
+
+/* Active navigation item styling */
+.fi-sidebar-item-active {
+    background-color: rgba(var(--primary-50), 1);
+    border-radius: 0.5rem;
+}
+
+.dark .fi-sidebar-item-active {
+    background-color: rgba(var(--primary-900), 0.3);
+}
+
+/* Collapsed sidebar improvements */
+.fi-sidebar-collapsed .fi-sidebar-footer {
+    padding: 0.5rem;
+    justify-content: center;
+}
+
+.fi-sidebar-collapsed .fi-sidebar-footer .fi-dropdown-trigger span {
+    display: none;
+}
+
+/* Scrollbar styling for sidebar */
+.fi-sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.fi-sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.fi-sidebar-nav::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--gray-300), 1);
+    border-radius: 2px;
+}
+
+.dark .fi-sidebar-nav::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--gray-600), 1);
+}
+
+/* Ensure content area doesn't conflict with sidebar */
+.fi-main-ctn {
+    min-height: 100vh;
+}

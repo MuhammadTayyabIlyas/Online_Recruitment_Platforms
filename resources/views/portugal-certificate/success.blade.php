@@ -37,7 +37,7 @@
                         </div>
                         <div>
                             <span class="text-gray-500">Service Type:</span>
-                            <span class="font-medium text-gray-900 ml-2">{{ $application->service_type === 'urgent' ? 'Urgent (2-3 days)' : 'Normal (5-7 days)' }}</span>
+                            <span class="font-medium text-gray-900 ml-2">{{ $application->service_type === 'urgent' ? 'Urgent (14 days)' : 'Normal (Up to 30 days)' }}</span>
                         </div>
                         <div>
                             <span class="text-gray-500">Purpose:</span>
@@ -78,9 +78,10 @@
                     <p class="text-sm text-amber-700 mb-4">Please make a bank transfer to complete your application:</p>
 
                     <div class="bg-white rounded-lg p-4 text-sm space-y-2">
-                        <p><strong>Bank:</strong> Millennium BCP</p>
-                        <p><strong>IBAN:</strong> PT50 0033 0000 0012345678901</p>
-                        <p><strong>BIC/SWIFT:</strong> BCOMPTPL</p>
+                        <p><strong>Bank:</strong> Wise</p>
+                        <p><strong>Account Name:</strong> PLACEMENET I.K.E.</p>
+                        <p><strong>IBAN:</strong> BE10 9677 3176 2104</p>
+                        <p><strong>BIC/SWIFT:</strong> TRWIBEB1XXX</p>
                         <p><strong>Amount:</strong> {{ number_format($application->payment_amount, 2) }} EUR</p>
                         <p><strong>Reference:</strong> {{ $application->application_reference }}</p>
                     </div>

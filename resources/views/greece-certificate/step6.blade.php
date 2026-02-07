@@ -2,138 +2,175 @@
 
 @section('form-content')
 <!-- Step 6: Authorization Letter -->
-<div class="space-y-6">
+<div class="space-y-6" x-data="{
+    activeTab: 'sign-online',
+    signatureMethod: 'drawn'
+}">
     <!-- Important Notice -->
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
+    <div class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6">
         <div class="flex items-start">
             <div class="flex-shrink-0">
-                <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div class="ml-4">
-                <h3 class="text-lg font-bold text-blue-900 mb-2">Authorization Letter Required</h3>
-                <p class="text-blue-700">
-                    To apply for a Greece Penal Record Certificate on your behalf, we require a signed authorization letter.
-                    Please follow the steps below to complete this requirement.
+                <h3 class="text-lg font-bold text-green-900 mb-2">Authorization Letter</h3>
+                <p class="text-green-700">
+                    You can <strong>sign directly on your screen</strong> (fastest!) or download the letter, print, sign by hand, and upload it.
                 </p>
             </div>
         </div>
     </div>
 
-    <!-- Step-by-Step Instructions -->
-    <div class="bg-amber-50 rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">How to Complete the Authorization Letter</h3>
+    <!-- Tab Selector -->
+    <div class="flex rounded-lg border border-gray-200 overflow-hidden">
+        <button type="button"
+                @click="activeTab = 'sign-online'; signatureMethod = 'drawn'"
+                :class="activeTab === 'sign-online' ? 'bg-green-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
+                class="flex-1 px-4 py-3 text-sm font-medium transition min-h-[48px] flex items-center justify-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+            </svg>
+            Sign Online (Recommended)
+        </button>
+        <button type="button"
+                @click="activeTab = 'upload'; signatureMethod = 'uploaded'"
+                :class="activeTab === 'upload' ? 'bg-green-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
+                class="flex-1 px-4 py-3 text-sm font-medium transition min-h-[48px] flex items-center justify-center border-l border-gray-200">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+            </svg>
+            Download, Print & Sign
+        </button>
+    </div>
 
-        <div class="space-y-4">
-            <!-- Step 1: Download -->
-            <div class="flex items-start">
-                <div class="flex-shrink-0 w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                    1
+    <input type="hidden" name="signature_method" :value="signatureMethod">
+
+    <!-- TAB A: Sign Online -->
+    <div x-show="activeTab === 'sign-online'" x-cloak class="space-y-6">
+        <div class="bg-white border-2 border-gray-200 rounded-xl p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Sign Your Authorization Letter</h3>
+            <p class="text-sm text-gray-600 mb-6">Your letter will be automatically generated with your details and this signature.</p>
+
+            <!-- Signing Place -->
+            <div class="mb-4">
+                <label for="signature_place" class="block text-sm font-medium text-gray-700 mb-1">
+                    Signing Place <span class="text-red-500">*</span>
+                </label>
+                <input type="text" name="signature_place" id="signature_place"
+                       value="{{ old('signature_place', ($application->current_city ?? '') . ($application->current_country ? ', ' . $application->current_country : '')) }}"
+                       class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 @error('signature_place') border-red-500 @enderror"
+                       placeholder="e.g., Athens, Greece">
+                @error('signature_place')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Date (auto-filled, read-only display) -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Date
+                </label>
+                <div class="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 w-full md:w-1/2">
+                    {{ now()->format('d/m/Y') }}
                 </div>
-                <div class="ml-4 flex-1">
-                    <h4 class="font-medium text-gray-900">Download the Authorization Letter Template</h4>
-                    <p class="text-sm text-gray-600 mb-3">Click the button below to download our official authorization letter template.</p>
-                    <a href="{{ asset('assets/documents/greece-authorization-letter.pdf') }}"
-                       target="_blank"
-                       download="greece-authorization-letter.pdf"
-                       class="inline-flex items-center px-4 py-2 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-700 transition shadow-sm">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                <input type="hidden" name="signature_date" value="{{ now()->format('Y-m-d') }}">
+            </div>
+
+            <!-- Signature Canvas -->
+            <div x-data="signaturePadComponent()" x-init="initSignaturePad()">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Your Signature <span class="text-red-500">*</span>
+                </label>
+                <div class="border-2 border-gray-300 rounded-lg bg-white overflow-hidden" :class="isEmpty ? '' : 'border-green-400'">
+                    <canvas x-ref="signatureCanvas" class="w-full touch-none" style="height: 200px;"></canvas>
+                </div>
+                <div class="flex items-center justify-between mt-2">
+                    <p class="text-xs text-gray-500">Use your finger or mouse to sign above</p>
+                    <button type="button" @click="clearSignature()"
+                            class="inline-flex items-center px-3 py-1.5 text-sm text-red-600 hover:text-red-800 border border-red-200 rounded-lg hover:bg-red-50 transition min-h-[44px]">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                         </svg>
-                        Download Authorization Letter
-                    </a>
+                        Clear Signature
+                    </button>
                 </div>
-            </div>
 
-            <!-- Step 2: Fill -->
-            <div class="flex items-start">
-                <div class="flex-shrink-0 w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                    2
-                </div>
-                <div class="ml-4">
-                    <h4 class="font-medium text-gray-900">Fill in Your Details</h4>
-                    <p class="text-sm text-gray-600">Complete all required fields in the authorization letter with your personal information.</p>
-                    <ul class="mt-2 text-sm text-gray-600 list-disc list-inside space-y-1">
-                        <li>Full name (as per passport)</li>
-                        <li>Date of birth</li>
-                        <li>Passport number</li>
-                        <li>Current address</li>
-                    </ul>
-                </div>
-            </div>
+                <input type="hidden" name="signature_data" x-ref="signatureData">
 
-            <!-- Step 3: Sign -->
-            <div class="flex items-start">
-                <div class="flex-shrink-0 w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                    3
-                </div>
-                <div class="ml-4">
-                    <h4 class="font-medium text-gray-900">Sign the Letter</h4>
-                    <p class="text-sm text-gray-600">Sign and date the authorization letter. You can:</p>
-                    <ul class="mt-2 text-sm text-gray-600 list-disc list-inside space-y-1">
-                        <li>Print, sign by hand, and scan/photograph</li>
-                        <li>Use a digital signature if available</li>
-                    </ul>
-                </div>
+                @error('signature_data')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
             </div>
+        </div>
 
-            <!-- Step 4: Upload -->
-            <div class="flex items-start">
-                <div class="flex-shrink-0 w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                    4
-                </div>
-                <div class="ml-4">
-                    <h4 class="font-medium text-gray-900">Upload the Completed Letter</h4>
-                    <p class="text-sm text-gray-600">Upload the signed authorization letter using the form below.</p>
-                </div>
-            </div>
+        <!-- What will be generated info -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <p class="text-sm text-blue-800">
+                <strong>What happens next:</strong> We'll generate your authorization letter with all your pre-filled details (name, passport, address) plus your signature, date, and signing place. The completed PDF is stored with your application.
+            </p>
         </div>
     </div>
 
-    <!-- Upload Section -->
-    <div class="bg-white border-2 border-gray-200 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Upload Signed Authorization Letter</h3>
+    <!-- TAB B: Download, Print & Sign -->
+    <div x-show="activeTab === 'upload'" x-cloak class="space-y-6">
+        <div class="bg-white border border-gray-200 rounded-xl p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">Complete in 3 Simple Steps</h3>
 
-        <div>
-            <label for="authorization_letter" class="block text-sm font-medium text-gray-700 mb-1">
-                Authorization Letter <span class="text-red-500">*</span>
-            </label>
-            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-amber-400 transition @error('authorization_letter') border-red-500 @enderror">
-                <div class="space-y-1 text-center">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                    <div class="flex text-sm text-gray-600">
-                        <label for="authorization_letter" class="relative cursor-pointer bg-white rounded-md font-medium text-amber-600 hover:text-amber-500">
-                            <span>Upload signed letter</span>
-                            <input id="authorization_letter" name="authorization_letter" type="file" class="sr-only" accept=".pdf,.jpg,.jpeg,.png" required>
-                        </label>
-                        <p class="pl-1">or drag and drop</p>
+            <div class="space-y-6">
+                <!-- Step 1: Download -->
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-lg">
+                        1
                     </div>
-                    <p class="text-xs text-gray-500">PDF, JPG, PNG up to 5MB</p>
+                    <div class="ml-4 flex-1">
+                        <h4 class="font-semibold text-gray-900 text-lg">Download Your Pre-filled Letter</h4>
+                        <p class="text-gray-600 mt-1 mb-3">Your authorization letter is ready with all your details pre-filled. Just download it!</p>
+                        <a href="{{ route('greece-certificate.download-authorization-letter') }}"
+                           class="inline-flex items-center px-5 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition shadow-sm min-h-[48px]">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            Download Pre-filled Authorization Letter
+                        </a>
+                    </div>
                 </div>
-            </div>
-            @error('authorization_letter')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
-        </div>
 
-        <!-- File Preview -->
-        <div id="file-preview" class="mt-4 hidden">
-            <div class="flex items-center p-3 bg-amber-50 rounded-lg">
-                <svg class="w-8 h-8 text-amber-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-                <div class="flex-1">
-                    <p id="file-name" class="text-sm font-medium text-gray-900"></p>
-                    <p id="file-size" class="text-xs text-gray-500"></p>
+                <!-- Divider -->
+                <div class="border-l-2 border-green-200 ml-5 h-4"></div>
+
+                <!-- Step 2: Sign -->
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-lg">
+                        2
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <h4 class="font-semibold text-gray-900 text-lg">Print & Sign</h4>
+                        <p class="text-gray-600 mt-1">Print the letter and <strong>sign it by hand</strong> in the signature box. Then scan or take a clear photo.</p>
+                    </div>
                 </div>
-                <button type="button" id="remove-file" class="text-red-500 hover:text-red-700">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
+
+                <!-- Divider -->
+                <div class="border-l-2 border-green-200 ml-5 h-4"></div>
+
+                <!-- Step 3: Upload -->
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-lg">
+                        3
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <h4 class="font-semibold text-gray-900 text-lg">Upload Below</h4>
+                        <p class="text-gray-600 mt-1 mb-4">Upload your signed authorization letter.</p>
+
+                        <x-document-upload
+                            name="authorization_letter"
+                            label="Signed Authorization Letter"
+                            :required="false"
+                            help-text="PDF, JPG, PNG up to 5MB"
+                        />
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -155,34 +192,65 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@5.0.4/dist/signature_pad.umd.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const fileInput = document.getElementById('authorization_letter');
-    const filePreview = document.getElementById('file-preview');
-    const fileName = document.getElementById('file-name');
-    const fileSize = document.getElementById('file-size');
-    const removeFile = document.getElementById('remove-file');
+function signaturePadComponent() {
+    return {
+        signaturePad: null,
+        isEmpty: true,
 
-    fileInput.addEventListener('change', function(e) {
-        if (this.files && this.files[0]) {
-            const file = this.files[0];
-            fileName.textContent = file.name;
-            fileSize.textContent = formatFileSize(file.size);
-            filePreview.classList.remove('hidden');
+        initSignaturePad() {
+            const canvas = this.$refs.signatureCanvas;
+            this.resizeCanvas(canvas);
+            this.signaturePad = new SignaturePad(canvas, {
+                backgroundColor: 'rgb(255, 255, 255)',
+                penColor: 'rgb(0, 0, 0)',
+            });
+
+            this.signaturePad.addEventListener('endStroke', () => {
+                this.isEmpty = this.signaturePad.isEmpty();
+                this.$refs.signatureData.value = this.signaturePad.toDataURL('image/png');
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                const data = this.signaturePad.toData();
+                this.resizeCanvas(canvas);
+                this.signaturePad.fromData(data);
+            });
+        },
+
+        resizeCanvas(canvas) {
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * ratio;
+            canvas.height = rect.height * ratio;
+            canvas.getContext('2d').scale(ratio, ratio);
+        },
+
+        clearSignature() {
+            this.signaturePad.clear();
+            this.isEmpty = true;
+            this.$refs.signatureData.value = '';
         }
-    });
+    }
+}
 
-    removeFile.addEventListener('click', function() {
-        fileInput.value = '';
-        filePreview.classList.add('hidden');
-    });
-
-    function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+// Intercept form submission to populate signature data
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const methodInput = form.querySelector('input[name="signature_method"]');
+            if (methodInput && methodInput.value === 'drawn') {
+                const sigData = form.querySelector('input[name="signature_data"]');
+                if (!sigData || !sigData.value) {
+                    e.preventDefault();
+                    alert('Please sign the authorization letter before continuing.');
+                    return false;
+                }
+            }
+        });
     }
 });
 </script>

@@ -2,8 +2,12 @@
 
 @section('form-content')
 <!-- Step 3: Portugal Residence History -->
+@php
+    $existingResidences = is_array($application->portugal_residence_history) ? $application->portugal_residence_history : [];
+    $defaultResidences = count($existingResidences) > 0 ? $existingResidences : [['from_date' => '', 'to_date' => '', 'address' => '', 'city' => '']];
+@endphp
 <div class="space-y-6" x-data="{
-    residences: {{ json_encode(old('portugal_residence_history', $application->portugal_residence_history ?? [['from_date' => '', 'to_date' => '', 'address' => '', 'city' => '']])) }},
+    residences: {{ json_encode(old('portugal_residence_history', $defaultResidences)) }},
     addResidence() {
         this.residences.push({ from_date: '', to_date: '', address: '', city: '' });
     },
@@ -95,7 +99,7 @@
     </button>
 
     <!-- Social Security Number -->
-    <div class="mt-8">
+    <div class="mt-8" x-data="{ noNiss: {{ old('no_portugal_social_security_number', $application->no_portugal_social_security_number ?? false) ? 'true' : 'false' }} }">
         <div class="bg-gray-50 rounded-lg p-4 mb-4">
             <h3 class="text-lg font-semibold text-gray-900 mb-2">Social Security (Optional)</h3>
             <p class="text-sm text-gray-600">If you have a Portuguese social security number (NISS), please provide it.</p>
@@ -108,7 +112,20 @@
             <input type="text" name="portugal_social_security_number" id="portugal_social_security_number"
                    value="{{ old('portugal_social_security_number', $application->portugal_social_security_number ?? '') }}"
                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                   placeholder="11 digits">
+                   :class="{ 'bg-gray-100': noNiss }"
+                   :disabled="noNiss"
+                   placeholder="e.g., 12345678901">
+            <p class="mt-1 text-xs text-gray-500">11-digit social security number issued by Segurança Social</p>
+
+            <!-- I don't have this checkbox -->
+            <div class="mt-2">
+                <label class="flex items-center text-sm text-gray-600 cursor-pointer hover:text-gray-800 min-h-[44px]">
+                    <input type="checkbox" name="no_portugal_social_security_number" value="1"
+                           x-model="noNiss"
+                           class="h-4 w-4 text-green-600 border-gray-300 rounded mr-2 cursor-pointer">
+                    I don't have this information
+                </label>
+            </div>
         </div>
     </div>
 </div>

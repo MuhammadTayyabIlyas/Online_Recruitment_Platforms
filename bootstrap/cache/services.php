@@ -49,10 +49,11 @@
     45 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     46 => 'Termwind\\Laravel\\TermwindServiceProvider',
     47 => 'RyanChandler\\BladeCaptureDirective\\BladeCaptureDirectiveServiceProvider',
-    48 => 'Spatie\\MediaLibrary\\MediaLibraryServiceProvider',
-    49 => 'Spatie\\Permission\\PermissionServiceProvider',
-    50 => 'App\\Providers\\AppServiceProvider',
-    51 => 'App\\Providers\\TelescopeServiceProvider',
+    48 => 'SimpleSoftwareIO\\QrCode\\QrCodeServiceProvider',
+    49 => 'Spatie\\MediaLibrary\\MediaLibraryServiceProvider',
+    50 => 'Spatie\\Permission\\PermissionServiceProvider',
+    51 => 'App\\Providers\\AppServiceProvider',
+    52 => 'App\\Providers\\TelescopeServiceProvider',
   ),
   'eager' => 
   array (
@@ -88,10 +89,11 @@
     29 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     30 => 'Termwind\\Laravel\\TermwindServiceProvider',
     31 => 'RyanChandler\\BladeCaptureDirective\\BladeCaptureDirectiveServiceProvider',
-    32 => 'Spatie\\MediaLibrary\\MediaLibraryServiceProvider',
-    33 => 'Spatie\\Permission\\PermissionServiceProvider',
-    34 => 'App\\Providers\\AppServiceProvider',
-    35 => 'App\\Providers\\TelescopeServiceProvider',
+    32 => 'SimpleSoftwareIO\\QrCode\\QrCodeServiceProvider',
+    33 => 'Spatie\\MediaLibrary\\MediaLibraryServiceProvider',
+    34 => 'Spatie\\Permission\\PermissionServiceProvider',
+    35 => 'App\\Providers\\AppServiceProvider',
+    36 => 'App\\Providers\\TelescopeServiceProvider',
   ),
   'deferred' => 
   array (

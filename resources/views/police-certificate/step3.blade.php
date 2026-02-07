@@ -2,15 +2,20 @@
 
 @section('form-content')
 <!-- Step 3: UK Residence History -->
-<div class="space-y-6" x-data="{ residences: {{ json_encode(old('uk_residence_history', $application->uk_residence_history ?? [['entry_date' => '', 'exit_date' => '', 'visa_category' => '', 'notes' => '']])) }} }">
+@php
+    $existingResidences = is_array($application->uk_residence_history) ? $application->uk_residence_history : [];
+    $defaultResidences = count($existingResidences) > 0 ? $existingResidences : [['entry_date' => '', 'exit_date' => '', 'visa_category' => '', 'notes' => '']];
+@endphp
+<div class="space-y-6" x-data="{ residences: {{ json_encode(old('uk_residence_history', $defaultResidences)) }} }">
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
         <div class="flex">
             <svg class="w-5 h-5 text-blue-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             <div class="ml-3">
+                <h4 class="text-sm font-medium text-blue-800 mb-1">UK Residence Requirements</h4>
                 <p class="text-sm text-blue-700">
-                    Add each period you stayed in the UK. Include all visa categories you held.
+                    Include <strong>all periods</strong> you lived in the UK, even short stays. Add each visa category you held during your time in the UK.
                 </p>
             </div>
         </div>
@@ -91,17 +96,39 @@
     </button>
 
     <!-- UK National Insurance Number -->
-    <div class="mt-6">
-        <label for="uk_national_insurance_number" class="block text-sm font-medium text-gray-700 mb-1">
-            UK National Insurance Number (if available)
-        </label>
-        <input type="text" name="uk_national_insurance_number" id="uk_national_insurance_number" 
-               value="{{ old('uk_national_insurance_number', $application->uk_national_insurance_number ?? '') }}"
-               class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-               placeholder="e.g., AB123456C">
-        @error('uk_national_insurance_number')
-            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-        @enderror
+    <div class="mt-6 bg-gray-50 rounded-lg p-6" x-data="{ noNiNumber: {{ old('no_uk_national_insurance_number', $application->no_uk_national_insurance_number ?? false) ? 'true' : 'false' }} }">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            UK National Insurance Number
+        </h3>
+
+        <div>
+            <label for="uk_national_insurance_number" class="block text-sm font-medium text-gray-700 mb-1">
+                National Insurance Number
+            </label>
+            <input type="text" name="uk_national_insurance_number" id="uk_national_insurance_number"
+                   value="{{ old('uk_national_insurance_number', $application->uk_national_insurance_number ?? '') }}"
+                   class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                   :class="{ 'bg-gray-100': noNiNumber }"
+                   :disabled="noNiNumber"
+                   placeholder="e.g., AB123456C">
+            <p class="mt-1 text-xs text-gray-500">Found on payslips, P60, or HMRC letters. Format: 2 letters, 6 numbers, 1 letter (e.g., AB123456C)</p>
+            @error('uk_national_insurance_number')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+
+            <!-- I don't have this checkbox -->
+            <div class="mt-3">
+                <label class="flex items-center text-sm text-gray-600 cursor-pointer hover:text-gray-800 min-h-[44px]">
+                    <input type="checkbox" name="no_uk_national_insurance_number" value="1"
+                           x-model="noNiNumber"
+                           class="h-4 w-4 text-blue-600 border-gray-300 rounded mr-2 cursor-pointer">
+                    I don't have this information
+                </label>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

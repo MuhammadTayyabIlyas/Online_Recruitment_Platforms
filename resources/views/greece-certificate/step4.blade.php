@@ -65,13 +65,14 @@
         <label for="current_country" class="block text-sm font-medium text-gray-700 mb-1">
             Country <span class="text-red-500">*</span>
         </label>
-        <input type="text" name="current_country" id="current_country"
-               value="{{ old('current_country', $application->current_country ?? 'Greece') }}"
-               class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 @error('current_country') border-red-500 @enderror"
-               required>
-        @error('current_country')
-            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-        @enderror
+        <div class="w-full md:w-1/2">
+            <x-country-select
+                name="current_country"
+                :value="old('current_country', $application->current_country ?? 'Greece')"
+                :required="true"
+                placeholder="Select country"
+            />
+        </div>
     </div>
 
     <!-- Info Box -->

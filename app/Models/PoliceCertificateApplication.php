@@ -52,6 +52,11 @@ class PoliceCertificateApplication extends Model
         'submitted_at',
         'admin_notes',
         'disclaimer_accepted_at',
+        'signature_data',
+        'signature_place',
+        'signature_date',
+        'signature_method',
+        'authorization_letter_uploaded',
     ];
 
     protected $casts = [
@@ -64,6 +69,8 @@ class PoliceCertificateApplication extends Model
         'disclaimer_accepted_at' => 'datetime',
         'uk_residence_history' => 'array',
         'uk_address_history' => 'array',
+        'signature_date' => 'date',
+        'authorization_letter_uploaded' => 'boolean',
     ];
 
     protected static function boot()
@@ -154,5 +161,15 @@ class PoliceCertificateApplication extends Model
     public function receiptDocument()
     {
         return $this->documents()->where('document_type', 'receipt')->first();
+    }
+
+    public function photoDocument()
+    {
+        return $this->documents()->where('document_type', 'photo')->first();
+    }
+
+    public function selfiePassportDocument()
+    {
+        return $this->documents()->where('document_type', 'selfie_passport')->first();
     }
 }

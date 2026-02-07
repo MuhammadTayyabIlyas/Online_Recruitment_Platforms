@@ -30,7 +30,11 @@ class PoliceCertificateDocument extends Model
             'passport' => 'Passport',
             'cnic' => 'CNIC/NICOP',
             'brp' => 'UK BRP/Visa',
+            'photo' => 'Passport Photo (White BG)',
+            'selfie_passport' => 'Selfie with Passport',
             'receipt' => 'Payment Receipt',
+            'payment_details' => 'Payment Details PDF',
+            'authorization_letter' => 'Authorization Letter',
             'additional' => 'Additional Document',
         ];
         return $labels[$this->document_type] ?? $this->document_type;

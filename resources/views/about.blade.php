@@ -87,6 +87,73 @@
                 </div>
             </div>
         </div>
+
+        <!-- Legal Notice Section -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8 space-y-6">
+            <div class="flex items-center mb-2">
+                <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center mr-4">
+                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-900">{{ __('General Legal Notice') }}</h3>
+            </div>
+
+            <div class="space-y-4 text-gray-600">
+                <p>
+                    PlaceMeNet is a trade name used by a group of independently registered legal entities operating in different jurisdictions. PlaceMeNet provides independent application support and administrative assistance services. We are not a government authority, law-enforcement body, or issuing authority in any country.
+                </p>
+                <p>
+                    Official certificates, records, or documents referenced on this website are issued solely by the relevant government or public authorities, in accordance with their own laws, rules, and procedures. PlaceMeNet does not issue official certificates and does not guarantee approval, issuance, processing times, or acceptance by any authority.
+                </p>
+                <p>
+                    The legal entity responsible for providing the service depends on the country-specific service page you are viewing. Jurisdiction, applicable law, and the contracting entity are clearly stated on each individual service page.
+                </p>
+            </div>
+
+            <div class="border-t border-gray-200 pt-6">
+                <h4 class="font-semibold text-gray-900 mb-3">{{ __('Jurisdiction Clause') }}</h4>
+                <p class="text-gray-600">
+                    The applicable legal entity, governing law, and jurisdiction are determined by the specific service page accessed by the user. Users must review the jurisdiction notice on each service page before proceeding.
+                </p>
+            </div>
+
+            <div class="border-t border-gray-200 pt-6">
+                <h4 class="font-semibold text-gray-900 mb-3">{{ __('Our Legal Entities') }}</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                        <div class="flex items-center mb-2">
+                            <span class="text-lg mr-2">🇬🇧</span>
+                            <span class="font-semibold text-gray-900">United Kingdom</span>
+                        </div>
+                        <p class="text-sm text-gray-600">PlaceMeNet Ltd</p>
+                        <p class="text-xs text-gray-500 mt-1">Registered in England and Wales</p>
+                    </div>
+                    <div class="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                        <div class="flex items-center mb-2">
+                            <span class="text-lg mr-2">🇬🇷</span>
+                            <span class="font-semibold text-gray-900">Greece</span>
+                        </div>
+                        <p class="text-sm text-gray-600">PlaceMeNet IKE</p>
+                        <p class="text-xs text-gray-500 mt-1">Ιδιωτική Κεφαλαιουχική Εταιρεία</p>
+                    </div>
+                    <div class="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                        <div class="flex items-center mb-2">
+                            <span class="text-lg mr-2">🇵🇹</span>
+                            <span class="font-semibold text-gray-900">Portugal</span>
+                        </div>
+                        <p class="text-sm text-gray-600">PlaceMeNet Portugal</p>
+                        <p class="text-xs text-gray-500 mt-1">Operating under Portuguese law</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-amber-50 rounded-xl p-4 border border-amber-200">
+                <p class="text-amber-800 text-sm">
+                    <strong>Note:</strong> For specific legal inquiries, please contact <a href="mailto:{{ $legalEmail }}" class="text-amber-700 underline">{{ $legalEmail }}</a>. For service-related questions, refer to the jurisdiction notice on the relevant service page.
+                </p>
+            </div>
+        </div>
     </div>
 </div>
 

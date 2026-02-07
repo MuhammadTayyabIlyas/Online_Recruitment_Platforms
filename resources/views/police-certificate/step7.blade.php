@@ -17,7 +17,7 @@
                     <span class="flex flex-col">
                         <span class="block text-sm font-medium text-gray-900">Normal Service</span>
                         <span class="mt-1 flex items-center text-sm text-gray-500">14 working days</span>
-                        <span class="mt-2 text-lg font-bold text-blue-600">£100 / €120</span>
+                        <span class="mt-2 text-lg font-bold text-blue-600">£125 / €150</span>
                     </span>
                 </span>
                 <svg class="h-5 w-5 text-blue-600 {{ old('service_type', $application->service_type ?? '') == 'normal' ? '' : 'invisible' }} check-icon-normal" fill="currentColor" viewBox="0 0 20 20">
@@ -34,7 +34,7 @@
                     <span class="flex flex-col">
                         <span class="block text-sm font-medium text-gray-900">Urgent Service <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 ml-2">Popular</span></span>
                         <span class="mt-1 flex items-center text-sm text-gray-500">7 working days</span>
-                        <span class="mt-2 text-lg font-bold text-blue-600">£150 / €180</span>
+                        <span class="mt-2 text-lg font-bold text-blue-600">£175 / €200</span>
                     </span>
                 </span>
                 <svg class="h-5 w-5 text-blue-600 {{ old('service_type', $application->service_type ?? '') == 'urgent' ? '' : 'invisible' }} check-icon-urgent" fill="currentColor" viewBox="0 0 20 20">
@@ -181,8 +181,8 @@ function updatePaymentDetails() {
     const currency = document.querySelector('input[name="payment_currency"]:checked')?.value;
     
     const prices = {
-        normal: { gbp: 100, eur: 120 },
-        urgent: { gbp: 150, eur: 180 }
+        normal: { gbp: 125, eur: 150 },
+        urgent: { gbp: 175, eur: 200 }
     };
     
     const amountDisplay = document.getElementById('payment-amount');

@@ -221,22 +221,35 @@
                             WhatsApp: {{ $whatsappNumber }}
                         </a>
                     </div>
-                        <div class="flex justify-center space-x-6 mb-4">
-                            <a href="{{ route('jobs.index') }}" class="text-white/80 hover:text-white text-sm transition-colors duration-300">Browse Jobs</a>
-                            <span class="text-blue-300">•</span>
-                            <a href="{{ route('visa.index') }}" class="text-white/80 hover:text-white text-sm transition-colors duration-300">Visa & Residency</a>
-                            <span class="text-blue-300">•</span>
-                            <a href="{{ route('blogs.index') }}" class="text-white/80 hover:text-white text-sm transition-colors duration-300">Blog</a>
-                            <span class="text-blue-300">•</span>
-                            <a href="{{ route('about') }}" class="text-white/80 hover:text-white text-sm transition-colors duration-300">About Us</a>
-                            <span class="text-blue-300">•</span>
-                            <a href="{{ route('login') }}" class="text-white/80 hover:text-white text-sm transition-colors duration-300">For Employers</a>
-                            <span class="text-blue-300">•</span>
-                            <a href="{{ route('register') }}" class="text-white/80 hover:text-white text-sm transition-colors duration-300">Job Seekers</a>
-                        <span class="text-blue-300">•</span>
+                    <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-4 px-2">
+                        <a href="{{ route('jobs.index') }}" class="text-white/80 hover:text-white text-sm transition-colors duration-300">Browse Jobs</a>
+                        <span class="text-blue-300 hidden sm:inline">•</span>
+                        <a href="{{ route('visa.index') }}" class="text-white/80 hover:text-white text-sm transition-colors duration-300">Visa & Residency</a>
+                        <span class="text-blue-300 hidden sm:inline">•</span>
+                        <a href="{{ route('blogs.index') }}" class="text-white/80 hover:text-white text-sm transition-colors duration-300">Blog</a>
+                        <span class="text-blue-300 hidden sm:inline">•</span>
+                        <a href="{{ route('about') }}" class="text-white/80 hover:text-white text-sm transition-colors duration-300">About Us</a>
+                        <span class="text-blue-300 hidden sm:inline">•</span>
+                        <a href="{{ route('login') }}" class="text-white/80 hover:text-white text-sm transition-colors duration-300">For Employers</a>
+                        <span class="text-blue-300 hidden sm:inline">•</span>
+                        <a href="{{ route('register') }}" class="text-white/80 hover:text-white text-sm transition-colors duration-300">Job Seekers</a>
+                        <span class="text-blue-300 hidden sm:inline">•</span>
                         <a href="{{ route('privacy') }}" class="text-white/80 hover:text-white text-sm transition-colors duration-300">Data Privacy & GDPR</a>
                     </div>
-                    <p class="text-blue-200 text-xs">
+                    <!-- General Legal Notice -->
+                    <div class="mt-6 pt-6 border-t border-blue-500/30 max-w-4xl mx-auto">
+                        <p class="text-blue-200/80 text-xs leading-relaxed mb-3">
+                            <strong class="text-blue-100">General Legal Notice:</strong> PlaceMeNet is a trade name used by a group of independently registered legal entities operating in different jurisdictions. PlaceMeNet provides independent application support and administrative assistance services. We are not a government authority, law-enforcement body, or issuing authority in any country.
+                        </p>
+                        <p class="text-blue-200/70 text-xs leading-relaxed mb-3">
+                            Official certificates, records, or documents referenced on this website are issued solely by the relevant government or public authorities, in accordance with their own laws, rules, and procedures. PlaceMeNet does not issue official certificates and does not guarantee approval, issuance, processing times, or acceptance by any authority.
+                        </p>
+                        <p class="text-blue-200/70 text-xs leading-relaxed">
+                            The legal entity responsible for providing the service depends on the country-specific service page you are viewing. Jurisdiction, applicable law, and the contracting entity are clearly stated on each individual service page.
+                        </p>
+                    </div>
+
+                    <p class="text-blue-200 text-xs mt-6">
                         &copy; 2026 PlaceMeNet. All rights reserved.
                     </p>
                 </div>

@@ -2,160 +2,146 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Payment Details - {{ $application->application_reference }}</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        @page {
+            margin: 1cm;
         }
 
         body {
-            font-family: 'Helvetica', 'Arial', sans-serif;
-            font-size: 12px;
-            line-height: 1.5;
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 9pt;
+            line-height: 1.3;
             color: #1f2937;
-            background: #fff;
+            margin: 0;
+            padding: 0;
         }
 
-        .container {
-            padding: 40px;
-            max-width: 100%;
-        }
-
-        /* Header */
         .header {
             background: {{ $config['brand_color'] }};
             color: #fff;
-            padding: 25px 30px;
-            margin: -40px -40px 30px -40px;
-            display: table;
-            width: calc(100% + 80px);
-        }
-
-        .header-content {
-            display: table-cell;
-            vertical-align: middle;
-        }
-
-        .logo-section {
-            display: table-cell;
-            vertical-align: middle;
-            width: 80px;
-        }
-
-        .logo {
-            width: 60px;
-            height: auto;
+            padding: 12px 15px;
+            margin-bottom: 10px;
         }
 
         .header-title {
-            font-size: 22px;
+            font-size: 14pt;
             font-weight: bold;
-            margin-bottom: 3px;
+            margin: 0;
         }
 
         .header-subtitle {
-            font-size: 14px;
+            font-size: 9pt;
             opacity: 0.9;
+            margin: 2px 0 0 0;
         }
 
-        /* Reference Box */
         .reference-box {
-            background: #EEF2FF;
-            border: 2px solid #6366F1;
-            border-radius: 8px;
-            padding: 20px;
+            background: #f0f9ff;
+            border: 2px solid {{ $config['brand_color'] }};
+            padding: 10px;
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 10px;
         }
 
         .reference-label {
-            font-size: 11px;
-            color: #6366F1;
+            font-size: 8pt;
+            color: {{ $config['brand_color'] }};
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 8px;
+            margin-bottom: 3px;
         }
 
         .reference-number {
-            font-size: 26px;
-            font-weight: bold;
-            color: #4338CA;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 2px;
-        }
-
-        .reference-note {
-            font-size: 10px;
-            color: #6B7280;
-            margin-top: 8px;
-        }
-
-        /* Section Title */
-        .section-title {
-            font-size: 14px;
+            font-size: 16pt;
             font-weight: bold;
             color: #1f2937;
-            margin-bottom: 12px;
-            padding-bottom: 6px;
-            border-bottom: 2px solid #E5E7EB;
+            font-family: monospace;
         }
 
-        /* Application Summary Table */
-        .summary-table {
+        .main-content {
             width: 100%;
-            margin-bottom: 25px;
-            border-collapse: collapse;
         }
 
-        .summary-table td {
-            padding: 8px 0;
-            border-bottom: 1px solid #F3F4F6;
+        .left-col {
+            width: 58%;
+            float: left;
+            padding-right: 10px;
         }
 
-        .summary-table td:first-child {
-            color: #6B7280;
+        .right-col {
             width: 40%;
+            float: right;
         }
 
-        .summary-table td:last-child {
-            font-weight: 500;
+        .clearfix::after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        .section-title {
+            font-size: 10pt;
+            font-weight: bold;
             color: #1f2937;
+            margin: 0 0 6px 0;
+            padding-bottom: 3px;
+            border-bottom: 2px solid {{ $config['brand_color'] }};
         }
 
-        /* Amount Box */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 8px;
+        }
+
+        .info-table td {
+            padding: 3px 0;
+            font-size: 9pt;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .info-table td:first-child {
+            color: #6b7280;
+            width: 35%;
+        }
+
+        .info-table td:last-child {
+            font-weight: 500;
+        }
+
         .amount-box {
-            background: #FEF3C7;
-            border: 2px solid #F59E0B;
-            border-radius: 8px;
-            padding: 20px;
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            padding: 12px 10px;
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 8px;
         }
 
         .amount-label {
-            font-size: 12px;
-            color: #92400E;
+            font-size: 8pt;
+            color: #92400e;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .amount-value {
-            font-size: 32px;
+            font-size: 20pt;
             font-weight: bold;
-            color: #92400E;
+            color: #92400e;
         }
 
-        /* Bank Details Box */
-        .bank-details {
-            background: #F9FAFB;
-            border: 1px solid #E5E7EB;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 25px;
+        .amount-currency {
+            font-size: 8pt;
+            color: #92400e;
+        }
+
+        .bank-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            margin-bottom: 8px;
         }
 
         .bank-table {
@@ -164,236 +150,187 @@
         }
 
         .bank-table td {
-            padding: 6px 0;
+            padding: 3px 0;
+            font-size: 9pt;
         }
 
         .bank-table td:first-child {
-            color: #6B7280;
+            color: #6b7280;
             width: 35%;
-            font-size: 11px;
         }
 
         .bank-table td:last-child {
             font-weight: 500;
-            font-family: 'Courier New', monospace;
+            font-family: monospace;
+            font-size: 8pt;
         }
 
         .bank-table tr.highlight td {
-            background: #FEF3C7;
-            padding: 8px 10px;
-            border-radius: 4px;
-        }
-
-        .bank-table tr.highlight td:first-child {
+            background: #fef3c7;
+            padding: 5px;
             font-weight: bold;
-            color: #92400E;
+            color: #92400e;
         }
 
-        .bank-table tr.highlight td:last-child {
-            font-weight: bold;
-            color: #92400E;
-        }
-
-        /* Instructions Box */
-        .instructions-box {
-            background: #ECFDF5;
-            border: 1px solid #6EE7B7;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-
-        .instructions-title {
-            font-size: 13px;
-            font-weight: bold;
-            color: #065F46;
-            margin-bottom: 12px;
-        }
-
-        .instructions-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .instructions-list li {
-            padding: 8px 0;
-            padding-left: 28px;
-            position: relative;
-            color: #047857;
-        }
-
-        .instructions-list li::before {
-            content: attr(data-step);
-            position: absolute;
-            left: 0;
-            top: 8px;
-            width: 20px;
-            height: 20px;
-            background: #10B981;
-            color: #fff;
-            border-radius: 50%;
-            font-size: 11px;
-            font-weight: bold;
-            text-align: center;
-            line-height: 20px;
-        }
-
-        /* Footer */
-        .footer {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #E5E7EB;
-            text-align: center;
-            color: #6B7280;
-            font-size: 10px;
-        }
-
-        .footer-company {
-            font-weight: bold;
-            color: #374151;
-            margin-bottom: 5px;
-        }
-
-        .footer-contact {
-            margin-bottom: 10px;
-        }
-
-        .footer-generated {
-            font-size: 9px;
-            color: #9CA3AF;
-        }
-
-        /* Important Notice */
         .notice {
-            background: #FEF2F2;
-            border-left: 4px solid #EF4444;
-            padding: 12px 15px;
-            margin-bottom: 20px;
-            font-size: 11px;
-            color: #991B1B;
+            background: #fef2f2;
+            border-left: 3px solid #ef4444;
+            padding: 6px 10px;
+            margin-bottom: 8px;
+            font-size: 8pt;
+            color: #991b1b;
         }
 
-        .notice strong {
-            display: block;
-            margin-bottom: 3px;
+        .steps-box {
+            background: #ecfdf5;
+            border: 1px solid #6ee7b7;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+
+        .steps-title {
+            font-size: 10pt;
+            font-weight: bold;
+            color: #065f46;
+            margin: 0 0 6px 0;
+        }
+
+        .steps-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .steps-table td {
+            padding: 2px 0;
+            font-size: 9pt;
+            color: #047857;
+            vertical-align: top;
+        }
+
+        .steps-table td:first-child {
+            width: 18px;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            font-size: 8pt;
+            color: #6b7280;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="logo-section">
-                @if(file_exists(public_path('assets/images/logo.jpg')))
-                    <img src="{{ public_path('assets/images/logo.jpg') }}" alt="PlaceMeNet" class="logo">
-                @endif
-            </div>
-            <div class="header-content">
-                <div class="header-title">{{ $config['name'] }}</div>
-                <div class="header-subtitle">Payment Details & Instructions</div>
-            </div>
-        </div>
+    <div class="header">
+        <div class="header-title">{{ $config['name'] }}</div>
+        <div class="header-subtitle">Payment Details & Instructions</div>
+    </div>
 
-        <!-- Reference Number Box -->
-        <div class="reference-box">
-            <div class="reference-label">Application Reference</div>
-            <div class="reference-number">{{ $application->application_reference }}</div>
-            <div class="reference-note">Keep this reference for all communications</div>
-        </div>
+    <div class="reference-box">
+        <div class="reference-label">Application Reference</div>
+        <div class="reference-number">{{ $application->application_reference }}</div>
+    </div>
 
-        <!-- Application Summary -->
-        <div class="section-title">Application Summary</div>
-        <table class="summary-table">
-            <tr>
-                <td>Applicant Name:</td>
-                <td>{{ $application->first_name }} {{ $application->middle_name ?? '' }} {{ $application->last_name }}</td>
-            </tr>
-            <tr>
-                <td>Email:</td>
-                <td>{{ $application->email }}</td>
-            </tr>
-            <tr>
-                <td>Service Type:</td>
-                <td>{{ ucfirst($application->service_type ?? 'normal') }} Processing ({{ $processingTime }})</td>
-            </tr>
-            <tr>
-                <td>Submitted:</td>
-                <td>{{ $application->submitted_at ? $application->submitted_at->format('d M Y, H:i') : $generatedAt->format('d M Y, H:i') }}</td>
-            </tr>
-        </table>
-
-        <!-- Amount Due -->
-        <div class="amount-box">
-            <div class="amount-label">Amount Due</div>
-            <div class="amount-value">{{ $currencySymbol }}{{ number_format($application->payment_amount, 2) }} {{ $currencyCode }}</div>
-        </div>
-
-        <!-- Bank Transfer Details -->
-        <div class="section-title">Bank Transfer Details</div>
-        <div class="bank-details">
-            <table class="bank-table">
+    <div class="main-content clearfix">
+        <div class="left-col">
+            <div class="section-title">Application Summary</div>
+            <table class="info-table">
                 <tr>
-                    <td>Bank:</td>
-                    <td>{{ $bankAccount['bank_name'] }}</td>
+                    <td>Applicant:</td>
+                    <td>{{ $application->first_name }} {{ $application->middle_name ?? '' }} {{ $application->last_name }}</td>
                 </tr>
                 <tr>
-                    <td>Account Name:</td>
-                    <td>{{ $bankAccount['account_name'] }}</td>
-                </tr>
-                @if(isset($bankAccount['account_number']))
-                <tr>
-                    <td>Account Number:</td>
-                    <td>{{ $bankAccount['account_number'] }}</td>
-                </tr>
-                @endif
-                @if(isset($bankAccount['sort_code']))
-                <tr>
-                    <td>Sort Code:</td>
-                    <td>{{ $bankAccount['sort_code'] }}</td>
-                </tr>
-                @endif
-                <tr>
-                    <td>IBAN:</td>
-                    <td>{{ $bankAccount['iban'] }}</td>
+                    <td>Email:</td>
+                    <td>{{ $application->email }}</td>
                 </tr>
                 <tr>
-                    <td>SWIFT/BIC:</td>
-                    <td>{{ $bankAccount['swift_bic'] }}</td>
+                    <td>Service:</td>
+                    <td>{{ ucfirst($application->service_type ?? 'normal') }} ({{ $processingTime }})</td>
                 </tr>
-                <tr class="highlight">
-                    <td>Payment Reference:</td>
-                    <td>{{ $application->application_reference }}</td>
+                <tr>
+                    <td>Date:</td>
+                    <td>{{ $application->submitted_at ? $application->submitted_at->format('d M Y') : $generatedAt->format('d M Y') }}</td>
                 </tr>
             </table>
         </div>
-
-        <!-- Important Notice -->
-        <div class="notice">
-            <strong>IMPORTANT:</strong>
-            Always use your application reference ({{ $application->application_reference }}) as the payment reference. This helps us identify and verify your payment quickly.
-        </div>
-
-        <!-- What To Do Next -->
-        <div class="instructions-box">
-            <div class="instructions-title">What To Do Next</div>
-            <ul class="instructions-list">
-                <li data-step="1">Make a bank transfer using the details above</li>
-                <li data-step="2">Use <strong>{{ $application->application_reference }}</strong> as your payment reference</li>
-                <li data-step="3">Upload your payment receipt to your dashboard or email it to us</li>
-                <li data-step="4">We'll verify your payment and begin processing your application</li>
-            </ul>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            <div class="footer-company">{{ $company['name'] }}</div>
-            <div class="footer-contact">
-                Email: {{ $company['email'] }} | Website: {{ $company['website'] }}
-            </div>
-            <div class="footer-generated">
-                Generated on {{ $generatedAt->format('d M Y') }} at {{ $generatedAt->format('H:i') }} (UTC)
+        <div class="right-col">
+            <div class="amount-box">
+                <div class="amount-label">Amount Due</div>
+                <div class="amount-value">{{ $currencySymbol }}{{ number_format($application->payment_amount, 2) }}</div>
+                <div class="amount-currency">{{ $currencyCode }}</div>
             </div>
         </div>
+    </div>
+
+    <div class="section-title">Bank Transfer Details</div>
+    <div class="bank-box">
+        <table class="bank-table">
+            <tr>
+                <td>Bank:</td>
+                <td>{{ $bankAccount['bank_name'] }}</td>
+            </tr>
+            <tr>
+                <td>Account Name:</td>
+                <td>{{ $bankAccount['account_name'] }}</td>
+            </tr>
+            @if(isset($bankAccount['account_number']))
+            <tr>
+                <td>Account Number:</td>
+                <td>{{ $bankAccount['account_number'] }}</td>
+            </tr>
+            @endif
+            @if(isset($bankAccount['sort_code']))
+            <tr>
+                <td>Sort Code:</td>
+                <td>{{ $bankAccount['sort_code'] }}</td>
+            </tr>
+            @endif
+            <tr>
+                <td>IBAN:</td>
+                <td>{{ $bankAccount['iban'] }}</td>
+            </tr>
+            <tr>
+                <td>SWIFT/BIC:</td>
+                <td>{{ $bankAccount['swift_bic'] }}</td>
+            </tr>
+            <tr class="highlight">
+                <td>Reference:</td>
+                <td>{{ $application->application_reference }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="notice">
+        <strong>IMPORTANT:</strong> Always use <strong>{{ $application->application_reference }}</strong> as your payment reference.
+    </div>
+
+    <div class="steps-box">
+        <div class="steps-title">What To Do Next</div>
+        <table class="steps-table">
+            <tr>
+                <td>1.</td>
+                <td>Make a bank transfer using the details above</td>
+            </tr>
+            <tr>
+                <td>2.</td>
+                <td>Use <strong>{{ $application->application_reference }}</strong> as payment reference</td>
+            </tr>
+            <tr>
+                <td>3.</td>
+                <td>Upload your payment receipt to your dashboard or email to {{ $company['email'] }}</td>
+            </tr>
+            <tr>
+                <td>4.</td>
+                <td>We'll verify payment and begin processing your application</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        <strong>{{ $company['name'] }}</strong> | {{ $company['email'] }} | {{ $company['website'] }}<br>
+        Generated: {{ $generatedAt->format('d M Y, H:i') }} UTC
     </div>
 </body>
 </html>

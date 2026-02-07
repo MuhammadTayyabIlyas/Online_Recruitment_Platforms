@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PortugalCertificateController extends Controller
 {
@@ -19,7 +20,8 @@ class PortugalCertificateController extends Controller
         3 => ['portugal_residence_history', 'portugal_social_security_number'],
         4 => ['current_address_line1', 'current_address_line2', 'current_city', 'current_postal_code', 'current_country'],
         5 => ['email', 'phone_number', 'whatsapp_number'],
-        6 => ['certificate_purpose', 'purpose_details', 'service_type', 'payment_currency', 'payment_amount'],
+        6 => ['signature_data', 'signature_place', 'signature_date', 'signature_method'],
+        7 => ['certificate_purpose', 'purpose_details', 'service_type', 'payment_currency', 'payment_amount'],
     ];
 
     public function index()
@@ -41,7 +43,7 @@ class PortugalCertificateController extends Controller
     public function showStep(Request $request, $step)
     {
         $step = (int) $step;
-        if ($step < 1 || $step > 6) {
+        if ($step < 1 || $step > 7) {
             return redirect()->route('portugal-certificate.index');
         }
 
@@ -66,7 +68,19 @@ class PortugalCertificateController extends Controller
                 ->get();
         }
 
-        return view("portugal-certificate.step{$step}", compact('application', 'step', 'existingDrafts'));
+        // Pass document existence flags for step 2
+        $hasPassport = false;
+        $hasResidencePermit = false;
+
+        if ($step === 2 && $application) {
+            $hasPassport = $application->documents()->where('document_type', 'passport')->exists();
+            $hasResidencePermit = $application->documents()->where('document_type', 'residence_permit')->exists();
+        }
+
+        return view("portugal-certificate.step{$step}", compact(
+            'application', 'step', 'existingDrafts',
+            'hasPassport', 'hasResidencePermit'
+        ));
     }
 
     public function processStep(Request $request, $step)
@@ -98,8 +112,25 @@ class PortugalCertificateController extends Controller
             $validated['portugal_residence_history'] = $this->processResidenceHistory($request->portugal_residence_history);
         }
 
-        // Calculate payment amount for step 6
+        // Handle authorization letter - step 6
         if ($step === 6) {
+            $signatureMethod = $request->input('signature_method', 'drawn');
+
+            if ($signatureMethod === 'drawn') {
+                $validated['signature_data'] = $request->input('signature_data');
+                $validated['signature_place'] = $request->input('signature_place');
+                $validated['signature_date'] = $request->input('signature_date');
+                $validated['signature_method'] = 'drawn';
+                $validated['authorization_letter_uploaded'] = true;
+            } elseif ($signatureMethod === 'uploaded' && $request->hasFile('authorization_letter')) {
+                $this->handleAuthorizationLetter($request, $application);
+                $validated['signature_method'] = 'uploaded';
+                $validated['authorization_letter_uploaded'] = true;
+            }
+        }
+
+        // Calculate payment amount for step 7
+        if ($step === 7) {
             $validated['payment_amount'] = $this->calculatePaymentAmount(
                 $validated['service_type'] ?? $request->service_type
             );
@@ -127,6 +158,11 @@ class PortugalCertificateController extends Controller
             $this->handleStep2Documents($request, $application);
         }
 
+        // Generate signed authorization letter PDF for drawn signatures
+        if ($step === 6 && ($request->input('signature_method') === 'drawn')) {
+            $this->generateSignedAuthorizationLetter($application);
+        }
+
         // Handle "Save & Continue Later" button
         if ($request->has('save_for_later')) {
             return redirect()->route('service_user.dashboard')
@@ -136,7 +172,7 @@ class PortugalCertificateController extends Controller
         }
 
         // If final step, mark as submitted
-        if ($step === 6) {
+        if ($step === 7) {
             $application->status = 'submitted';
             $application->submitted_at = now();
             $application->save();
@@ -219,8 +255,13 @@ class PortugalCertificateController extends Controller
             return 5;
         }
 
-        // Step 6: Service Selection (final step)
-        return 6;
+        // Step 6: Authorization Letter
+        if (!$application->authorization_letter_uploaded) {
+            return 6;
+        }
+
+        // Step 7: Service Selection (final step)
+        return 7;
     }
 
     public function showReceiptUpload(Request $request, $reference)
@@ -229,7 +270,31 @@ class PortugalCertificateController extends Controller
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        return view('portugal-certificate.receipt-upload', compact('application'));
+        $receipts = $application->documents()->where('document_type', 'receipt')->get();
+
+        return view('portugal-certificate.receipt-upload', compact('application', 'receipts'));
+    }
+
+    public function deleteReceipt($reference, $documentId)
+    {
+        $application = PortugalCertificateApplication::where('application_reference', $reference)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        $document = $application->documents()
+            ->where('id', $documentId)
+            ->where('document_type', 'receipt')
+            ->firstOrFail();
+
+        // Delete file from storage
+        if (Storage::disk('private')->exists($document->file_path)) {
+            Storage::disk('private')->delete($document->file_path);
+        }
+
+        // Delete document record
+        $document->delete();
+
+        return back()->with('success', 'Receipt deleted successfully.');
     }
 
     public function uploadReceipt(Request $request, $reference)
@@ -292,6 +357,9 @@ class PortugalCertificateController extends Controller
                 break;
 
             case 2:
+                $applicationId = $request->session()->get('portugal_application_id');
+                $existingApp = $applicationId ? PortugalCertificateApplication::find($applicationId) : null;
+
                 $rules = [
                     'passport_number' => 'required|string|max:20',
                     'passport_issue_date' => 'required|date|before:today',
@@ -300,10 +368,21 @@ class PortugalCertificateController extends Controller
                     'portugal_nif' => 'nullable|string|max:20',
                     'portugal_residence_permit' => 'nullable|string|max:50',
                     'portugal_residence_permit_expiry' => 'nullable|date',
-                    'passport_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+                    'passport_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
                     'residence_permit_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
                 ];
-                break;
+
+                $validated = $request->validate($rules);
+
+                // Server-side check: require passport file if no existing document
+                $hasExistingPassport = $existingApp && $existingApp->documents()->where('document_type', 'passport')->exists();
+                if (!$hasExistingPassport && !$request->hasFile('passport_file')) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'passport_file' => 'A passport scan is required.',
+                    ]);
+                }
+
+                return $validated;
 
             case 3:
                 $rules = [
@@ -335,6 +414,24 @@ class PortugalCertificateController extends Controller
                 break;
 
             case 6:
+                $signatureMethod = $request->input('signature_method', 'drawn');
+
+                if ($signatureMethod === 'drawn') {
+                    $rules = [
+                        'signature_data' => 'required|string',
+                        'signature_place' => 'required|string|max:200',
+                        'signature_date' => 'required|date',
+                        'signature_method' => 'required|in:drawn,uploaded',
+                    ];
+                } else {
+                    $rules = [
+                        'authorization_letter' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+                        'signature_method' => 'required|in:drawn,uploaded',
+                    ];
+                }
+                break;
+
+            case 7:
                 $rules = [
                     'certificate_purpose' => 'required|in:employment,immigration,visa,residency,education,adoption,other',
                     'purpose_details' => 'nullable|string|max:500',
@@ -364,13 +461,25 @@ class PortugalCertificateController extends Controller
 
     protected function handleStep2Documents(Request $request, $application)
     {
-        // Passport
+        // Passport — delete old before replacing
         if ($request->hasFile('passport_file')) {
+            $application->documents()->where('document_type', 'passport')->each(function ($doc) {
+                if (Storage::disk('private')->exists($doc->file_path)) {
+                    Storage::disk('private')->delete($doc->file_path);
+                }
+                $doc->delete();
+            });
             $this->storeDocument($request->file('passport_file'), $application, 'passport');
         }
 
-        // Residence Permit (optional)
+        // Residence Permit (optional) — delete old before replacing
         if ($request->hasFile('residence_permit_file')) {
+            $application->documents()->where('document_type', 'residence_permit')->each(function ($doc) {
+                if (Storage::disk('private')->exists($doc->file_path)) {
+                    Storage::disk('private')->delete($doc->file_path);
+                }
+                $doc->delete();
+            });
             $this->storeDocument($request->file('residence_permit_file'), $application, 'residence_permit');
         }
     }
@@ -389,14 +498,93 @@ class PortugalCertificateController extends Controller
         ]);
     }
 
+    protected function handleAuthorizationLetter(Request $request, $application)
+    {
+        if ($request->hasFile('authorization_letter')) {
+            // Delete old authorization letter if exists
+            $application->documents()->where('document_type', 'authorization_letter')->each(function ($doc) {
+                if (Storage::disk('private')->exists($doc->file_path)) {
+                    Storage::disk('private')->delete($doc->file_path);
+                }
+                $doc->delete();
+            });
+
+            $this->storeDocument($request->file('authorization_letter'), $application, 'authorization_letter');
+        }
+    }
+
+    protected function generateSignedAuthorizationLetter(PortugalCertificateApplication $application): void
+    {
+        // Delete old authorization letter docs
+        $application->documents()->where('document_type', 'authorization_letter')->each(function ($doc) {
+            if (Storage::disk('private')->exists($doc->file_path)) {
+                Storage::disk('private')->delete($doc->file_path);
+            }
+            $doc->delete();
+        });
+
+        $pdf = Pdf::loadView('portugal-certificate.authorization-letter-pdf', [
+            'application' => $application,
+            'generatedDate' => $application->signature_date
+                ? $application->signature_date->format('d/m/Y')
+                : now()->format('d/m/Y'),
+            'signatureImage' => $application->signature_data,
+            'signaturePlace' => $application->signature_place,
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        $filename = 'authorization_letters/signed_' . $application->application_reference . '_' . time() . '.pdf';
+        Storage::disk('private')->put(
+            'portugal-certificates/' . $filename,
+            $pdf->output()
+        );
+
+        PortugalCertificateDocument::create([
+            'application_id' => $application->id,
+            'document_type' => 'authorization_letter',
+            'file_path' => 'portugal-certificates/' . $filename,
+            'original_filename' => 'Authorization_Letter_Signed_' . $application->application_reference . '.pdf',
+            'mime_type' => 'application/pdf',
+            'file_size' => Storage::disk('private')->size('portugal-certificates/' . $filename),
+        ]);
+    }
+
+    public function downloadAuthorizationLetter(Request $request)
+    {
+        $applicationId = $request->session()->get('portugal_application_id');
+
+        if (!$applicationId) {
+            return redirect()->route('portugal-certificate.step', ['step' => 1])
+                ->with('error', 'Please complete the previous steps first.');
+        }
+
+        $application = PortugalCertificateApplication::find($applicationId);
+
+        if (!$application) {
+            return redirect()->route('portugal-certificate.step', ['step' => 1])
+                ->with('error', 'Application not found.');
+        }
+
+        $pdf = Pdf::loadView('portugal-certificate.authorization-letter-pdf', [
+            'application' => $application,
+            'generatedDate' => now()->format('d/m/Y'),
+            'signatureImage' => null,
+            'signaturePlace' => null,
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        $filename = 'Authorization_Letter_' . ($application->application_reference ?? 'DRAFT') . '.pdf';
+
+        return $pdf->download($filename);
+    }
+
     protected function calculatePaymentAmount($serviceType)
     {
-        $prices = [
-            'normal' => 85,  // EUR
-            'urgent' => 130, // EUR
-        ];
+        $pricing = config('certificate-services.services.portugal.pricing.eur');
 
-        return $prices[$serviceType] ?? 85;
+        return $pricing[$serviceType] ?? $pricing['normal'];
     }
 
     /**

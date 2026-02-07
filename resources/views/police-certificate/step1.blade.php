@@ -207,10 +207,11 @@
         <label for="father_full_name" class="block text-sm font-medium text-gray-700 mb-1">
             Father's Full Name <span class="text-red-500">*</span>
         </label>
-        <input type="text" name="father_full_name" id="father_full_name" 
+        <input type="text" name="father_full_name" id="father_full_name"
                value="{{ old('father_full_name', $application->father_full_name ?? '') }}"
                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('father_full_name') border-red-500 @enderror"
                placeholder="Full name as per official documents" required>
+        <p class="mt-1 text-xs text-gray-500">As shown on birth certificate or passport</p>
         @error('father_full_name')
             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
         @enderror
@@ -276,9 +277,10 @@
             <label for="place_of_birth_city" class="block text-sm font-medium text-gray-700 mb-1">
                 City of Birth <span class="text-red-500">*</span>
             </label>
-            <input type="text" name="place_of_birth_city" id="place_of_birth_city" 
+            <input type="text" name="place_of_birth_city" id="place_of_birth_city"
                    value="{{ old('place_of_birth_city', $application->place_of_birth_city ?? '') }}"
                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('place_of_birth_city') border-red-500 @enderror"
+                   placeholder="e.g., Lahore, Karachi, Islamabad"
                    required>
             @error('place_of_birth_city')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
