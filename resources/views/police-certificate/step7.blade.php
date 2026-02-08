@@ -135,11 +135,33 @@
         </div>
     </div>
 
+    <!-- Referral Code -->
+    <div class="bg-purple-50 border border-purple-200 rounded-xl p-6 mt-4 mb-4" x-data="referralCode()">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2 flex items-center">
+            <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
+            </svg>
+            Have a Referral Code?
+        </h3>
+        <p class="text-sm text-gray-600 mb-4">If someone referred you, enter their code below. Both of you will receive a bonus once your payment is verified.</p>
+        <div class="flex items-start gap-3">
+            <div class="flex-1">
+                <input type="text" name="referral_code" x-model="code" @input.debounce.500ms="validate()"
+                       placeholder="e.g. REF-XXXXX" maxlength="10"
+                       class="w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 text-sm uppercase"
+                       value="{{ old('referral_code', $application->referral_code_used ?? '') }}">
+            </div>
+        </div>
+        <div x-show="message" x-transition class="mt-2">
+            <p class="text-sm" :class="valid ? 'text-green-600' : 'text-red-600'" x-text="message"></p>
+        </div>
+    </div>
+
     <!-- Terms & Conditions -->
     <div class="space-y-4">
         <div class="flex items-start">
             <div class="flex items-center h-5">
-                <input type="checkbox" name="terms_accepted" id="terms_accepted" 
+                <input type="checkbox" name="terms_accepted" id="terms_accepted"
                        {{ old('terms_accepted') ? 'checked' : '' }}
                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 @error('terms_accepted') border-red-500 @enderror"
                        required>
@@ -200,5 +222,38 @@ function updatePaymentDetails() {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', updatePaymentDetails);
+
+function referralCode() {
+    return {
+        code: '{{ old('referral_code', $application->referral_code_used ?? '') }}',
+        valid: false,
+        message: '',
+        validate() {
+            if (!this.code || this.code.trim().length === 0) {
+                this.message = '';
+                this.valid = false;
+                return;
+            }
+            fetch('{{ route("referral.validate") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ code: this.code })
+            })
+            .then(r => r.json())
+            .then(data => {
+                this.valid = data.valid;
+                this.message = data.message;
+            })
+            .catch(() => {
+                this.valid = false;
+                this.message = 'Unable to validate code. You can still submit.';
+            });
+        }
+    }
+}
 </script>
 @endsection

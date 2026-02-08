@@ -56,6 +56,7 @@ class GreeceCertificateApplication extends Model
         'status',
         'application_reference',
         'admin_notes',
+        'referral_code_used',
         'disclaimer_accepted_at',
         'submitted_at',
     ];

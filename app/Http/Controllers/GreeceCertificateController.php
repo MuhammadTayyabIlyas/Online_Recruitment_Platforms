@@ -6,6 +6,7 @@ use App\Mail\GreeceCertificateSubmitted;
 use App\Models\GreeceCertificateApplication;
 use App\Models\GreeceCertificateDocument;
 use App\Services\PaymentPdfService;
+use App\Services\ReferralService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -149,6 +150,18 @@ class GreeceCertificateController extends Controller
 
         // If final step, mark as submitted
         if ($step === 7) {
+            // Handle referral code
+            $referralCode = $request->input('referral_code');
+            if (!empty($referralCode)) {
+                $referralService = new ReferralService();
+                $validation = $referralService->validateReferralCode($referralCode, auth()->user());
+                if ($validation['valid']) {
+                    $application->referral_code_used = $referralCode;
+                    $application->save();
+                    $referralService->recordReferralUse($referralCode, auth()->user(), 'greece', $application->id);
+                }
+            }
+
             $application->status = 'submitted';
             $application->submitted_at = now();
             $application->save();
@@ -417,6 +430,7 @@ class GreeceCertificateController extends Controller
                     'certificate_purpose' => 'required|in:employment,immigration,visa,residency,education,adoption,other',
                     'purpose_details' => 'nullable|string|max:500',
                     'service_type' => 'required|in:normal,urgent',
+                    'referral_code' => 'nullable|string|max:10',
                     'terms_accepted' => 'required|accepted',
                     'privacy_accepted' => 'required|accepted',
                 ];

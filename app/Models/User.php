@@ -314,6 +314,34 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Get the user's referral code.
+     */
+    public function referralCode(): HasOne
+    {
+        return $this->hasOne(ReferralCode::class);
+    }
+
+    /**
+     * Get the user's wallet.
+     */
+    public function wallet(): HasOne
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+    /**
+     * Get or create the user's wallet.
+     */
+    public function getOrCreateWallet(): Wallet
+    {
+        return $this->wallet ?? Wallet::create([
+            'user_id' => $this->id,
+            'balance' => 0,
+            'currency' => config('referral.currency', 'EUR'),
+        ]);
+    }
+
+    /**
      * Get the authorized partner record for the user.
      */
     public function authorizedPartner(): HasOne

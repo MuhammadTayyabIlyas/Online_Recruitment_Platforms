@@ -51,6 +51,7 @@ class PoliceCertificateApplication extends Model
         'application_reference',
         'submitted_at',
         'admin_notes',
+        'referral_code_used',
         'disclaimer_accepted_at',
         'signature_data',
         'signature_place',

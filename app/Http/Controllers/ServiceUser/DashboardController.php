@@ -175,6 +175,10 @@ class DashboardController extends Controller
         // Partner program
         $partner = $user->authorizedPartner;
 
+        // Referral & Wallet
+        $referralCode = $user->referralCode;
+        $walletBalance = $user->wallet ? $user->wallet->balance : 0;
+
         return view('service-user.dashboard', compact(
             'totalApplications',
             'pendingApplications',
@@ -183,7 +187,9 @@ class DashboardController extends Controller
             'recentApplications',
             'draftApplications',
             'needsAction',
-            'partner'
+            'partner',
+            'referralCode',
+            'walletBalance'
         ));
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\GreeceCertificateApplication;
 use App\Models\GreeceCertificateDocument;
+use App\Services\ReferralService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -111,6 +112,16 @@ class GreeceCertificateAdminController extends Controller
         }
 
         $application->save();
+
+        // Process referral system on payment verification
+        if ($request->status === 'payment_verified' && $previousStatus !== 'payment_verified') {
+            $referralService = new ReferralService();
+            $referralService->ensureReferralCodeOnPaymentVerified($application->user);
+
+            if ($application->referral_code_used) {
+                $referralService->processReferralCredits('greece', $application->id, $application->user);
+            }
+        }
 
         // Send status update email if status changed
         if ($statusChanged && $application->email && class_exists(GreeceCertificateStatusUpdate::class)) {

@@ -380,7 +380,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Service User Dashboard
         Route::get('/dashboard', [\App\Http\Controllers\ServiceUser\DashboardController::class, 'index'])->name('dashboard');
+
+        // Wallet
+        Route::get('/wallet', [\App\Http\Controllers\ServiceUser\WalletController::class, 'index'])->name('wallet');
+        Route::post('/wallet/request-payout', [\App\Http\Controllers\ServiceUser\WalletController::class, 'requestPayout'])->name('wallet.request-payout');
     });
+
+    // Referral code validation (accessible to any authenticated user)
+    Route::post('/referral/validate', [\App\Http\Controllers\ServiceUser\WalletController::class, 'validateCode'])->name('referral.validate');
 
     // Partner Profile Routes (accessible to any authenticated user with a partner record)
     Route::get('/partner/profile', [\App\Http\Controllers\ServiceUser\PartnerProfileController::class, 'edit'])->name('partner.profile.edit');
@@ -502,6 +509,13 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::post('/authorized-partners/{partner}/revoke', [\App\Http\Controllers\Admin\AuthorizedPartnerController::class, 'revoke'])->name('authorized-partners.revoke');
     Route::post('/authorized-partners/{partner}/renew', [\App\Http\Controllers\Admin\AuthorizedPartnerController::class, 'renew'])->name('authorized-partners.renew');
     Route::get('/authorized-partners/{partner}/certificate', [\App\Http\Controllers\Admin\AuthorizedPartnerController::class, 'downloadCertificate'])->name('authorized-partners.certificate');
+
+    // Referral Admin Routes
+    Route::get('/referrals', [\App\Http\Controllers\Admin\ReferralAdminController::class, 'index'])->name('referrals.index');
+    Route::get('/referrals/codes', [\App\Http\Controllers\Admin\ReferralAdminController::class, 'referralCodes'])->name('referrals.codes');
+    Route::get('/referrals/withdrawals', [\App\Http\Controllers\Admin\ReferralAdminController::class, 'withdrawalRequests'])->name('referrals.withdrawals');
+    Route::patch('/referrals/withdrawals/{withdrawal}', [\App\Http\Controllers\Admin\ReferralAdminController::class, 'processWithdrawal'])->name('referrals.process-withdrawal');
+    Route::get('/referrals/user/{user}', [\App\Http\Controllers\Admin\ReferralAdminController::class, 'userReferralDetail'])->name('referrals.user-detail');
 
     // Greece Certificate Admin Routes
     Route::get('/greece-certificates', [\App\Http\Controllers\Admin\GreeceCertificateAdminController::class, 'index'])->name('greece-certificates.index');

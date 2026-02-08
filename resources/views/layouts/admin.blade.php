@@ -232,6 +232,16 @@
                     <span x-show="sidebarOpen">Authorized Partners</span>
                 </a>
 
+                <!-- Referrals -->
+                <a href="{{ route('admin.referrals.index') }}"
+                   class="sidebar-link group flex items-center rounded-lg text-white/80 py-3 {{ request()->routeIs('admin.referrals.*') ? 'active' : '' }}"
+                   :class="sidebarOpen ? 'space-x-3 px-4 justify-start' : 'px-3 justify-center'">
+                    <svg class="w-6 h-6 text-white/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
+                    </svg>
+                    <span x-show="sidebarOpen">Referrals</span>
+                </a>
+
                 <!-- Blogs -->
                 <a href="{{ route('admin.blogs.index') }}"
                    class="sidebar-link group flex items-center rounded-lg text-white/80 py-3 {{ request()->routeIs('admin.blogs.*') ? 'active' : '' }}"

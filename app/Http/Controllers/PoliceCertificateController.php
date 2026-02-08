@@ -6,6 +6,7 @@ use App\Mail\PoliceCertificateSubmitted;
 use App\Models\PoliceCertificateApplication;
 use App\Models\PoliceCertificateDocument;
 use App\Services\PaymentPdfService;
+use App\Services\ReferralService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -188,6 +189,18 @@ class PoliceCertificateController extends Controller
 
         // If final step, mark as submitted and send confirmation email
         if ($step === 7) {
+            // Handle referral code
+            $referralCode = $request->input('referral_code');
+            if (!empty($referralCode)) {
+                $referralService = new ReferralService();
+                $validation = $referralService->validateReferralCode($referralCode, auth()->user());
+                if ($validation['valid']) {
+                    $application->referral_code_used = $referralCode;
+                    $application->save();
+                    $referralService->recordReferralUse($referralCode, auth()->user(), 'uk-police', $application->id);
+                }
+            }
+
             $application->status = 'submitted';
             $application->submitted_at = now();
             $application->save();
@@ -464,6 +477,7 @@ class PoliceCertificateController extends Controller
                 $rules = [
                     'service_type' => 'required|in:normal,urgent',
                     'payment_currency' => 'required|in:gbp,eur',
+                    'referral_code' => 'nullable|string|max:10',
                     'terms_accepted' => 'required|accepted',
                     'privacy_accepted' => 'required|accepted',
                 ];
