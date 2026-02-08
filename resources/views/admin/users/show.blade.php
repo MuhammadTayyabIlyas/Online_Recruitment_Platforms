@@ -98,10 +98,76 @@
                         <dd class="mt-1 text-sm text-gray-900">{{ $user->profile->headline }}</dd>
                     </div>
                     @endif
+                    @if($user->profile->current_job_title)
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Current Job Title</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ $user->profile->current_job_title }}</dd>
+                    </div>
+                    @endif
                     @if($user->profile->location)
                     <div>
                         <dt class="text-sm font-medium text-gray-500">Location</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $user->profile->location }}</dd>
+                    </div>
+                    @endif
+                    @if($user->profile->city || $user->profile->country)
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">City / Country</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ collect([$user->profile->city, $user->profile->country])->filter()->implode(', ') }}</dd>
+                    </div>
+                    @endif
+                    @if($user->profile->nationality)
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Nationality</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ $user->profile->nationality }}</dd>
+                    </div>
+                    @endif
+                    @if($user->profile->gender)
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Gender</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ ucfirst($user->profile->gender) }}</dd>
+                    </div>
+                    @endif
+                    @if($user->profile->date_of_birth)
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Date of Birth</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ $user->profile->date_of_birth->format('M d, Y') }} ({{ $user->profile->age }} years old)</dd>
+                    </div>
+                    @endif
+                    @if($user->profile->address)
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Address</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ $user->profile->address }}</dd>
+                    </div>
+                    @endif
+                    @if($user->profile->postal_code)
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Postal Code</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ $user->profile->postal_code }}</dd>
+                    </div>
+                    @endif
+                    @if($user->profile->passport_number)
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Passport Number</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ $user->profile->passport_number }}</dd>
+                    </div>
+                    @endif
+                    @if($user->profile->website)
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">Website</dt>
+                        <dd class="mt-1 text-sm"><a href="{{ $user->profile->website }}" target="_blank" class="text-indigo-600 hover:text-indigo-800">{{ $user->profile->website }}</a></dd>
+                    </div>
+                    @endif
+                    @if($user->profile->linkedin_url)
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">LinkedIn</dt>
+                        <dd class="mt-1 text-sm"><a href="{{ $user->profile->linkedin_url }}" target="_blank" class="text-indigo-600 hover:text-indigo-800">{{ $user->profile->linkedin_url }}</a></dd>
+                    </div>
+                    @endif
+                    @if($user->profile->github_url)
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">GitHub</dt>
+                        <dd class="mt-1 text-sm"><a href="{{ $user->profile->github_url }}" target="_blank" class="text-indigo-600 hover:text-indigo-800">{{ $user->profile->github_url }}</a></dd>
                     </div>
                     @endif
                     @if($user->profile->bio)
@@ -175,7 +241,7 @@
                 <!-- Package Assignment Section -->
                 <div class="mt-6 border-t pt-6">
                     <h4 class="text-sm font-semibold text-gray-900 mb-4">Package Management</h4>
-                    
+
                     @php
                         $currentSubscription = $user->activeSubscription;
                         $allPackages = App\Models\Package::where('is_active', true)->orderBy('price')->get();
@@ -185,7 +251,7 @@
                         <div class="mb-4 p-3 bg-blue-50 rounded-lg">
                             <p class="text-sm font-medium text-blue-900">Current Package</p>
                             <p class="text-xs text-blue-700 mt-1">
-                                {{ $currentSubscription->package->name }} - 
+                                {{ $currentSubscription->package->name }} -
                                 Expires: {{ $currentSubscription->expires_at->format('M d, Y') }}
                             </p>
                         </div>
@@ -204,12 +270,12 @@
                                 <option value="">-- Select Package --</option>
                                 @foreach($allPackages as $package)
                                     <option value="{{ $package->id }}">
-                                        {{ $package->name }} - €{{ number_format($package->price, 0) }}/month
+                                        {{ $package->name }} - &euro;{{ number_format($package->price, 0) }}/month
                                     </option>
                                 @endforeach
                             </select>
                         </div>
-                        <button type="submit" 
+                        <button type="submit"
                                 class="w-full mt-3 px-4 py-2 bg-purple-600 text-white text-sm rounded-md hover:bg-purple-700 transition-colors flex items-center justify-center">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
@@ -217,6 +283,245 @@
                             Assign Package
                         </button>
                     </form>
+                </div>
+            </div>
+            @endif
+
+            <!-- Education Section -->
+            @if($user->user_type === 'job_seeker')
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Education</h3>
+                @if($user->education->count() > 0)
+                    <div class="space-y-4">
+                        @foreach($user->education as $edu)
+                        <div class="border-b pb-4 last:border-b-0 last:pb-0">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-medium text-gray-900">{{ $edu->degree }}{{ $edu->field_of_study ? ' in ' . $edu->field_of_study : '' }}</h4>
+                                    <p class="text-sm text-gray-600">{{ $edu->institution }}</p>
+                                </div>
+                                <span class="text-sm text-gray-500 whitespace-nowrap ml-4">{{ $edu->start_date }} - {{ $edu->is_current ? 'Present' : $edu->end_date }}</span>
+                            </div>
+                            @if($edu->grade)
+                                <p class="text-sm text-gray-500 mt-1">Grade: {{ $edu->grade }}</p>
+                            @endif
+                            @if($edu->description)
+                                <p class="text-sm text-gray-600 mt-2">{{ $edu->description }}</p>
+                            @endif
+                        </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-sm text-gray-500">No education records added yet.</p>
+                @endif
+            </div>
+            @endif
+
+            <!-- Work Experience Section -->
+            @if($user->user_type === 'job_seeker')
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Work Experience</h3>
+                @if($user->experience->count() > 0)
+                    <div class="space-y-4">
+                        @foreach($user->experience as $exp)
+                        <div class="border-b pb-4 last:border-b-0 last:pb-0">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-medium text-gray-900">{{ $exp->job_title }}</h4>
+                                    <p class="text-sm text-gray-600">{{ $exp->company_name }}{{ $exp->location ? ' - ' . $exp->location : '' }}</p>
+                                </div>
+                                <div class="text-right ml-4">
+                                    <span class="text-sm text-gray-500 whitespace-nowrap">{{ $exp->start_date->format('M Y') }} - {{ $exp->is_current ? 'Present' : $exp->end_date->format('M Y') }}</span>
+                                    @if($exp->employment_type)
+                                        <span class="block mt-1 px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-800 inline-flex">{{ $exp->formattedEmploymentType }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                            @if($exp->description)
+                                <p class="text-sm text-gray-600 mt-2">{{ $exp->description }}</p>
+                            @endif
+                        </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-sm text-gray-500">No work experience added yet.</p>
+                @endif
+            </div>
+            @endif
+
+            <!-- Skills Section -->
+            @if($user->user_type === 'job_seeker')
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Skills</h3>
+                @if($user->skills->count() > 0)
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($user->skills as $skill)
+                            @php
+                                $levelColors = [
+                                    'beginner' => 'bg-gray-100 text-gray-800',
+                                    'intermediate' => 'bg-blue-100 text-blue-800',
+                                    'advanced' => 'bg-indigo-100 text-indigo-800',
+                                    'expert' => 'bg-purple-100 text-purple-800',
+                                ];
+                                $color = $levelColors[$skill->proficiency_level] ?? 'bg-gray-100 text-gray-800';
+                            @endphp
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $color }}">
+                                {{ $skill->formattedSkillName }}
+                                @if($skill->proficiency_level)
+                                    <span class="ml-1 text-xs opacity-75">({{ ucfirst($skill->proficiency_level) }})</span>
+                                @endif
+                                @if($skill->years_of_experience)
+                                    <span class="ml-1 text-xs opacity-75">{{ $skill->years_of_experience }}y</span>
+                                @endif
+                            </span>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-sm text-gray-500">No skills added yet.</p>
+                @endif
+            </div>
+            @endif
+
+            <!-- Languages Section -->
+            @if($user->user_type === 'job_seeker')
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Languages</h3>
+                @if($user->languages->count() > 0)
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($user->languages as $lang)
+                            @php
+                                $profColors = [
+                                    'basic' => 'bg-gray-100 text-gray-800',
+                                    'conversational' => 'bg-green-100 text-green-800',
+                                    'fluent' => 'bg-blue-100 text-blue-800',
+                                    'native' => 'bg-indigo-100 text-indigo-800',
+                                ];
+                                $color = $profColors[$lang->proficiency] ?? 'bg-gray-100 text-gray-800';
+                            @endphp
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $color }}">
+                                {{ $lang->language }}
+                                @if($lang->proficiency)
+                                    <span class="ml-1 text-xs opacity-75">({{ $lang->formattedProficiency }})</span>
+                                @endif
+                            </span>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-sm text-gray-500">No languages added yet.</p>
+                @endif
+            </div>
+            @endif
+
+            <!-- Certifications Section -->
+            @if($user->user_type === 'job_seeker')
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Certifications</h3>
+                @if($user->certifications->count() > 0)
+                    <div class="space-y-4">
+                        @foreach($user->certifications as $cert)
+                        <div class="border-b pb-4 last:border-b-0 last:pb-0">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-medium text-gray-900">{{ $cert->name }}</h4>
+                                    @if($cert->issuing_organization)
+                                        <p class="text-sm text-gray-600">{{ $cert->issuing_organization }}</p>
+                                    @endif
+                                </div>
+                                <div class="ml-4">
+                                    @if($cert->expiry_date)
+                                        @if($cert->isExpired())
+                                            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-red-100 text-red-800">Expired</span>
+                                        @else
+                                            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800">Valid</span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="mt-1 text-sm text-gray-500">
+                                @if($cert->issue_date)
+                                    Issued: {{ $cert->issue_date->format('M Y') }}
+                                @endif
+                                @if($cert->expiry_date)
+                                    &middot; Expires: {{ $cert->expiry_date->format('M Y') }}
+                                @endif
+                            </div>
+                            @if($cert->credential_id)
+                                <p class="text-sm text-gray-500 mt-1">Credential ID: {{ $cert->credential_id }}</p>
+                            @endif
+                            @if($cert->credential_url)
+                                <a href="{{ $cert->credential_url }}" target="_blank" class="text-sm text-indigo-600 hover:text-indigo-800 mt-1 inline-block">View Credential</a>
+                            @endif
+                        </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-sm text-gray-500">No certifications added yet.</p>
+                @endif
+            </div>
+            @endif
+
+            <!-- Resumes / CVs Section -->
+            @if($user->user_type === 'job_seeker')
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Resumes / CVs</h3>
+                @if($user->resumes->count() > 0)
+                    <div class="space-y-3">
+                        @foreach($user->resumes as $resume)
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center min-w-0">
+                                <svg class="w-8 h-8 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+                                </svg>
+                                <div class="ml-3 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900 truncate">
+                                        {{ $resume->title ?? $resume->file_name }}
+                                        @if($resume->is_primary)
+                                            <span class="ml-1 px-2 py-0.5 text-xs font-medium rounded-full bg-indigo-100 text-indigo-800">Primary</span>
+                                        @endif
+                                    </p>
+                                    <p class="text-xs text-gray-500">{{ $resume->file_name }} &middot; {{ $resume->formattedFileSize }}</p>
+                                </div>
+                            </div>
+                            <a href="{{ route('admin.users.resume.download', [$user, $resume]) }}"
+                               class="ml-4 flex-shrink-0 px-3 py-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 rounded-md transition-colors">
+                                Download
+                            </a>
+                        </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-sm text-gray-500">No resumes uploaded yet.</p>
+                @endif
+            </div>
+            @endif
+
+            <!-- Documents Section -->
+            @if($user->documents->count() > 0)
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Documents</h3>
+                <div class="space-y-3">
+                    @foreach($user->documents as $doc)
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center min-w-0">
+                            <svg class="w-8 h-8 text-blue-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+                            </svg>
+                            <div class="ml-3 min-w-0">
+                                <p class="text-sm font-medium text-gray-900 truncate">{{ $doc->document_name ?? $doc->file_name }}</p>
+                                <p class="text-xs text-gray-500">
+                                    @if($doc->document_number)
+                                        #{{ $doc->document_number }} &middot;
+                                    @endif
+                                    {{ $doc->fileSizeFormatted }}
+                                </p>
+                            </div>
+                        </div>
+                        <a href="{{ route('admin.users.document.download', [$user, $doc]) }}"
+                           class="ml-4 flex-shrink-0 px-3 py-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 rounded-md transition-colors">
+                            Download
+                        </a>
+                    </div>
+                    @endforeach
                 </div>
             </div>
             @endif
@@ -258,6 +563,44 @@
                     <div class="text-center p-4 bg-gray-50 rounded-lg">
                         <p class="text-2xl font-bold text-indigo-600">{{ $user->jobApplications->count() }}</p>
                         <p class="text-sm text-gray-500">Applications</p>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <p class="text-2xl font-bold text-indigo-600">{{ $user->education->count() }}</p>
+                        <p class="text-sm text-gray-500">Education</p>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <p class="text-2xl font-bold text-indigo-600">{{ $user->experience->count() }}</p>
+                        <p class="text-sm text-gray-500">Experience</p>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <p class="text-2xl font-bold text-indigo-600">{{ $user->skills->count() }}</p>
+                        <p class="text-sm text-gray-500">Skills</p>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <p class="text-2xl font-bold text-indigo-600">{{ $user->resumes->count() }}</p>
+                        <p class="text-sm text-gray-500">Resumes</p>
+                    </div>
+                    @php
+                        $filledFields = collect([
+                            $user->profile?->headline,
+                            $user->profile?->bio,
+                            $user->profile?->location,
+                            $user->profile?->current_job_title,
+                            $user->profile?->date_of_birth,
+                            $user->profile?->nationality,
+                            $user->phone,
+                            $user->avatar,
+                        ])->filter()->count();
+                        $totalFields = 8;
+                        $dataPoints = $filledFields + $user->education->count() + $user->experience->count() + $user->skills->count() + $user->resumes->count();
+                        $completeness = min(100, round(($dataPoints / 12) * 100));
+                    @endphp
+                    <div class="text-center p-4 bg-gray-50 rounded-lg md:col-span-2">
+                        <p class="text-2xl font-bold {{ $completeness >= 70 ? 'text-green-600' : ($completeness >= 40 ? 'text-yellow-600' : 'text-red-600') }}">{{ $completeness }}%</p>
+                        <p class="text-sm text-gray-500">Profile Completeness</p>
+                        <div class="mt-2 w-full bg-gray-200 rounded-full h-2">
+                            <div class="h-2 rounded-full {{ $completeness >= 70 ? 'bg-green-500' : ($completeness >= 40 ? 'bg-yellow-500' : 'bg-red-500') }}" style="width: {{ $completeness }}%"></div>
+                        </div>
                     </div>
                     @endif
                 </div>

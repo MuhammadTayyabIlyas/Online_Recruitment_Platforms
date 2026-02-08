@@ -147,8 +147,8 @@
     </div>
 
     <!-- Users Table -->
-    <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
-        <div class="overflow-x-auto">
+    <div class="bg-white rounded-xl shadow-md border border-gray-200">
+        <div class="overflow-x-auto rounded-xl">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
@@ -243,43 +243,65 @@
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
-                            <div class="flex justify-end gap-2">
-                                <a href="{{ route('admin.users.show', $user) }}" class="inline-flex items-center px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 font-medium transition-colors" title="View Details">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            <div x-data="{ open: false }" class="relative inline-block text-left">
+                                <button @click="open = !open" @click.outside="open = false" type="button" class="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
                                     </svg>
-                                </a>
-                                <a href="{{ route('admin.users.edit', $user) }}" class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 font-medium transition-colors" title="Edit User">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                    </svg>
-                                </a>
-                                @if($user->id !== auth()->id())
-                                    <form action="{{ route('admin.users.toggle-status', $user) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="inline-flex items-center px-3 py-1.5 {{ $user->is_active ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' : 'bg-green-100 text-green-700 hover:bg-green-200' }} rounded-lg font-medium transition-colors" title="{{ $user->is_active ? 'Deactivate' : 'Activate' }}">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                @if($user->is_active)
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-                                                @else
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                @endif
+                                </button>
+                                <div x-show="open"
+                                     x-transition:enter="transition ease-out duration-100"
+                                     x-transition:enter-start="transform opacity-0 scale-95"
+                                     x-transition:enter-end="transform opacity-100 scale-100"
+                                     x-transition:leave="transition ease-in duration-75"
+                                     x-transition:leave-start="transform opacity-100 scale-100"
+                                     x-transition:leave-end="transform opacity-0 scale-95"
+                                     class="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                     style="display: none;">
+                                    <div class="py-1">
+                                        <a href="{{ route('admin.users.show', $user) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            <svg class="w-4 h-4 mr-3 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                             </svg>
-                                        </button>
-                                    </form>
-                                    <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline"
-                                          onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-medium transition-colors" title="Delete User">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            View Details
+                                        </a>
+                                        <a href="{{ route('admin.users.edit', $user) }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                             </svg>
-                                        </button>
-                                    </form>
-                                @endif
+                                            Edit User
+                                        </a>
+                                        @if($user->id !== auth()->id())
+                                            <form action="{{ route('admin.users.toggle-status', $user) }}" method="POST">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                    <svg class="w-4 h-4 mr-3 {{ $user->is_active ? 'text-yellow-500' : 'text-green-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        @if($user->is_active)
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                                                        @else
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                        @endif
+                                                    </svg>
+                                                    {{ $user->is_active ? 'Deactivate' : 'Activate' }}
+                                                </button>
+                                            </form>
+                                            <div class="border-t border-gray-100 my-1"></div>
+                                            <form action="{{ route('admin.users.destroy', $user) }}" method="POST"
+                                                  onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                    </svg>
+                                                    Delete User
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
                         </td>
                     </tr>

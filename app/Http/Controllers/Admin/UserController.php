@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Package;
 use App\Models\User;
+use App\Models\UserDocument;
+use App\Models\UserResume;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -98,6 +101,13 @@ class UserController extends Controller
             'jobApplications.job',
             'jobs',
             'subscriptions.package',
+            'education',
+            'experience',
+            'skills',
+            'languages',
+            'certifications',
+            'resumes',
+            'documents',
         ]);
         return view('admin.users.show', compact('user'));
     }
@@ -202,5 +212,43 @@ class UserController extends Controller
             ->update(['status' => 'expired']);
 
         return back()->with('success', "Package '{$package->name}' assigned successfully.");
+    }
+
+    public function downloadResume(User $user, UserResume $resume)
+    {
+        if ($resume->user_id !== $user->id) {
+            abort(403);
+        }
+
+        $path = $resume->file_path;
+
+        if (Storage::disk('private')->exists($path)) {
+            return Storage::disk('private')->download($path, $resume->file_name);
+        }
+
+        if (Storage::disk('public')->exists($path)) {
+            return Storage::disk('public')->download($path, $resume->file_name);
+        }
+
+        abort(404, 'Resume file not found.');
+    }
+
+    public function downloadDocument(User $user, UserDocument $document)
+    {
+        if ($document->user_id !== $user->id) {
+            abort(403);
+        }
+
+        $path = $document->file_path;
+
+        if (Storage::disk('private')->exists($path)) {
+            return Storage::disk('private')->download($path, $document->file_name ?? $document->original_name);
+        }
+
+        if (Storage::disk('public')->exists($path)) {
+            return Storage::disk('public')->download($path, $document->file_name ?? $document->original_name);
+        }
+
+        abort(404, 'Document file not found.');
     }
 }

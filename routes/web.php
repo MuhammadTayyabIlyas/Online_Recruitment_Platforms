@@ -411,6 +411,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::patch('/users/{user}/toggle-status', [AdminUserController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::patch('/users/{user}/toggle-cv-access', [AdminUserController::class, 'toggleCvAccess'])->name('users.toggle-cv-access');
     Route::post('/users/{user}/assign-package', [AdminUserController::class, 'assignPackage'])->name('users.assign-package');
+    Route::get('/users/{user}/resume/{resume}/download', [AdminUserController::class, 'downloadResume'])->name('users.resume.download');
+    Route::get('/users/{user}/document/{document}/download', [AdminUserController::class, 'downloadDocument'])->name('users.document.download');
 
     // Category Management
     Route::resource('categories', AdminCategoryController::class);
