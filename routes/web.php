@@ -47,6 +47,9 @@ require __DIR__ . '/portugal-certificate.php';
 // Greece Penal Record Certificate Routes
 require __DIR__ . '/greece-certificate.php';
 
+// Appointment Booking Routes
+require __DIR__ . '/appointments.php';
+
 // Public Partner Pages
 Route::get('/partners', [\App\Http\Controllers\PartnerController::class, 'directory'])->name('partners.directory');
 Route::get('/partner/verify/{reference}', [\App\Http\Controllers\PartnerController::class, 'verify'])->name('partner.verify');
@@ -381,6 +384,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Service User Dashboard
         Route::get('/dashboard', [\App\Http\Controllers\ServiceUser\DashboardController::class, 'index'])->name('dashboard');
 
+        // Appointments
+        Route::get('/appointments', [\App\Http\Controllers\ServiceUser\AppointmentController::class, 'index'])->name('appointments.index');
+        Route::get('/appointments/{appointment}', [\App\Http\Controllers\ServiceUser\AppointmentController::class, 'show'])->name('appointments.show');
+        Route::post('/appointments/{appointment}/cancel', [\App\Http\Controllers\ServiceUser\AppointmentController::class, 'cancel'])->name('appointments.cancel');
+
         // Wallet
         Route::get('/wallet', [\App\Http\Controllers\ServiceUser\WalletController::class, 'index'])->name('wallet');
         Route::post('/wallet/request-payout', [\App\Http\Controllers\ServiceUser\WalletController::class, 'requestPayout'])->name('wallet.request-payout');
@@ -518,6 +526,31 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::get('/referrals/withdrawals', [\App\Http\Controllers\Admin\ReferralAdminController::class, 'withdrawalRequests'])->name('referrals.withdrawals');
     Route::patch('/referrals/withdrawals/{withdrawal}', [\App\Http\Controllers\Admin\ReferralAdminController::class, 'processWithdrawal'])->name('referrals.process-withdrawal');
     Route::get('/referrals/user/{user}', [\App\Http\Controllers\Admin\ReferralAdminController::class, 'userReferralDetail'])->name('referrals.user-detail');
+
+    // Consultation Types Admin Routes
+    Route::get('/consultation-types', [\App\Http\Controllers\Admin\ConsultationTypeController::class, 'index'])->name('consultation-types.index');
+    Route::get('/consultation-types/create', [\App\Http\Controllers\Admin\ConsultationTypeController::class, 'create'])->name('consultation-types.create');
+    Route::post('/consultation-types', [\App\Http\Controllers\Admin\ConsultationTypeController::class, 'store'])->name('consultation-types.store');
+    Route::get('/consultation-types/{consultationType}/edit', [\App\Http\Controllers\Admin\ConsultationTypeController::class, 'edit'])->name('consultation-types.edit');
+    Route::put('/consultation-types/{consultationType}', [\App\Http\Controllers\Admin\ConsultationTypeController::class, 'update'])->name('consultation-types.update');
+    Route::delete('/consultation-types/{consultationType}', [\App\Http\Controllers\Admin\ConsultationTypeController::class, 'destroy'])->name('consultation-types.destroy');
+    Route::patch('/consultation-types/{consultationType}/toggle-status', [\App\Http\Controllers\Admin\ConsultationTypeController::class, 'toggleStatus'])->name('consultation-types.toggle-status');
+
+    // Appointment Schedule Admin Routes
+    Route::get('/appointment-schedule', [\App\Http\Controllers\Admin\AppointmentScheduleController::class, 'index'])->name('appointment-schedule.index');
+    Route::post('/appointment-schedule', [\App\Http\Controllers\Admin\AppointmentScheduleController::class, 'store'])->name('appointment-schedule.store');
+    Route::put('/appointment-schedule/{schedule}', [\App\Http\Controllers\Admin\AppointmentScheduleController::class, 'update'])->name('appointment-schedule.update');
+    Route::delete('/appointment-schedule/{schedule}', [\App\Http\Controllers\Admin\AppointmentScheduleController::class, 'destroy'])->name('appointment-schedule.destroy');
+    Route::post('/appointment-schedule/blocks', [\App\Http\Controllers\Admin\AppointmentScheduleController::class, 'storeBlock'])->name('appointment-schedule.store-block');
+    Route::delete('/appointment-schedule/blocks/{block}', [\App\Http\Controllers\Admin\AppointmentScheduleController::class, 'destroyBlock'])->name('appointment-schedule.destroy-block');
+
+    // Appointment Admin Routes
+    Route::get('/appointments', [\App\Http\Controllers\Admin\AppointmentAdminController::class, 'index'])->name('appointments.index');
+    Route::get('/appointments/calendar', [\App\Http\Controllers\Admin\AppointmentAdminController::class, 'calendar'])->name('appointments.calendar');
+    Route::get('/appointments/export/csv', [\App\Http\Controllers\Admin\AppointmentAdminController::class, 'export'])->name('appointments.export');
+    Route::get('/appointments/{appointment}', [\App\Http\Controllers\Admin\AppointmentAdminController::class, 'show'])->name('appointments.show');
+    Route::patch('/appointments/{appointment}/status', [\App\Http\Controllers\Admin\AppointmentAdminController::class, 'updateStatus'])->name('appointments.update-status');
+    Route::patch('/appointments/{appointment}/meeting-link', [\App\Http\Controllers\Admin\AppointmentAdminController::class, 'updateMeetingLink'])->name('appointments.update-meeting-link');
 
     // Greece Certificate Admin Routes
     Route::get('/greece-certificates', [\App\Http\Controllers\Admin\GreeceCertificateAdminController::class, 'index'])->name('greece-certificates.index');

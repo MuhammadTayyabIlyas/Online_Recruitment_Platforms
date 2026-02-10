@@ -350,6 +350,14 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Get the user's appointments.
+     */
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
+    /**
      * Check if user is an active authorized partner.
      */
     public function isAuthorizedPartner(): bool

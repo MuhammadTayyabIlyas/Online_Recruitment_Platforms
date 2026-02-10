@@ -4,6 +4,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Console\Commands\SendJobAlerts;
+use App\Console\Commands\SendAppointmentReminders;
+use Illuminate\Console\Scheduling\Schedule;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -13,7 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withCommands([
         SendJobAlerts::class,
+        SendAppointmentReminders::class,
     ])
+    ->withSchedule(function (Schedule $schedule) {
+        $schedule->command('appointments:send-reminders')->everyFiveMinutes();
+    })
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,

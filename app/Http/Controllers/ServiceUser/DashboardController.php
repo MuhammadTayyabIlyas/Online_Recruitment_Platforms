@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\PoliceCertificateController;
 use App\Http\Controllers\PortugalCertificateController;
 use App\Http\Controllers\GreeceCertificateController;
+use App\Models\Appointment;
 use App\Models\PoliceCertificateApplication;
 use App\Models\PortugalCertificateApplication;
 use App\Models\GreeceCertificateApplication;
@@ -172,6 +173,13 @@ class DashboardController extends Controller
         // Merge needs action
         $needsAction = $ukNeedsAction->merge($ptNeedsAction)->merge($grNeedsAction);
 
+        // Upcoming Appointments
+        $upcomingAppointments = Appointment::where('user_id', $user->id)
+            ->upcoming()
+            ->with('consultationType')
+            ->take(3)
+            ->get();
+
         // Partner program
         $partner = $user->authorizedPartner;
 
@@ -187,6 +195,7 @@ class DashboardController extends Controller
             'recentApplications',
             'draftApplications',
             'needsAction',
+            'upcomingAppointments',
             'partner',
             'referralCode',
             'walletBalance'

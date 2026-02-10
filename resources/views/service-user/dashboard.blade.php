@@ -133,6 +133,44 @@
         </div>
     </div>
 
+    <!-- Upcoming Appointments -->
+    @if($upcomingAppointments->count() > 0)
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                    <svg class="h-5 w-5 text-indigo-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    Upcoming Appointments
+                </h3>
+                <a href="{{ route('service_user.appointments.index') }}" class="text-sm text-indigo-600 hover:text-indigo-800">View All</a>
+            </div>
+            <div class="space-y-3">
+                @foreach($upcomingAppointments as $appt)
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="p-2 bg-indigo-100 rounded-lg">
+                                <svg class="h-5 w-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">{{ $appt->consultationType->name }}</p>
+                                <p class="text-xs text-gray-500">{{ $appt->appointment_date->format('M j, Y') }} &middot; {{ $appt->formatted_time }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-{{ $appt->status_color }}-100 text-{{ $appt->status_color }}-800">
+                                {{ $appt->status_label }}
+                            </span>
+                            <a href="{{ route('service_user.appointments.show', $appt) }}" class="text-sm text-indigo-600 hover:text-indigo-800">View</a>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     <!-- Draft Applications - Continue Where You Left Off -->
     @if($draftApplications->count() > 0)
         <div class="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-lg p-6">

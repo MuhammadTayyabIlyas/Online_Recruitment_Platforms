@@ -222,6 +222,26 @@
                     <span x-show="sidebarOpen">Greece Certificates</span>
                 </a>
 
+                <!-- Appointments -->
+                <a href="{{ route('admin.appointments.index') }}"
+                   class="sidebar-link group flex items-center rounded-lg text-white/80 py-3 {{ request()->routeIs('admin.appointments.*') ? 'active' : '' }}"
+                   :class="sidebarOpen ? 'space-x-3 px-4 justify-start' : 'px-3 justify-center'">
+                    <svg class="w-6 h-6 text-white/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <span x-show="sidebarOpen">Appointments</span>
+                </a>
+
+                <!-- Consultation Types -->
+                <a href="{{ route('admin.consultation-types.index') }}"
+                   class="sidebar-link group flex items-center rounded-lg text-white/80 py-3 {{ request()->routeIs('admin.consultation-types.*') || request()->routeIs('admin.appointment-schedule.*') ? 'active' : '' }}"
+                   :class="sidebarOpen ? 'space-x-3 px-4 justify-start' : 'px-3 justify-center'">
+                    <svg class="w-6 h-6 text-white/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span x-show="sidebarOpen">Consultation Types</span>
+                </a>
+
                 <!-- Authorized Partners -->
                 <a href="{{ route('admin.authorized-partners.index') }}"
                    class="sidebar-link group flex items-center rounded-lg text-white/80 py-3 {{ request()->routeIs('admin.authorized-partners.*') ? 'active' : '' }}"
