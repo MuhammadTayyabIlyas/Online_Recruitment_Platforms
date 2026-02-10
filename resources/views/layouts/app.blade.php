@@ -142,6 +142,7 @@
         }
     </style>
     @include('layouts.partials.brand-styles')
+    @livewireStyles
 </head>
 @php($whatsappLink = config('placemenet.whatsapp_link'))
 @php($whatsappNumber = config('placemenet.whatsapp_number'))
@@ -230,6 +231,8 @@
                         <span class="text-blue-300 hidden sm:inline">•</span>
                         <a href="{{ route('about') }}" class="text-white/80 hover:text-white text-sm transition-colors duration-300">About Us</a>
                         <span class="text-blue-300 hidden sm:inline">•</span>
+                        <a href="{{ route('appointments.index') }}" class="text-white/80 hover:text-white text-sm transition-colors duration-300">Consultations</a>
+                        <span class="text-blue-300 hidden sm:inline">•</span>
                         <a href="{{ route('login') }}" class="text-white/80 hover:text-white text-sm transition-colors duration-300">For Employers</a>
                         <span class="text-blue-300 hidden sm:inline">•</span>
                         <a href="{{ route('register') }}" class="text-white/80 hover:text-white text-sm transition-colors duration-300">Job Seekers</a>
@@ -258,6 +261,7 @@
     </div>
 
     @include('layouts.partials.geo-autofill')
+    @livewireScripts
     @stack('scripts')
 </body>
 </html>

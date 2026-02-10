@@ -234,12 +234,22 @@
 
                 <!-- Consultation Types -->
                 <a href="{{ route('admin.consultation-types.index') }}"
-                   class="sidebar-link group flex items-center rounded-lg text-white/80 py-3 {{ request()->routeIs('admin.consultation-types.*') || request()->routeIs('admin.appointment-schedule.*') ? 'active' : '' }}"
+                   class="sidebar-link group flex items-center rounded-lg text-white/80 py-3 {{ request()->routeIs('admin.consultation-types.*') ? 'active' : '' }}"
                    :class="sidebarOpen ? 'space-x-3 px-4 justify-start' : 'px-3 justify-center'">
                     <svg class="w-6 h-6 text-white/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     <span x-show="sidebarOpen">Consultation Types</span>
+                </a>
+
+                <!-- Availability Schedule -->
+                <a href="{{ route('admin.appointment-schedule.index') }}"
+                   class="sidebar-link group flex items-center rounded-lg text-white/80 py-3 {{ request()->routeIs('admin.appointment-schedule.*') ? 'active' : '' }}"
+                   :class="sidebarOpen ? 'space-x-3 px-4 justify-start' : 'px-3 justify-center'">
+                    <svg class="w-6 h-6 text-white/70 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                    </svg>
+                    <span x-show="sidebarOpen">Availability Schedule</span>
                 </a>
 
                 <!-- Authorized Partners -->

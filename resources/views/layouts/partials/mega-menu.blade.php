@@ -317,6 +317,17 @@
                                     <p class="text-xs text-gray-500">Penal Record</p>
                                 </div>
                             </a>
+                            <a href="{{ route('appointments.index') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 transition-colors">
+                                <div class="p-2 bg-orange-100 rounded-lg">
+                                    <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900 text-sm">{{ __('Book a Consultation') }}</p>
+                                    <p class="text-xs text-gray-500">Expert advice sessions</p>
+                                </div>
+                            </a>
                             <a href="{{ route('blogs.index') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-rose-50 transition-colors">
                                 <div class="p-2 bg-rose-100 rounded-lg">
                                     <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -461,6 +472,7 @@
                         <a href="{{ route('greece-certificate.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('Greece Certificate') }}</a>
                     </div>
 
+                    <a href="{{ route('appointments.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('Book a Consultation') }}</a>
                     <a href="{{ route('blogs.index') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('Blog') }}</a>
                     <a href="{{ route('about') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('About') }}</a>
                     <a href="{{ route('contact') }}" class="block px-4 py-3 text-white rounded-lg hover:bg-white/10 active:bg-white/20">{{ __('Contact') }}</a>

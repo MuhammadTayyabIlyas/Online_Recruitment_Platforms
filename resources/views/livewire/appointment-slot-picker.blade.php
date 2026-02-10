@@ -46,6 +46,17 @@
         @endforeach
     </div>
 
+    {{-- No availability message --}}
+    @if(empty($availableDates))
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 text-center">
+            <svg class="w-8 h-8 text-amber-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p class="text-amber-800 font-medium">No available dates this month</p>
+            <p class="text-amber-600 text-sm mt-1">Try navigating to the next month, or contact us for assistance.</p>
+        </div>
+    @endif
+
     {{-- Time Slots --}}
     @if($selectedDate)
         <div class="border-t border-gray-200 pt-6">

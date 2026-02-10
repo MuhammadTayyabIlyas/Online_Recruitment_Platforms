@@ -242,6 +242,14 @@
                 </svg>
                 Move to Europe
             </a>
+
+            <a href="{{ route('appointments.index') }}"
+               class="group inline-flex items-center justify-center gap-2 border-2 border-yellow-300/60 text-yellow-200 hover:bg-yellow-300 hover:text-blue-800 px-6 py-3 rounded-lg font-medium transition-all duration-300 hover-lift">
+                <svg class="h-5 w-5 group-hover:scale-110 transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                {{ __('Book a Consultation') }}
+            </a>
         </div>
 
         {{-- Stats Row --}}
@@ -504,7 +512,7 @@
             <p class="text-lg text-gray-600">Jobs, study abroad, or moving to Europe—we keep the steps clear and conversion-focused.</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 shadow-sm flex flex-col gap-3">
                 <div class="flex items-center justify-between">
                     <p class="text-sm text-blue-700 font-semibold">Find a job</p>
@@ -544,6 +552,21 @@
                 <p class="text-gray-700 text-sm">Golden Visa, Digital Nomad, Passive Income, Startup, or Skilled paths.</p>
                 <a href="{{ route('visa.index') }}" class="inline-flex items-center gap-2 text-teal-700 font-semibold hover:text-teal-900">
                     See pathways
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </a>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 shadow-sm flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm text-amber-700 font-semibold">Expert advice</p>
+                    <span class="px-3 py-1 rounded-full bg-white text-amber-700 text-xs font-semibold">Free & paid</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900">Book a consultation</h3>
+                <p class="text-gray-700 text-sm">Career coaching, CV review, immigration advice - talk to our experts.</p>
+                <a href="{{ route('appointments.index') }}" class="inline-flex items-center gap-2 text-amber-700 font-semibold hover:text-amber-900">
+                    Book now
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                     </svg>
