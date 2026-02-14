@@ -40,6 +40,7 @@ class Appointment extends Model
         'cancelled_by',
         'reminder_24h_sent_at',
         'reminder_1h_sent_at',
+        'reminder_15m_sent_at',
     ];
 
     protected function casts(): array
@@ -52,6 +53,7 @@ class Appointment extends Model
             'cancelled_at' => 'datetime',
             'reminder_24h_sent_at' => 'datetime',
             'reminder_1h_sent_at' => 'datetime',
+            'reminder_15m_sent_at' => 'datetime',
         ];
     }
 

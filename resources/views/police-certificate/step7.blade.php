@@ -71,11 +71,42 @@
         @enderror
     </div>
 
+    <!-- Apostille Add-on -->
+    <div class="bg-amber-50 border border-amber-200 rounded-lg p-6">
+        <div class="flex items-start">
+            <div class="flex items-center h-5 mt-1">
+                <input type="checkbox" name="apostille_required" id="apostille_required" value="1"
+                       {{ old('apostille_required', $application->apostille_required ?? false) ? 'checked' : '' }}
+                       class="w-5 h-5 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+                       onchange="updatePaymentDetails()">
+            </div>
+            <div class="ml-3">
+                <label for="apostille_required" class="text-base font-semibold text-gray-900 cursor-pointer">
+                    Add Apostille / Legalisation Service
+                    <span id="apostille-price-label" class="text-amber-700 font-bold ml-1"></span>
+                </label>
+                <p class="text-sm text-gray-600 mt-1">
+                    An apostille is an official certification that authenticates your document for use in countries that are members of the Hague Convention. Required for most international uses including immigration, employment, and legal proceedings abroad.
+                </p>
+            </div>
+        </div>
+    </div>
+
     <!-- Payment Summary -->
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <div class="flex justify-between items-center mb-4">
-            <span class="text-gray-700">Service Fee:</span>
-            <span id="payment-amount" class="text-2xl font-bold text-blue-700">Select options above</span>
+        <div id="payment-breakdown" class="space-y-2 mb-4">
+            <div class="flex justify-between items-center">
+                <span class="text-gray-700">Service Fee:</span>
+                <span id="service-fee-display" class="font-semibold text-gray-900">Select options above</span>
+            </div>
+            <div id="apostille-fee-row" class="flex justify-between items-center" style="display: none;">
+                <span class="text-gray-700">Apostille / Legalisation:</span>
+                <span id="apostille-fee-display" class="font-semibold text-gray-900"></span>
+            </div>
+            <div class="border-t border-blue-200 pt-2 flex justify-between items-center">
+                <span class="text-gray-900 font-bold">Total:</span>
+                <span id="payment-amount" class="text-2xl font-bold text-blue-700">Select options above</span>
+            </div>
         </div>
         <div class="text-sm text-gray-600">
             <p>You will be able to upload your payment receipt after submitting this application.</p>
@@ -201,20 +232,44 @@
 function updatePaymentDetails() {
     const serviceType = document.querySelector('input[name="service_type"]:checked')?.value;
     const currency = document.querySelector('input[name="payment_currency"]:checked')?.value;
-    
+    const apostille = document.getElementById('apostille_required')?.checked;
+
     const prices = {
         normal: { gbp: 125, eur: 150 },
         urgent: { gbp: 175, eur: 200 }
     };
-    
+
+    const apostillePrices = { gbp: 180, eur: 200 };
+
     const amountDisplay = document.getElementById('payment-amount');
-    
+    const serviceFeeDisplay = document.getElementById('service-fee-display');
+    const apostilleFeeRow = document.getElementById('apostille-fee-row');
+    const apostilleFeeDisplay = document.getElementById('apostille-fee-display');
+    const apostillePriceLabel = document.getElementById('apostille-price-label');
+
     if (serviceType && currency) {
-        const amount = prices[serviceType][currency];
         const symbol = currency === 'gbp' ? '£' : '€';
-        amountDisplay.textContent = symbol + amount;
+        const serviceAmount = prices[serviceType][currency];
+        const apostilleAmount = apostillePrices[currency];
+        let total = serviceAmount;
+
+        serviceFeeDisplay.textContent = symbol + serviceAmount;
+        apostillePriceLabel.textContent = '(+' + symbol + apostilleAmount + ')';
+
+        if (apostille) {
+            total += apostilleAmount;
+            apostilleFeeRow.style.display = 'flex';
+            apostilleFeeDisplay.textContent = symbol + apostilleAmount;
+        } else {
+            apostilleFeeRow.style.display = 'none';
+        }
+
+        amountDisplay.textContent = symbol + total;
+    } else if (currency) {
+        const symbol = currency === 'gbp' ? '£' : '€';
+        apostillePriceLabel.textContent = '(+' + symbol + apostillePrices[currency] + ')';
     }
-    
+
     // Update checkmark visibility
     document.querySelector('.check-icon-normal').classList.toggle('invisible', serviceType !== 'normal');
     document.querySelector('.check-icon-urgent').classList.toggle('invisible', serviceType !== 'urgent');

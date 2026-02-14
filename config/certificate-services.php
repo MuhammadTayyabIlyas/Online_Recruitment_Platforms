@@ -35,6 +35,10 @@ return [
                     'currency_code' => 'EUR',
                 ],
             ],
+            'apostille' => [
+                'gbp' => 180,
+                'eur' => 200,
+            ],
             'bank_accounts' => [
                 'gbp' => [
                     'bank_name' => 'Wise',
@@ -70,6 +74,9 @@ return [
                     'currency_code' => 'EUR',
                 ],
             ],
+            'apostille' => [
+                'eur' => 200,
+            ],
             'bank_accounts' => [
                 'eur' => [
                     'bank_name' => 'Wise',
@@ -96,6 +103,9 @@ return [
                     'currency_symbol' => '€',
                     'currency_code' => 'EUR',
                 ],
+            ],
+            'apostille' => [
+                'eur' => 200,
             ],
             'bank_accounts' => [
                 'eur' => [

@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Console\Commands\SendJobAlerts;
 use App\Console\Commands\SendAppointmentReminders;
+use App\Console\Commands\SendDailyAppointmentSummary;
 use Illuminate\Console\Scheduling\Schedule;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -16,9 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withCommands([
         SendJobAlerts::class,
         SendAppointmentReminders::class,
+        SendDailyAppointmentSummary::class,
     ])
     ->withSchedule(function (Schedule $schedule) {
-        $schedule->command('appointments:send-reminders')->everyFiveMinutes();
+        $schedule->command('appointments:send-reminders')->everyMinute();
+        $schedule->command('appointments:daily-summary')->dailyAt('21:00');
     })
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([

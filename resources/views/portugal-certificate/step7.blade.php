@@ -115,6 +115,40 @@
         <p class="text-sm text-red-600">{{ $message }}</p>
     @enderror
 
+    <!-- Apostille Add-on -->
+    <div class="bg-amber-50 border border-amber-200 rounded-xl p-6 mt-8" x-data="{ apostille: {{ old('apostille_required', $application->apostille_required ?? false) ? 'true' : 'false' }} }">
+        <div class="flex items-start">
+            <div class="flex items-center h-5 mt-1">
+                <input type="checkbox" name="apostille_required" id="apostille_required" value="1"
+                       x-model="apostille"
+                       class="w-5 h-5 text-amber-600 border-gray-300 rounded focus:ring-amber-500">
+            </div>
+            <div class="ml-3">
+                <label for="apostille_required" class="text-base font-semibold text-gray-900 cursor-pointer">
+                    Add Apostille / Legalisation Service
+                    <span class="text-amber-700 font-bold ml-1">(+€200)</span>
+                </label>
+                <p class="text-sm text-gray-600 mt-1">
+                    An apostille is an official certification that authenticates your document for use in countries that are members of the Hague Convention. Required for most international uses including immigration, employment, and legal proceedings abroad.
+                </p>
+            </div>
+        </div>
+        <div x-show="apostille" x-transition class="mt-3 p-3 bg-white rounded-lg border border-amber-200 text-sm text-gray-700">
+            <div class="flex justify-between">
+                <span>Service Fee:</span>
+                <span class="font-semibold" x-text="serviceType === 'urgent' ? '€250' : '€200'"></span>
+            </div>
+            <div class="flex justify-between mt-1">
+                <span>Apostille / Legalisation:</span>
+                <span class="font-semibold">€200</span>
+            </div>
+            <div class="flex justify-between mt-1 pt-1 border-t border-amber-200 font-bold">
+                <span>Total:</span>
+                <span x-text="serviceType === 'urgent' ? '€450' : '€400'"></span>
+            </div>
+        </div>
+    </div>
+
     <!-- Payment Information -->
     <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-8">
         <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">

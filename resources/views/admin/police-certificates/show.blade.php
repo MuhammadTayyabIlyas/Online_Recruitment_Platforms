@@ -29,8 +29,11 @@
                         </p>
                         <p class="text-sm text-gray-500 mt-1">
                             Service: <span class="font-medium {{ $application->service_type === 'urgent' ? 'text-red-600' : '' }}">{{ $application->service_type_label }}</span> |
-                            Amount: <span class="font-medium">{{ $application->payment_amount_display }}</span> |
-                            Submitted {{ $application->submitted_at?->diffForHumans() }}
+                            Amount: <span class="font-medium">{{ $application->payment_amount_display }}</span>
+                            @if($application->apostille_required)
+                                | <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800">Apostille</span>
+                            @endif
+                            | Submitted {{ $application->submitted_at?->diffForHumans() }}
                         </p>
                     </div>
                 </div>

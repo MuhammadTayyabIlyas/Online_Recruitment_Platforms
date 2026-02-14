@@ -43,6 +43,7 @@ class PortugalCertificateApplication extends Model
         'certificate_purpose',
         'purpose_details',
         'service_type',
+        'apostille_required',
         'payment_currency',
         'payment_amount',
         'payment_status',
@@ -73,6 +74,7 @@ class PortugalCertificateApplication extends Model
         'portugal_residence_history' => 'array',
         'signature_date' => 'date',
         'authorization_letter_uploaded' => 'boolean',
+        'apostille_required' => 'boolean',
     ];
 
     protected static function boot()

@@ -201,6 +201,14 @@ class AppointmentService
                 // Log but don't block booking
             }
 
+            // Send WhatsApp notification to admin
+            try {
+                $whatsapp = app(WhatsAppService::class);
+                $whatsapp->sendAppointmentBookedNotification($appointment);
+            } catch (\Exception $e) {
+                // Log but don't block booking
+            }
+
             return $appointment;
         });
     }

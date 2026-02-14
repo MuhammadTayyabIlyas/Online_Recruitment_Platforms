@@ -48,6 +48,7 @@ class GreeceCertificateApplication extends Model
         'certificate_purpose',
         'purpose_details',
         'service_type',
+        'apostille_required',
         'payment_currency',
         'payment_amount',
         'payment_status',
@@ -73,6 +74,7 @@ class GreeceCertificateApplication extends Model
         'submitted_at' => 'datetime',
         'disclaimer_accepted_at' => 'datetime',
         'greece_residence_history' => 'array',
+        'apostille_required' => 'boolean',
     ];
 
     protected static function boot()

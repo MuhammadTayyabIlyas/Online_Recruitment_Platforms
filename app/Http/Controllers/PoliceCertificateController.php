@@ -7,6 +7,7 @@ use App\Models\PoliceCertificateApplication;
 use App\Models\PoliceCertificateDocument;
 use App\Services\PaymentPdfService;
 use App\Services\ReferralService;
+use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -142,9 +143,11 @@ class PoliceCertificateController extends Controller
 
         // Calculate payment amount for step 7
         if ($step === 7) {
+            $validated['apostille_required'] = $request->boolean('apostille_required');
             $validated['payment_amount'] = $this->calculatePaymentAmount(
                 $validated['service_type'] ?? $request->service_type,
-                $validated['payment_currency'] ?? $request->payment_currency
+                $validated['payment_currency'] ?? $request->payment_currency,
+                $request->boolean('apostille_required')
             );
         }
 
@@ -210,6 +213,14 @@ class PoliceCertificateController extends Controller
 
             // Send confirmation email to applicant (with PDF attached)
             Mail::to($application->email)->send(new PoliceCertificateSubmitted($application));
+
+            // Send WhatsApp notification to admin
+            try {
+                $whatsapp = app(WhatsAppService::class);
+                $whatsapp->sendCertificateSubmissionNotification($application, 'uk-police');
+            } catch (\Exception $e) {
+                // Log but don't block submission
+            }
 
             return redirect()->route('police-certificate.success', ['reference' => $application->application_reference]);
         }
@@ -477,6 +488,7 @@ class PoliceCertificateController extends Controller
                 $rules = [
                     'service_type' => 'required|in:normal,urgent',
                     'payment_currency' => 'required|in:gbp,eur',
+                    'apostille_required' => 'nullable|boolean',
                     'referral_code' => 'nullable|string|max:10',
                     'terms_accepted' => 'required|accepted',
                     'privacy_accepted' => 'required|accepted',
@@ -641,11 +653,17 @@ class PoliceCertificateController extends Controller
         return $pdf->download($filename);
     }
 
-    protected function calculatePaymentAmount($serviceType, $currency)
+    protected function calculatePaymentAmount($serviceType, $currency, $apostilleRequired = false)
     {
         $pricing = config('certificate-services.services.uk-police.pricing.' . $currency);
+        $amount = $pricing[$serviceType] ?? $pricing['normal'];
 
-        return $pricing[$serviceType] ?? $pricing['normal'];
+        if ($apostilleRequired) {
+            $apostillePrice = config('certificate-services.services.uk-police.apostille.' . $currency, 0);
+            $amount += $apostillePrice;
+        }
+
+        return $amount;
     }
 
     /**

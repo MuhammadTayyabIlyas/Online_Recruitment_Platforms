@@ -42,4 +42,15 @@ return [
         'scopes' => ['openid', 'profile', 'email'],
     ],
 
+    'evolution' => [
+        'api_url' => env('EVOLUTION_API_URL', 'http://localhost:8080'),
+        'api_key' => env('EVOLUTION_API_KEY'),
+        'instances' => [
+            'uk-police' => env('EVOLUTION_INSTANCE_UK', 'uk-5000'),
+            'greece' => env('EVOLUTION_INSTANCE_GREECE', 'greece'),
+            'portugal' => env('EVOLUTION_INSTANCE_PORTUGAL', 'purtugal'),
+        ],
+        'admin_number' => env('WHATSAPP_ADMIN_NUMBER', '306981513600'),
+    ],
+
 ];

@@ -7,6 +7,7 @@ use App\Models\GreeceCertificateApplication;
 use App\Models\GreeceCertificateDocument;
 use App\Services\PaymentPdfService;
 use App\Services\ReferralService;
+use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -111,8 +112,10 @@ class GreeceCertificateController extends Controller
 
         // Calculate payment amount for step 7
         if ($step === 7) {
+            $validated['apostille_required'] = $request->boolean('apostille_required');
             $validated['payment_amount'] = $this->calculatePaymentAmount(
-                $validated['service_type'] ?? $request->service_type
+                $validated['service_type'] ?? $request->service_type,
+                $request->boolean('apostille_required')
             );
         }
 
@@ -171,6 +174,14 @@ class GreeceCertificateController extends Controller
 
             // Send confirmation email to applicant (with PDF attached)
             Mail::to($application->email)->send(new GreeceCertificateSubmitted($application));
+
+            // Send WhatsApp notification to admin
+            try {
+                $whatsapp = app(WhatsAppService::class);
+                $whatsapp->sendCertificateSubmissionNotification($application, 'greece');
+            } catch (\Exception $e) {
+                // Log but don't block submission
+            }
 
             return redirect()->route('greece-certificate.success', ['reference' => $application->application_reference]);
         }
@@ -430,6 +441,7 @@ class GreeceCertificateController extends Controller
                     'certificate_purpose' => 'required|in:employment,immigration,visa,residency,education,adoption,other',
                     'purpose_details' => 'nullable|string|max:500',
                     'service_type' => 'required|in:normal,urgent',
+                    'apostille_required' => 'nullable|boolean',
                     'referral_code' => 'nullable|string|max:10',
                     'terms_accepted' => 'required|accepted',
                     'privacy_accepted' => 'required|accepted',
@@ -570,11 +582,17 @@ class GreeceCertificateController extends Controller
         ]);
     }
 
-    protected function calculatePaymentAmount($serviceType)
+    protected function calculatePaymentAmount($serviceType, $apostilleRequired = false)
     {
         $pricing = config('certificate-services.services.greece.pricing.eur');
+        $amount = $pricing[$serviceType] ?? $pricing['normal'];
 
-        return $pricing[$serviceType] ?? $pricing['normal'];
+        if ($apostilleRequired) {
+            $apostillePrice = config('certificate-services.services.greece.apostille.eur', 0);
+            $amount += $apostillePrice;
+        }
+
+        return $amount;
     }
 
     /**

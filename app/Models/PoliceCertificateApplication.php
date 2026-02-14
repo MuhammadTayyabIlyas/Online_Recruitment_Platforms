@@ -51,6 +51,7 @@ class PoliceCertificateApplication extends Model
         'application_reference',
         'submitted_at',
         'admin_notes',
+        'apostille_required',
         'referral_code_used',
         'disclaimer_accepted_at',
         'signature_data',
@@ -72,6 +73,7 @@ class PoliceCertificateApplication extends Model
         'uk_address_history' => 'array',
         'signature_date' => 'date',
         'authorization_letter_uploaded' => 'boolean',
+        'apostille_required' => 'boolean',
     ];
 
     protected static function boot()
